@@ -21,7 +21,7 @@ var MESSAGE_FORMAT_URL = "message-format";//格式json串
 var MESSAGE_VALIDATE_JSON_URL = "message-validateJson";//报文json串验证
 
 var templateParams = {
-		tableTheads:["接口","报文名", "类型", "创建时间", "状态", "创建用户", "最后修改", "入参", "场景", "操作"],
+		tableTheads:["接口","报文名", "类型", "创建时间", "状态", "创建用户", "最后修改", "入参报文", "场景", "操作"],
 		btnTools:[{
 			type:"primary",
 			size:"M",

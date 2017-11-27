@@ -26,7 +26,7 @@ var INTERFACE_DEL_URL = "interface-del"; //删除指定接口
 
 
 var templateParams = {
-		tableTheads:["名称","中文名","类型","协议","创建时间","状态","创建用户","最后修改","参数","操作"],
+		tableTheads:["名称","报文", "中文名","类型","协议","创建时间","状态","创建用户","最后修改","参数","操作"],
 		btnTools:[{
 			type:"primary",
 			size:"M",
@@ -164,10 +164,22 @@ var columnsSetting = [
               }},
           {"data":"interfaceId"},
           {
-          	"className":"ellipsis show-interface-messages",
+          	"className":"ellipsis",
 		    "data":"interfaceName",
           	"render":CONSTANT.DATA_TABLES.COLUMNFUN.ELLIPSIS
           	},
+          	{
+                "data":"messagesNum",
+                "render":function(data, type, full, meta){
+                	var context =
+                		[{
+              			type:"default",
+              			size:"M",
+              			markClass:"show-interface-messages",
+              			name:data
+              		}];
+                    return btnTextTemplate(context);
+                }},
           {
       		"className":"ellipsis",
 		    "data":"interfaceCnName",
@@ -202,14 +214,14 @@ var columnsSetting = [
               }},
           {"data":"user.realName"},{"data":"lastModifyUser"},
           {
-              "data":null,
+              "data":"parametersNum",
               "render":function(data, type, full, meta){
               	var context =
               		[{
-            			type:"primary",
+            			type:"secondary",
             			size:"M",
             			markClass:"edit-params",
-            			name:"管理"
+            			name:data
             		}];
                   return btnTextTemplate(context);
               }},
@@ -389,7 +401,7 @@ var mySetting = {
 			listUrl:INTERFACE_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0,10,11]
+			columnsJson:[0, 12]
 		},
 		templateParams:templateParams		
 	};

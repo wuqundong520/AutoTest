@@ -47,7 +47,7 @@ var COMPLEX_SET_SCENE_GET_URL = "set-getComplexScene"; //获取指定场景信�
 var COMPLEX_SET_SCENE_EDIT_VARIABLES = "set-editComplexSceneVariables";//更新组合场景变量信息
 
 var templateParams = {
-		tableTheads:["接口", "报文", "场景名", "测试数据","备注", "操作"],
+		tableTheads:["接口", "报文", "场景名", "测试数据", "验证规则", "备注", "操作"],
 		btnTools:[{
 			type:"primary",
 			size:"M",
@@ -127,6 +127,19 @@ var columnsSetting = [
                               return btnTextTemplate(context);
                               }
             		    },  
+            		    {
+                      	  	"data":"rulesNum",
+	                        "render":function(data, type, full, meta){
+	                        	var context =
+	                        		[{
+	                      			type:"default",
+	                      			size:"M",
+	                      			markClass:"validate-method",
+	                      			name:data
+	                      		}];
+	                            return btnTextTemplate(context);
+	                            }
+              		    },
                       {
             		    "data":"mark",
             		    "className":"ellipsis",
@@ -161,10 +174,6 @@ var columnsSetting = [
                             if (setId == null) {
                             	return btnIconTemplate(context.concat(
                             			[{
-                                        	title:"验证规则设定",
-                            	    		markClass:"validate-method",
-                            	    		iconFont:"&#xe654;"                           	
-                                        },{
                             	    		title:"接口编辑",
                             	    		markClass:"scene-edit",
                             	    		iconFont:"&#xe6df;"
@@ -447,7 +456,7 @@ var mySetting = {
 			listUrl:SCENE_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0, 6, 7],
+			columnsJson:[0, 7, 8],
 			dtOtherSetting:{
 				"bStateSave": false
 			}

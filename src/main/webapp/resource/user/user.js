@@ -92,11 +92,11 @@ var columnsSetting = [{"data":null,
 	{"data":"realName"}, 
 	{"data":"role.roleName"},                                          
 	{
-    "data":null,
+    "data":"status",
     "render":function(data, type, full, meta ){
     	var bstatus;
     	var btnstyle;
-    	switch(data.status)
+    	switch(data)
     	{
     	case "0":
        		bstatus = "正常";
@@ -107,7 +107,7 @@ var columnsSetting = [{"data":null,
        		btnstyle = "danger";
     	  	break;               
     	}
-        return htmlContent = '<span class="label label-'+btnstyle+' radius">'+bstatus+'</span>';
+        return htmlContent = '<span class="label label-' + btnstyle + ' radius">' + bstatus + '</span>';
     }
 	},
 	{
@@ -236,10 +236,10 @@ var mySetting = {
 			beforeInit:beforeEditInit,
 			editUrl:"user-edit",
 			getUrl:"user-get",
-			rules:{username:{required:true,minlength:2,maxlength:20},realName:{required:true,minlength: 2,maxlength: 20}},
+			rules:{username:{required:true, minlength:2, maxlength:20},realName:{required:true, minlength: 2, maxlength: 20}},
 			renderCallback:function(o){
 				var statusMsg='';
-				o.status=="0"?statusMsg="正常":statusMsg="锁定";
+				o.status == "0" ? statusMsg = "正常" : statusMsg = "锁定";
 				$("#statusText").text(statusMsg);
 			}
 		},
@@ -247,7 +247,7 @@ var mySetting = {
 			listUrl:"user-list",
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0,7,8]
+			columnsJson:[0, 8]
 		},
 		templateParams:templateParams		
 	};

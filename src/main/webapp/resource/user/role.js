@@ -98,23 +98,28 @@ var columnsSetting = [
 	           }},
 	{"data":"roleId"},{"data":"roleGroup"},{"data":"roleName"},                                  
 	{
-	   "data":null,
+	   "data":"oiNum",
 	   "render":function(data, type, full, meta ){
 		   var context = [{
 			   type:"default",
 			   size:"S",
 			   markClass:"show-role-power",  
 			   iconFont:"", 
-			   name:data.oiNum
+			   name:data
 		   }];
 		   return btnTextTemplate(context);		   
 		   }
 	},
 	{
-		"data":"mark",
-		"className":"ellipsis",
-	    "render":CONSTANT.DATA_TABLES.COLUMNFUN.ELLIPSIS
-	},
+	    "data":"mark",
+	    "className":"ellipsis",
+	    "render":function(data, type, full, meta) { 
+	    	if (data != "" && data != null) {
+		    	return '<a href="javascript:;" onclick="showMark(\'' + full.roleName + '\', \'mark\', this);"><span title="' + data + '">' + data + '</span></a>';
+	    	}
+	    	return "";
+	    }
+      },
 	{
 		"data":null,
 	    "render":function(data, type, full, meta){	    	
@@ -216,7 +221,7 @@ var mySetting = {
 			listUrl:"role-list",
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0,4,5]
+			columnsJson:[0 ,6]
 		},
 		templateParams:templateParams		
 	};

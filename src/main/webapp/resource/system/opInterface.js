@@ -39,21 +39,26 @@ var columnsSetting = [
 	           }},
 	{"data":"opId"},{"data":"opName"},                                 
 	{
-	   "data":null,
+	   "data":"callName",
 	   "render":function(data, type, full, meta ){
-		   return '<a href="'+data.callName+'" target="_blank">'+data.callName+'</a>';	   
+		   return '<a href="' + data + '" target="_blank">' + data + '</a>';	   
 		   }
 	},{"data":"parentOpName"},
 	{
-		"data":null,
+		"data":"status",
 	    "render":function(data, type, full, meta){
-            return labelCreate(data.status);	    	
+            return labelCreate(data);	    	
 	    }
 	},{
-		"data":"mark",
-		"className":"ellipsis",
-	    "render":CONSTANT.DATA_TABLES.COLUMNFUN.ELLIPSIS
-	}
+	    "data":"mark",
+	    "className":"ellipsis",
+	    "render":function(data, type, full, meta) { 
+	    	if (data != "" && data != null) {
+		    	return '<a href="javascript:;" onclick="showMark(\'' + full.opName + '\', \'mark\', this);"><span title="' + data + '">' + data + '</span></a>';
+	    	}
+	    	return "";
+	    }
+      }
 ];
 
 var eventList = {
@@ -91,7 +96,7 @@ var mySetting = {
 			listUrl:"op-listOp?opType=1",
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0,5]
+			columnsJson:[0]
 		},
 		templateParams:templateParams		
 	};

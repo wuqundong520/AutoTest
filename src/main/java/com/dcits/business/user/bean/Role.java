@@ -7,6 +7,8 @@ import java.util.Set;
 import org.apache.struts2.json.annotations.JSON;
 // default package
 
+import com.dcits.annotation.FieldNameMapper;
+
 
 
 /**
@@ -53,6 +55,7 @@ public class Role implements Serializable {
 	/**
 	 * 拥有的权限个数
 	 */
+	@FieldNameMapper("size(ois)")
 	private Integer oiNum;
 	
 	@JSON(serialize=false)

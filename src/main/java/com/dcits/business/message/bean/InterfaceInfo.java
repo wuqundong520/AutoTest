@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.struts2.json.annotations.JSON;
 
+import com.dcits.annotation.FieldNameMapper;
 import com.dcits.business.user.bean.User;
 
 
@@ -97,6 +98,12 @@ public class InterfaceInfo implements Serializable {
 	 */
 	private String interfaceProtocol;
 	
+	@FieldNameMapper("size(parameters)")
+	private Integer parametersNum;
+	
+	@FieldNameMapper("size(messages)")
+	private Integer messagesNum;
+	
     /** default constructor */
     public InterfaceInfo() {
     }
@@ -127,7 +134,13 @@ public class InterfaceInfo implements Serializable {
     // Property accessors
     
     
+    public Integer getMessagesNum() {
+		return this.messages.size();
+	}
     
+    public Integer getParametersNum() {
+		return this.parameters.size();
+	}
     
     public Integer getInterfaceId() {
         return this.interfaceId;

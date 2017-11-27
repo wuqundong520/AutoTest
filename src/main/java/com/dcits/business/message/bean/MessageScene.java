@@ -74,6 +74,9 @@ public class MessageScene implements Serializable {
 	@FieldNameMapper("size(testDatas)")
 	private Integer testDataNum = getTestDataNum();
 	
+	@FieldNameMapper("size(rules)")
+	private Integer rulesNum;
+	
 	@FieldNameMapper("message.messageName")
 	private String messageName;
 
@@ -106,7 +109,11 @@ public class MessageScene implements Serializable {
     
     
     
-    // Property accessors      
+    // Property accessors   
+    
+    public Integer getRulesNum() {
+		return this.rules.size();
+	}
     
     public String getMessageName() {
     	if (this.message != null) {

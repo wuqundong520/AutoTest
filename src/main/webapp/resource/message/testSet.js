@@ -325,7 +325,7 @@ $(function(){
 /********************************************************************************************************/
 function viewRunSettingConfig (rowData, obj) { 
 	configData = rowData.config;
-	layer_show(rowData.setName + "-运行时配置", settingConfigViewTemplate(rowData.config), '800', '480', 1, function() {
+	layer_show(rowData.setName + "-运行时配置", settingConfigViewTemplate(rowData.config), '800', '510', 1, function() {
 		resetOptions();
 	}, function() {
 		rowData.config = configData; 
