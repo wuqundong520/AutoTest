@@ -19,6 +19,7 @@ import com.dcits.business.message.bean.Parameter;
 import com.dcits.business.message.service.ParameterService;
 import com.dcits.constant.MessageKeys;
 import com.dcits.constant.SystemConsts;
+import com.dcits.util.SettingUtil;
 import com.dcits.util.StrutsUtils;
 import com.dcits.util.message.JsonUtil.TypeEnum;
 import com.dcits.util.message.XmlUtil;
@@ -228,7 +229,7 @@ public class XMLMessageParse extends MessageParse {
 		    StringReader in=new StringReader(message); 
 		    Document doc=reader.read(in);  
 		    OutputFormat formater=OutputFormat.createPrettyPrint();  
-		    formater.setEncoding("UTF-8");  
+		    formater.setEncoding(SettingUtil.getSettingValue(SystemConsts.GLOBAL_SETTING_MESSAGE_ENCODING));
 		    StringWriter out=new StringWriter();  
 		    XMLWriter writer=new XMLWriter(out,formater);  
 		    writer.write(doc);  
@@ -239,6 +240,15 @@ public class XMLMessageParse extends MessageParse {
 			e.printStackTrace();
 			return message;
 		}		
+	}
+
+	@Override
+	public String parseMessageToSingleRow(String message) {
+		// TODO Auto-generated method stub
+		String msg = super.parseMessageToSingleRow(message);
+		return msg.replaceAll(">\\s+<", "><");		
 	};
+	
+	
 	
 }

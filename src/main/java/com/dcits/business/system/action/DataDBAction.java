@@ -3,6 +3,7 @@ package com.dcits.business.system.action;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -46,6 +47,9 @@ public class DataDBAction extends BaseAction<DataDB> {
 		if (model.getDbId() == null) {
 			//新增
 			model.setDbId(dataDBService.getMaxDBId());
+		}
+		if (StringUtils.isEmpty(model.getDbMark())) {
+			model.setDbMark(model.getDbUrl() + "上的" + model.getDbType() + "数据库!");
 		}
 		dataDBService.edit(model);
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);

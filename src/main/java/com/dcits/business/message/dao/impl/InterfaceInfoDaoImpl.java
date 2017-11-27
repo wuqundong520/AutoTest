@@ -28,8 +28,8 @@ public class InterfaceInfoDaoImpl extends BaseDaoImpl<InterfaceInfo> implements 
 			
 			return getSession().createQuery(hql)
 					.setInteger("id",Integer.parseInt(condition))
-					.setString("name","%"+condition+"%")
-					.setString("cnName", "%"+condition+"%")
+					.setString("name","%" + condition + "%")
+					.setString("cnName", "%" + condition + "%")
 					.setCacheable(true).list();
 		} else {
 			hql = "From InterfaceInfo t "
@@ -37,8 +37,8 @@ public class InterfaceInfoDaoImpl extends BaseDaoImpl<InterfaceInfo> implements 
 					+ "or t.interfaceCnName like :cnName";
 			
 			return getSession().createQuery(hql)
-					.setString("name","%"+condition+"%")
-					.setString("cnName", "%"+condition+"%")
+					.setString("name","%" + condition + "%")
+					.setString("cnName", "%" + condition + "%")
 					.setCacheable(true).list();
 		}
 	}

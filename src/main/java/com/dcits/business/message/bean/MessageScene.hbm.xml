@@ -22,6 +22,11 @@
         <property name="mark" type="java.lang.String">
             <column name="mark" />
         </property>
+        
+        <property name="createTime" type="java.sql.Timestamp">
+            <column name="create_time" length="19" />
+        </property>
+        
         <set name="testDatas" cascade="all" lazy="true"  order-by="Status" inverse="true">
             <key>
                 <column name="message_scene_id" />
@@ -35,7 +40,7 @@
             <one-to-many class="com.dcits.business.message.bean.TestResult" />
         </set>
         
-        <set name="rules" cascade="all" lazy="false" inverse="true">
+        <set name="rules" cascade="all" lazy="true" inverse="true">
             <key>
                 <column name="message_scene_id" />
             </key>

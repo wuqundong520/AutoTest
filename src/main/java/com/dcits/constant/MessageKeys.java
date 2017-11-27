@@ -6,11 +6,16 @@ public class MessageKeys {
 	
 	public static final String INTERFACE_TYPE_SL = "SL";
 	
+	
 	public static final String MESSAGE_TYPE_JSON = "JSON";
 	
 	public static final String MESSAGE_TYPE_XML = "XML";
 	
 	public static final String MESSAGE_TYPE_URL = "URL";
+	
+	public static final String MESSAGE_TYPE_FIXED = "FIXED";
+	
+	public static final String MESSAGE_TYPE_OPT = "OPT";
 	
 	
 	public static final String QUERY_ORDER_DESC = "desc";
@@ -37,7 +42,7 @@ public class MessageKeys {
 	public static final String MESSAGE_PARAMETER_TYPE_ARRAY_IN_ARRAY = "ARRAY_ARRAY";
 	
 	
-	public static final String XML_MESSAGE_HEAD_STRING = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
+	public static final String XML_MESSAGE_ENCODING = "UTF-8";
 	
 	public static final String XML_MESSAGE_DEFAULT_ROOT_NODE = "ROOT";
 	
@@ -53,21 +58,25 @@ public class MessageKeys {
 	
 	public static final String HTTP_PARAMETER_HEADER = "Headers";
 	
-	public static final String HTTP_PARAMETER_METHOD = "Method";
-	
 	public static final String HTTP_PARAMETER_AUTHORIZATION = "Authorization";
-	
-	public static final String HTTP_PARAMETER_AUTHORIZATION_NAME = "Username";
-	
-	public static final String HTTP_PARAMETER_AUTHORIZATION_PASSWORD = "Password";
 	
 	public static final String HTTP_PARAMETER_ENC_TYPE = "EncType";
 	
 	public static final String HTTP_PARAMETER_REC_ENC_TYPE = "RecEncType";
 	
+	public static final String WEB_SERVICE_PARAMETER_NAMESPACE = "Namespace";
+	
 	public static final String PUBLIC_PARAMETER_CONNECT_TIMEOUT = "ConnectTimeOut";
 	
 	public static final String PUBLIC_PARAMETER_READ_TIMEOUT = "ReadTimeOut";
+	
+	public static final String PUBLIC_PARAMETER_USERNAME = "Username";
+	
+	public static final String PUBLIC_PARAMETER_PASSWORD = "Password";
+	
+	public static final String PUBLIC_PARAMETER_METHOD = "Method";
+	
+	
 	
 	
 	

@@ -4,12 +4,17 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.dcits.business.message.bean.TestReport;
+import com.dcits.business.message.bean.TestResult;
 import com.dcits.util.message.JsonUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -189,7 +194,147 @@ public class PracticalUtils {
 		 return true;
 	 }
 	 
+	 /**
+	  * 生成用户登录标识
+	  * @param password
+	  * @return
+	  * @throws NoSuchAlgorithmException
+	  */
 	 public static String createUserLoginIdentification(String password) throws NoSuchAlgorithmException {
 		 return MD5Util.code(password + System.currentTimeMillis());
 	 }
+	 
+	 /**
+	  * 生成静态报告文件
+	  * @param report
+	  * @param title html标题
+	  * @param successRate 成功率
+	  * @return
+	  */
+	 public static StringBuilder createReport(TestReport report, String title, String successRate) {
+		 StringBuilder str = new StringBuilder();		 
+		 Set<TestResult> results = report.getTrs();
+		 
+		 str.append("<div class=\"panel-heading\">").append(title).append("</div>")
+		 .append("<div class=\"panel-body text-left\"><div class=\"row\"><div class=\"col-sm-6\"><span>测试场景数:</span>&nbsp;&nbsp;<span id=\"sceneNum\">")
+		 .append(report.getSceneNum()).append("</span></div><div class=\"col-sm-6\"><span>执&nbsp;行&nbsp;日&nbsp;期:</span>&nbsp;&nbsp;<span id=\"testDate\">")
+		 .append(report.getCreateTime()).append("</span></div></div><div class=\"row\"><div class=\"col-sm-6\"><span>执行成功数:</span>&nbsp;&nbsp;<span id=\"successNum\">")
+		 .append(report.getSuccessNum()).append("</span></div><div class=\"col-sm-6\"><span>异常中断数:</span>&nbsp;&nbsp;<span id=\"stopNum\">")
+		 .append(report.getStopNum()).append("</span></div></div><div class=\"row\"><div class=\"col-sm-6\"><span>执行失败数:</span>&nbsp;&nbsp;<span id=\"failNum\">")
+		 .append(report.getFailNum()).append("</span></div><div class=\"col-sm-6\"><span>测试成功率:</span>&nbsp;&nbsp;<span id=\"successRate\">")
+		 .append(successRate).append("</span>%</div></div><hr><table class=\"table table-hover\"><thead><tr><th>接口</th><th>协议</th><th>报文</th><th>场景</th><th>状态</th><th>耗时(ms)</th></tr></thead><tbody>");
+		 
+		 int count = 0;
+		 for (TestResult result:results) {
+			 str.append("<tr id=\"" + count + "\" class=\"result-view\">");
+			 String[] infos = result.getMessageInfo().split(",");
+			 str.append("<td>" + infos[0] + "</td>").append("<td>" + result.getProtocolType() + "</td>")
+			 .append("<td>" + infos[1] + "</td>").append("<td>" + infos[2] + "</td>")
+			 .append("<td class=\"status\" style=\"display:table-cell; vertical-align:middle;\"><span class=\"label label-");
+			 
+			 switch (result.getRunStatus()) {
+			 case "0":
+				str.append("success\">Success");
+				break;
+			 case "1":
+				 str.append("danger\">Fail");
+				break;
+			 case "2":
+				 str.append("default\">Stop");
+				break;
+			 default:
+				break;
+			}
+			 
+			 str.append("</span></td><td>" + result.getUseTime() + "</td></tr>");
+			 
+			 //详情显示
+			 str.append("<tr class=\"hidden\"><td colspan=\"6\"><div class=\"view-details\"><div class=\"row\"><div class=\"col-sm-3\"><strong>请求地址:</strong></div><div class=\"col-sm-9\">")
+			 .append(result.getRequestUrl())
+			 .append("</div></div><br><div class=\"row\"><div class=\"col-sm-3\"><strong>请求返回码:</strong></div><div class=\"col-sm-9\">")
+			 .append(result.getStatusCode())
+			 .append("</div></div><br/><div class=\"row\"><div class=\"col-sm-3\"><strong>入参报文:</strong></div><div class=\"col-sm-9\"><textarea class=\"form-control\" cols=\"30\" rows=\"8\">")
+			 .append(result.getRequestMessage())
+			 .append("</textarea></div></div><br/><div class=\"row\"><div class=\"col-sm-3\"><strong>出参报文:</strong></div><div class=\"col-sm-9\"><textarea name=\"\" class=\"form-control\" cols=\"30\" rows=\"8\">")
+			 .append(result.getResponseMessage() == null ? "" : result.getResponseMessage())
+			 .append("</textarea></div></div><br/><div class=\"row\"><div class=\"col-sm-3\"><strong>备注:</strong></div><div class=\"col-sm-9\"> <textarea name=\"\" class=\"form-control\" cols=\"30\" rows=\"4\">")
+			 .append(result.getMark() == null ? "" : result.getMark())
+			 .append("</textarea></div></div></div></td></tr>");
+			 
+			 count++;
+		 }
+		 
+		 str.append("</tbody></table></div><div class=\"panel-footer\">神州数码系统集成服务有限公司@2016-2017 Created by 性能测试团队 </div></div></div></body></html>");
+		 return str;
+	 }
+	 
+	 /**
+	  * 获取当天零点时间
+	  * @return
+	  */
+	 public static Date getTodayZeroTime () {		 		 
+		 Calendar calendar = Calendar.getInstance();
+         calendar.setTime(new Date());
+         calendar.set(Calendar.HOUR_OF_DAY, 0);
+         calendar.set(Calendar.MINUTE, 0);
+         calendar.set(Calendar.SECOND, 0);
+         Date zero = calendar.getTime();
+         return zero;
+	 }
+	 
+	 /**
+	  * 获取昨天零点时间
+	  * @return 昨天零点时间戳
+	  */
+	 public static Date getYesterdayZeroTime () {
+		 Date date = new Date();
+		 GregorianCalendar gc = new GregorianCalendar();  
+		 gc.setTime(date);  
+		 if ((gc.get(GregorianCalendar.HOUR_OF_DAY) == 0) && (gc.get(GregorianCalendar.MINUTE) == 0)  
+				 && (gc.get(GregorianCalendar.SECOND) == 0)) {  
+			 return new Date(date.getTime() - (24 * 60 * 60 * 1000));  
+		 } else {  
+			 Date date2 = new Date(date.getTime() - gc.get(GregorianCalendar.HOUR_OF_DAY) * 60 * 60  
+					 * 1000 - gc.get(GregorianCalendar.MINUTE) * 60 * 1000 - gc.get(GregorianCalendar.SECOND)  
+					 * 1000 - 24 * 60 * 60 * 1000);  
+			 return date2;  
+		 }  
+	 }
+	 
+	 /**
+	  * 获取当月第一天零点时刻
+	  * @return
+	  */
+	 public static Date getThisMonthFirstDayZeroTime () {
+		 Calendar c = Calendar.getInstance();  
+		 c.add(Calendar.MONTH, 0);  
+		 c.set(Calendar.DAY_OF_MONTH, 1);//设置为1号,当前日期既为本月第一天  
+		 //将小时至0  
+		 c.set(Calendar.HOUR_OF_DAY, 0);  
+		 //将分钟至0  
+		 c.set(Calendar.MINUTE, 0);  
+		 //将秒至0  
+		 c.set(Calendar.SECOND,0);  
+		 //将毫秒至0  
+		 c.set(Calendar.MILLISECOND, 0);  
+		 // 获取本月第一天的时间戳  
+		 return c.getTime();
+	 }
+	 
+	 /**
+	  * 获取本周第一天零点时刻
+	  * @return
+	  */
+	 public static Date getThisWeekFirstDayZeroTime () {
+		 Calendar cal = Calendar.getInstance();
+		 cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY); 
+		 cal.set(Calendar.HOUR_OF_DAY, 0);
+		 cal.set(Calendar.MINUTE, 0);
+		 cal.set(Calendar.SECOND, 0);
+		 return cal.getTime();
+	 }
+	 
+	 public static void main(String[] args) {
+		System.out.println(getThisWeekFirstDayZeroTime().toString());
+	}
 }

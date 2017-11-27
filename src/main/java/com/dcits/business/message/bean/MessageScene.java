@@ -2,10 +2,13 @@ package com.dcits.business.message.bean;
 // default package
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.struts2.json.annotations.JSON;
+
+import com.dcits.annotation.FieldNameMapper;
 
 
 /**
@@ -47,6 +50,8 @@ public class MessageScene implements Serializable {
 	 * 备注
 	 */
 	private String mark;
+	
+	private Timestamp createTime;
 	/**
 	 * 该测试场景对应的测试数据
 	 */
@@ -66,12 +71,13 @@ public class MessageScene implements Serializable {
 	
 	private String validateMethodStr;
 	
-	@SuppressWarnings("unused")
+	@FieldNameMapper("size(testDatas)")
 	private Integer testDataNum = getTestDataNum();
 	
-	@SuppressWarnings("unused")
+	@FieldNameMapper("message.messageName")
 	private String messageName;
-	@SuppressWarnings("unused")
+
+	@FieldNameMapper("message.interfaceInfo.interfaceName")
 	private String interfaceName;
 	
 	/**
@@ -179,6 +185,15 @@ public class MessageScene implements Serializable {
 	}
 
 
+	@JSON(format="yyyy-MM-dd HH:mm:ss")
+    public Timestamp getCreateTime() {
+        return this.createTime;
+    }
+    
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
+    }
+	
 	@JSON(serialize=false)
     public Set<TestResult> getTestResults() {
 		return testResults;

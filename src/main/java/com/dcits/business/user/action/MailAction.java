@@ -1,8 +1,6 @@
 package com.dcits.business.user.action;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -26,17 +24,13 @@ import com.dcits.util.StrutsUtils;
 public class MailAction extends BaseAction<Mail> {
 
 	private static final long serialVersionUID = 1L;
-	
-	
-	
-	private Integer mailType;
+		
+/*	private Integer mailType;	
+	private Integer receiveUserId;*/
 	
 	private String statusName;
 	
 	private String status;
-	
-	private Integer receiveUserId;
-	
 	
 	private MailService mailService;
 	@Autowired
@@ -45,7 +39,16 @@ public class MailAction extends BaseAction<Mail> {
 		this.mailService = mailService;
 	}
 	
-	
+	@Override
+	public String[] prepareList() {
+		// TODO Auto-generated method stub
+		User user = (User) StrutsUtils.getSessionMap().get("user");
+		if (user != null) {
+			this.filterCondition = new String[]{"receiveUser.userId=" + user.getUserId()};
+		}		
+		return this.filterCondition;
+	}
+
 	//获取未读邮件数量
 	public String getNoReadMailNum() {
 		User user = (User) StrutsUtils.getSessionMap().get("user");
@@ -55,9 +58,11 @@ public class MailAction extends BaseAction<Mail> {
 		return SUCCESS;
 	}
 	
+	
+	
 	//获取收件箱列表或者发件箱列表
 	//mailType=1收件箱列表   mailType=2 发件箱列表
-	public String listMails() {
+	/*public String listMails() {
 		User user = (User) StrutsUtils.getSessionMap().get("user");
 		List<Mail> mails = new ArrayList<Mail>();
 		if (mailType == 1) {
@@ -75,11 +80,11 @@ public class MailAction extends BaseAction<Mail> {
 		jsonMap.put("data", mails);
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
 		return SUCCESS;
-	}
+	}*/
 	
 	//改变邮件状态
 	public String changeStatus() {
-		if (statusName.equals("sendStatus")||statusName.equals("readStatus")||statusName.equals("ifValidate")) {			
+		if (statusName.equals("sendStatus") || statusName.equals("readStatus") || statusName.equals("ifValidate")) {			
 			if (statusName.equals("sendStatus")) {
 				Mail mail1 = mailService.get(model.getMailId());
 				if (mail1.getReceiveUser() == null) {
@@ -100,7 +105,7 @@ public class MailAction extends BaseAction<Mail> {
 	}
 	
 	//获取指定mail
-	public String get() {
+	/*public String get() {
 		model = mailService.get(model.getMailId());
 		model.setReceiveUserName();
 		model.setSendUserName();
@@ -110,18 +115,10 @@ public class MailAction extends BaseAction<Mail> {
 		jsonMap.put("mail", model);
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);		
 		return SUCCESS;
-	}
-	
-	//删除
-	//目前只能删除未发送的邮件
-	public String del() {
-		mailService.delete(model.getMailId());
-		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
-		return SUCCESS;
-	}
+	}*/
 
 	//保存新的邮件信息或者更新信息
-	public String save() {
+	/*public String save() {
 		User user = (User) StrutsUtils.getSessionMap().get("user");
 		
 		model.setReadStatus("1");
@@ -142,10 +139,10 @@ public class MailAction extends BaseAction<Mail> {
 		}
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
 		return SUCCESS;
-	}
+	}*/
 	
 	/****************************************************************************************************************/
-	
+/*	
 	public void setMailType(Integer mailType) {
 		this.mailType = mailType;
 	}
@@ -153,7 +150,7 @@ public class MailAction extends BaseAction<Mail> {
 	public void setReceiveUserId(Integer receiveUserId) {
 		this.receiveUserId = receiveUserId;
 	}
-	
+	*/
 	public void setStatus(String status) {
 		this.status = status;
 	}

@@ -81,21 +81,40 @@ public class SystemConsts {
 	//Object对象 对应外层
 	public static final Integer PARAMETER_OBJECT_ID = 1;
 	
-	//ApplicationMap中指定属性名
-	
+	//ApplicationMap中指定属性名	
 	public static final String APPLICATION_ATTRIBUTE_QUERY_DB = "queryDb";
 	
 	public static final String APPLICATION_ATTRIBUTE_WEB_SETTING = "settingMap";
 	
 	public static final String APPLICATION_ATTRIBUTE_OPERATION_INTERFACE = "ops";
 	
+	//定时任务相关标志词语	
 	public static final String QUARTZ_TASK_NAME_PREFIX_KEY = "scheduleJob";
 	
 	public static final String QUARTZ_SCHEDULER_START_FLAG = "quartzStatus";
 	
-	public static final String QUARTZ_SCHEDULER_IS_START = "true";
+	public static final String QUARTZ_SCHEDULER_IS_START = "true"; 
 	
 	public static final String QUARTZ_SCHEDULER_IS_STOP = "false";
+	
+	
+	//全局设置指定设置名称
+	public static final String GLOBAL_SETTING_HOME = "home";
+	
+	public static final String GLOBAL_SETTING_NOTICE = "notice";
+	
+	public static final String GLOBAL_SETTING_VERSION = "version";
+	
+	public static final String GLOBAL_SETTING_STATUS = "status";
+	
+	public static final String GLOBAL_SETTING_LOGSWITCH = "logSwitch";
+	
+	public static final String GLOBAL_SETTING_MESSAGE_ENCODING = "messageEncoding";
+	
+	
+	//测试报告静态html存储文件夹
+	public static final String REPORT_VIEW_HTML_FOLDER = "reportHtml";
+	public static final String REPORT_VIEW_HTML_FIXED_HTML = "viewTemplate.xml";
 	
 
 }

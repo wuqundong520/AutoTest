@@ -39,6 +39,7 @@ public class TestData implements Serializable {
      /**
       * 可用状态
       * <br>0-可用  1-不可用/已使用
+      * <br>新增   2 - 可重复使用，不论接口类型
       */
      private String status;
      

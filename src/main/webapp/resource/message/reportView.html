@@ -43,6 +43,13 @@
         #failNum {
            color:red;
         }
+        .status {
+        	display:table-cell; vertical-align:middle;
+        }
+        
+        .col-sm-6 > span {
+        	font-size:16px;
+        }
 
     </style>
 </head>
@@ -66,23 +73,31 @@
                     <div class="col-sm-6"><span>测试成功率:</span>&nbsp;&nbsp;<span id="successRate"></span>%</div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-2 col-sm-offset-10">
-                    	<select class="form-control" id="status-views">
-						  <option value="3" selected>全部</option>
+                    <div class="col-sm-2 col-sm-offset-8">                   	
+						<select class="form-control select-view-mark" id="protocol-views">
+						  <option value="all" selected>全部协议</option>
+						  <option value="HTTP">HTTP</option>
+						  <option value="WebService">WebService</option>
+						  <option value="Socket">Socket</option>
+						</select> 
+                    </div>
+                    <div class="col-sm-2">
+                    	<select class="form-control select-view-mark" id="status-views">
+						  <option value="3" selected>全部状态</option>
 						  <option value="0">成功</option>
 						  <option value="1">失败</option>
 						  <option value="2">异常</option>
-						</select> 
+						</select>
                     </div>
                 </div>               
                 <hr/>
                 <table class="table table-hover">
                     <thead>
                     <tr>
-                        <th>接口名</th>
+                        <th>接口</th>
                         <th>协议</th>
-                        <th>报文名</th>
-                        <th>场景名</th>
+                        <th>报文</th>
+                        <th>场景</th>
                         <th>                       	 
 							状态                     
                         </th>
@@ -94,7 +109,7 @@
                 </table>
             </div>
             <div class="panel-footer">
-                	神州数码系统集成服务有限公司@2015-2017 Created by 性能测试团队
+                	神州数码系统集成服务有限公司@2016-2017 Created by 性能测试团队
             </div>
         </div>
     </div>

@@ -18,7 +18,7 @@ var eventList = {
 	'#choose-test-set':function() {
 		$.get(LIST_MY_SETS_URL, function(json) {
 			if (json.returnCode == 0) {
-				layer_show("我的测试集", mySetViewTemplate(json.data), '680', '640', 1);
+				layer_show("我的测试集", mySetViewTemplate(json.data), '680', '500', 1);
 			} else {
 				layer.alert(json.msg, {icon:5});
 			}
@@ -69,7 +69,9 @@ function resetOptions () {
 		$("#readTimeOut").val(configData.readTimeOut);
 		$("#checkDataFlag").val(configData.checkDataFlag);
 		$("#configId").val(configData.configId);
+		$("#runType").val(configData.runType);
 		$("#userId").val(configData.userId);
+		$("#retryCount").val(configData.retryCount);
 	}
 }
 
@@ -134,10 +136,12 @@ function batchTest(setId) {
 				if (json.count == 0) {
 					sendTest();
 				} else {
-					layer.confirm('当前还有' + json.count + '个测试场景未有足够的测试数据进行测试，是否需要手动添加这些测试数据?', {title:'提示', icon:'0', btn:['手动添加', '直接测试']}
+					layer.confirm('当前还有<span class="c-red"><strong>' + json.count + '</strong></span>个测试场景未有足够的测试数据进行测试<br>是否需要手动添加这些测试数据?', {title:'提示', icon:'0', btn:['手动添加', '直接测试']}
 					, function(index) {
 						layer.close(index);
-						layer.alert("尚未完成!");
+						$(this).attr("data-title", "手动添加测试数据");
+						$(this).attr("_href", "resource/message/messageScene.html?setId=" + setId + "&addDataFlag=0");
+						Hui_admin_tab(this);
 					}
 					, function(index) {
 						layer.close(index);

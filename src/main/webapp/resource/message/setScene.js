@@ -6,6 +6,9 @@ var $wrapper = $('#div-table-container');
 var SET_LIST_SCENE_URL = "set-listScenes";//展示存在测试集或者不存在于测试集的测试场景
 var SET_OP_SCENE_URL = "set-opScene";//操作测试场景，添加到测试集或者从测试集删除
 
+//var SET_SCENE_LIST_URL = "scene-listSetScenes";
+var SET_SCENE_LIST_URL = "set-listScenes";
+
 var setId;
 var mode = 0; //0-管理  1-添加
 
@@ -81,18 +84,18 @@ var eventList = {
 		},
 		"#manger-scene":function() {
 			var that = this;
-			mode = 0;			
-			refreshTable(SET_LIST_SCENE_URL + "?mode=" + mode + "&setId=" + setId, function(json) {
+			mode = 0;				
+			refreshTable(SET_SCENE_LIST_URL + "?mode=" + mode + "&setId=" + setId, function(json) {
 				$(that).addClass('btn-primary').siblings().removeClass('btn-primary');
-			});
+			}, null, true);	
 			$("#batch-op").children("i").removeClass("Hui-iconfont-add").addClass("Hui-iconfont-del3");
 		},
 		"#add-scene":function() {
 			var that = this;
-			mode = 1;
-			refreshTable(SET_LIST_SCENE_URL + "?mode=" + mode + "&setId=" + setId, function(json) {
+			mode = 1;			
+			refreshTable(SET_SCENE_LIST_URL + "?mode=" + mode + "&setId=" + setId, function(json) {
 				$(that).addClass('btn-primary').siblings().removeClass('btn-primary');
-			});
+			}, null, true);	
 			$("#batch-op").children("i").removeClass("Hui-iconfont-del3").addClass("Hui-iconfont-add");
 		},
 		".op-scene":function() {
@@ -123,7 +126,7 @@ var mySetting = {
 		eventList:eventList,
 		templateCallBack:function(df){
 			setId = GetQueryString("setId");	
-			publish.renderParams.listPage.listUrl = SET_LIST_SCENE_URL + "?mode=" + mode + "&setId=" + setId;
+			publish.renderParams.listPage.listUrl = SET_SCENE_LIST_URL + "?mode=" + mode + "&setId=" + setId;
 			df.resolve();			   		 	
    	 	},
 		listPage:{
@@ -131,7 +134,7 @@ var mySetting = {
 			columnsSetting:columnsSetting,
 			columnsJson:[0, 5],
 			dtOtherSetting:{
-				"serverSide": false
+				serverSide:false
 			}
 		},
 		templateParams:templateParams		

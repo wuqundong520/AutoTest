@@ -5,17 +5,23 @@ var messageId; //当前messageid
 var messageSceneId; //当前正在操作的sceneId
 var currIndex;//当前正在操作的layer窗口的index
 
-var currSceneMark;//当前测试备注
 var resultTemplate;//测试详情结果页面模板
+
+var editVariablesTemplate;//添加修改组合场景中变量的模板
+var showSceneVariablesTemplate;//展示组合场景中变量列表
 
 var interfaceName;
 var messageName;
 
-var validateFullJsonHtml; //全文验证
-var validateKeywordHtml; //关键字验证
+var complexSetScene; //进入的组合场景
+var oldcomplexSetScene;//保存没修改之前的对象信息
+
+var setId; //添加缺少数据时获取测试场景的测试集  0表示全量测试场景
+
 var sceneTestHtml; //场景测试
 
-var validateValueOriginal; //原始验证值
+var thisMark = "";
+var table;
 /**
  * ajax地址
  */
@@ -26,25 +32,46 @@ var SCENE_DEL_URL = "scene-del"; //删除指定场景
 var SCENE_CHANGE_VALIDATE_RULE_URL = "scene-changeValidateRule";
 var SCENE_GET_TEST_OBJECT_URL = "scene-getTestObject"; //获取场景的测试数据和测试地址
 
+var SCENE_LIST_NO_DATA_SCENES_URL = "scene-listNoDataScenes"; //获取指定测试集中没有测试数据的测试场景列表
+
 var TEST_SCENE_URL = "test-sceneTest";
+
+//var SET_SCENE_LIST_URL = "scene-listSetScenes";
+var SET_SCENE_LIST_URL = "set-listScenes";
 
 var VALIDATE_GET_URL = "validate-getValidate";
 var VALIDATE_FULL_EDIT_URL = "validate-validateFullEdit";
 
+//组合场景
+var COMPLEX_SET_SCENE_GET_URL = "set-getComplexScene"; //获取指定场景信息
+var COMPLEX_SET_SCENE_EDIT_VARIABLES = "set-editComplexSceneVariables";//更新组合场景变量信息
+
 var templateParams = {
-		tableTheads:["场景名","验证方式", "测试数据","备注", "操作"],
+		tableTheads:["接口", "报文", "场景名", "测试数据","备注", "操作"],
 		btnTools:[{
 			type:"primary",
 			size:"M",
-			markClass:"add-object",
+			id:"add-object",
 			iconFont:"&#xe600;",
 			name:"添加场景"
 		},{
 			type:"danger",
 			size:"M",
-			markClass:"batch-del-object",
+			id:"batch-del-object",
 			iconFont:"&#xe6e2;",
 			name:"批量删除"
+		},{
+			type:"primary",
+			size:"M",
+			id:"add-to-complex-scene",
+			iconFont:"&#xe600;",
+			name:"添加到组合场景"
+		},{
+			type:"danger",
+			size:"M",
+			id:"del-from-complex-scene",
+			iconFont:"&#xe6e2;",
+			name:"从组合场景中删除"
 		}],
 		formControls:[
 		{
@@ -62,23 +89,6 @@ var templateParams = {
 			input:[{	
 				name:"sceneName",
 				placeholder:"输入场景名称"
-				}]
-		},
-		{	
-			required:true,
-			label:"验证规则",  			
-			select:[{	
-				name:"validateRuleFlag",
-				option:[{
-					value:"0",
-					text:"关键字验证"
-				},{
-					value:"1",
-					text:"节点验证"
-				},{
-					value:"2",
-					text:"全文验证"
-				}]
 				}]
 		},
 		{
@@ -101,49 +111,28 @@ var columnsSetting = [
                               return checkboxHmtl(data.sceneName, data.messageSceneId, "selectScene");
                           }},
                       {"data":"messageSceneId"},
+                      ellipsisData("interfaceName"),
+                      ellipsisData("messageName"),
                       ellipsisData("sceneName"),
                       {
-                    	  "data":null,
-                    	  "render":function(data) {
-                    		  	var option = {
-                    		  			"0":{
-                    		  				btnStyle:"primary",
-                    		  				status:"关键字验证"
-                    		  				},
-                		  				"1":{
-                		  					btnStyle:"warning",
-                		  					status:"节点验证"
-                		  					},
-            		  					"2":{
-            		  						btnStyle:"secondary",
-            		  						status:"全文验证"
-            		  						}
-                    		  	};	
-                    		  	
-                    		  	messageSceneId = data.messageSceneId;
-                    		  	return '<a href="javascript:;" onclick="showValidatRulePage(' + data.validateRuleFlag + ',\'' + data.sceneName + '\');">' + labelCreate(data.validateRuleFlag, option) + '</a>';							
-                    	  }
-                      },
-                      {
-                    	  "data":null,
+                    	  "data":"testDataNum",
                           "render":function(data, type, full, meta){
                           	var context =
                           		[{
                         			type:"default",
                         			size:"M",
                         			markClass:"show-test-data",
-                        			name:data.testDataNum
+                        			name:data
                         		}];
                               return btnTextTemplate(context);
                               }
             		    },  
                       {
-            		    "data":null,
+            		    "data":"mark",
             		    "className":"ellipsis",
-            		    "render":function(data) { 
-            		    	if (data.mark != "" && data.mark != null) {
-            		    		currSceneMark = data.mark;
-                		    	return '<a href="javascript:;" onclick="showSceneMark(\'' + data.sceneName + '\');"><span title="' + data.mark + '">' + data.mark + '</span></a>';
+            		    "render":function(data, type, full, meta) { 
+            		    	if (data != "" && data != null) {
+                		    	return '<a href="javascript:;" onclick="showMark(\'' + full.sceneName + '\', \'mark\', this);"><span title="' + data + '">' + data + '</span></a>';
             		    	}
             		    	return "";
             		    }
@@ -151,34 +140,53 @@ var columnsSetting = [
                       {
                           "data":null,
                           "render":function(data, type, full, meta){
-                            var context = [{
-                            	title:"验证规则设定",
-                	    		markClass:"validate-method",
-                	    		iconFont:"&#xe654;"                           	
-                            },{
-                            	title:"场景测试",
-                	    		markClass:"scene-test",
-                	    		iconFont:"&#xe603;"
-                            },{
-                	    		title:"接口编辑",
-                	    		markClass:"scene-edit",
-                	    		iconFont:"&#xe6df;"
-                	    	},{
-                	    		title:"接口删除",
-                	    		markClass:"scene-del",
-                	    		iconFont:"&#xe6e2;"
-                	    	}];                           
+                        	  var context = [{
+                              	title:"场景测试",
+                  	    		markClass:"scene-test",
+                  	    		iconFont:"&#xe603;"
+                              }]; 
+                        	  
+                        	if (GetQueryString("complexSceneFlag") != null) {
+                        		if ($.inArray("" + data.messageSceneId, complexSetScene.scenes) != -1) {
+                        			return btnIconTemplate(context.concat(
+                                			[{
+                                            	title:"变量管理",
+                                	    		markClass:"show-complex-scene-variables",
+                                	    		iconFont:"&#xe61d;"                           	
+                                            }]));
+                        		}
+                        		return btnIconTemplate(context);
+                        	} 
+                        	                        	                                                                                                         
+                            if (setId == null) {
+                            	return btnIconTemplate(context.concat(
+                            			[{
+                                        	title:"验证规则设定",
+                            	    		markClass:"validate-method",
+                            	    		iconFont:"&#xe654;"                           	
+                                        },{
+                            	    		title:"接口编辑",
+                            	    		markClass:"scene-edit",
+                            	    		iconFont:"&#xe6df;"
+                            	    	},{
+                            	    		title:"接口删除",
+                            	    		markClass:"scene-del",
+                            	    		iconFont:"&#xe6e2;"
+                            	    	}]));
+                            }
+                            
                           	return btnIconTemplate(context);
                           }}
                   ];
+var currentVariablesSpan;
 var eventList = {
-		".add-object":function() {
+		"#add-object":function() {
 			publish.renderParams.editPage.modeFlag = 0;					
 			currIndex = layer_show("增加场景", editHtml, "550", "360", 1);
 			//layer.full(index);
 			publish.init();			
 		},
-		".batch-del-object":function() {
+		"#batch-del-object":function() {
 			var checkboxList = $(".selectScene:checked");
 			batchDelObjs(checkboxList,SCENE_DEL_URL);
 		},
@@ -197,62 +205,227 @@ var eventList = {
 			var data = table.row( $(this).parents('tr') ).data();
 			messageSceneId = data.messageSceneId;
 			layer_show("场景测试", sceneTestHtml, '800','500', 1, function() {
-				renderSceneTestPage();
+				renderSceneTestPage();				
 			});
 			
 		},
-		".validate-method":function() {
+		".validate-method":function() {//场景验证规则管理
 			var data = table.row( $(this).parents('tr') ).data();
 			messageSceneId = data.messageSceneId;
-			layer.confirm(
-					'请选择对测试返回结果进行验证的方式![默认为关键字验证]',
-					{
-						title:'提示',
-						btn:['关键字验证','节点验证','全文验证'],
-						btn3:function(index){
-							changeValidateRule(data.messageSceneId, '2');   		
-						}
-					},function(index){ 
-						changeValidateRule(data.messageSceneId, '0'); 
-					},function(index){
-						changeValidateRule(data.messageSceneId, '1');
-					});
+			var index = layer.open({
+	            type: 2,
+	            title: data.sceneName + "-验证规则管理",
+	            content: 'validateParameters.html?messageSceneId=' + messageSceneId
+	        });
+			layer.full(index);
+			
 		},
-		".show-test-data":function() {
+		".show-test-data":function() { //展示测试数据
 			var data = table.row( $(this).parents('tr') ).data();	
-			var title = interfaceName + "-" + messageName + "-" + data.sceneName + " " + "测试数据";
+			var title = data.interfaceName + "-" + data.messageName + "-" + data.sceneName + " " + "测试数据";
 			var url = "testData.html?messageSceneId=" + data.messageSceneId + "&sceneName=" + data.sceneName;
 			
-			var index = layer_show(title, url, '1000','700', 2);
-			//layer.full(index);
+			var index = layer_show(title, url, '1000','700', 2, null, function() {
+				refreshTable();
+			});		
+		},
+		".show-complex-scene-variables":function() {//展示组合场景中场景的变量管理
+			var data = table.row( $(this).parents('tr') ).data();
+			var context = {saveVariables:[],useVariables:[]};
+			$.each(complexSetScene.saveVariables["" + data.messageSceneId], function(key, value) {
+				context.saveVariables.push({key:key, value:value});
+			});
+			$.each(complexSetScene.useVariables["" + data.messageSceneId], function(key, value) {
+				context.useVariables.push({key:key, value:value});
+			});
+			layer_show(data.sceneName + "-编辑变量", showSceneVariablesTemplate(context), "700", "330", 1, null, function() {
+				//自动保存变量信息
+				$.each($("#save-variables").siblings('div').children(".edit-this-variables"), function(i, n) {
+					var variables = ($(n).text()).split(":");
+					complexSetScene["saveVariables"]["" + data.messageSceneId][variables[0]] = variables[1];
+				});
+				$.each($("#use-variables").siblings('div').children(".edit-this-variables"), function(i, n) {
+					var variables = ($(n).text()).split(":");
+					complexSetScene["useVariables"]["" + data.messageSceneId][variables[0]] = variables[1];
+				});				
+			})
+		},
+		"#add-to-complex-scene":function() {//从组合场景中添加
+			var checkboxList = $(".selectScene:checked");
+			if (checkboxList.length < 1) {
+				return false;
+			}
+			layer.confirm('确认添加选中的' + checkboxList.length + '个场景到该组合场景中?', {icon:0, title:'提示'}, function(index) {
+				layer.close(index);
+				$.each(checkboxList ,function(i, n) {
+					if ($.inArray($(n).val(), complexSetScene.scenes) == -1) {
+						complexSetScene.scenes.push($(n).val());
+						complexSetScene.saveVariables["" + $(n).val()] = {};
+						complexSetScene.useVariables["" + $(n).val()] = {};
+					}
+				});	
+				table.rows().invalidate().draw(false);
+				layer.msg('操作成功', {icon:1, time:1500});
+			});
+		},
+		"#del-from-complex-scene":function() {//从组合场景中删除
+			var checkboxList = $(".selectScene:checked");
+			if (checkboxList.length < 1) {
+				return false;
+			}
+			layer.confirm('确认从该组合场景删除选中的' + checkboxList.length + '个场景?', {icon:0, title:'提示'}, function(index) {
+				layer.close(index);
+				$.each(checkboxList ,function(i, n) {
+					if ($.inArray($(n).val(), complexSetScene.scenes) != -1) {
+						complexSetScene.scenes.splice($.inArray($(n).val(), complexSetScene.scenes), 1);
+						delete complexSetScene.saveVariables["" + $(n).val()];
+						delete complexSetScene.useVariables["" + $(n).val()];
+					}
+				});
+				table.rows().invalidate().draw(false);
+				layer.msg('操作成功', {icon:1, time:1500});
+			});
 			
+		},
+		"#save-variables,#use-variables":function() {//新建组合参数变量
+			var name = $(this).text();
+			var context = {"key":"", "value":""};
+			layer_show("添加-" + name, editVariablesTemplate(context), '360', '240', 1, function(layero, index) {
+				$("#save-new-varibales").attr("layer-index", index);
+				$("#save-new-varibales").attr("mode", "add");
+				$("#save-new-varibales").attr("parent-parameter-name", name);
+			});	
+		},
+		"#save-new-varibales":function() {//保存变量信息
+			if ($(this).attr("mode") == "edit") {
+				currentVariablesSpan.text($("#scene-variables-key").val() + ':' +  $("#scene-variables-value").val());
+			} else {
+				$("label:contains('" + $(this).attr("parent-parameter-name") + "')").siblings('div')
+					.append('<span class="label label-default radius edit-this-variables appoint">' + $("#scene-variables-key")
+					.val() + ':' +  $("#scene-variables-value").val() 
+					+ '</span><i class="Hui-iconfont del-this-variables appoint" style="margin-right:8px;">&#xe6a6;</i>');
+			}
+			
+			layer.close($(this).attr("layer-index"));
+			layer.msg('保存成功!', {icon:1, time:1500});
+		},
+		".edit-this-variables":function() {//编辑变量信息
+			currentVariablesSpan = $(this);
+			var keyValue = ($(this).text()).split("=");
+			var name = $(this).parents('div').siblings('label').text();
+			var context = {"key":keyValue[0], "value":keyValue[1]};
+			layer_show("修改-" + name, editVariablesTemplate(context), '360', '240', 1, function(layero, index) {
+				$("#save-new-varibales").attr("layer-index", index);
+				$("#save-new-varibales").attr("mode", "edit");
+				$("#save-new-varibales").attr("parent-parameter-name", name);
+			});	
+		},
+		".del-this-variables":function() {//删除变量信息
+			$(this).prev('span').remove();
+			$(this).remove();
+		},
+		"#save-scene-variables":function() {//保存组合场景信息
+			
+			var useVariables = JSON.stringify(complexSetScene.useVariables);
+			var saveVariables = JSON.stringify(complexSetScene.saveVariables);
+			var scenes = complexSetScene.scenes.join(",");
+			var index = parent.layer.getFrameIndex(window.name);//先得到当前iframe层的索引
+			
+			if (oldcomplexSetScene.scenes == scenes &&　oldcomplexSetScene.useVariables　==　useVariables
+					&& oldcomplexSetScene.saveVariables == saveVariables) {				 
+				parent.layer.close(index); //再执行关闭
+				return false;
+			}
+			
+			$.post(COMPLEX_SET_SCENE_EDIT_VARIABLES, {
+				useVariables:useVariables, 
+				saveVariables:saveVariables,
+				scenes:scenes,
+				id:complexSetScene.id
+					}, 
+				function(json) {
+						if (json.returnCode == 0) {
+							parent.refreshTable();
+							parent.layer.close(index); //再执行关闭  
+						} else {
+							layer.alert("保存信息时出现错误：" + json.msg, {icon:5});
+						}
+			});
 		}
 };
 
 
 var mySetting = {
 		eventList:eventList,
+		customCallBack:function(p) {
+			if (GetQueryString("complexSceneFlag") != null) {
+				table.column(5).visible(false);
+				$("#add-object").attr("style", "display:none;");
+				$("#batch-del-object").attr("style", "display:none;");
+				return false;
+			} 
+			table.column(5).visible(true);
+			$("#add-to-complex-scene").attr("style", "display:none;");
+			$("#del-from-complex-scene").attr("style", "display:none;");
+		},
 		templateCallBack:function(df){
-			messageId = GetQueryString("messageId");
-			interfaceName = GetQueryString("interfaceName");
-			messageName = GetQueryString("messageName");				
-			publish.renderParams.listPage.listUrl = SCENE_LIST_URL + "?messageId=" + messageId;
-			jqueryLoad("messageScene-validateFullJson.htm", $("#validate-full-json-page"), function(domHmtl) {
-				validateFullJsonHtml = domHmtl;				
-			});
-			
+			//加载场景测试页面
 			jqueryLoad("messageScene-test.htm", $("#scene-test-page"), function(domHmtl) {
 				sceneTestHtml = domHmtl;			
 			});
 			
-			jqueryLoad("messageScene-validateKeyword.htm", $("#validate-keyword-page"), function(domHmtl) {
-				validateKeywordHtml = domHmtl;			
-			});
-			
+			//测试结果模板
 			resultTemplate =  Handlebars.compile($("#scene-test-result").html());
 			
-			df.resolve();
-			   		 	
+			//测试集中组合场景的编辑页面
+			if (GetQueryString("complexSceneFlag") == "0") {
+				setId = GetQueryString("setId");
+				//var complexSetScene;
+				$.ajax({
+					url:COMPLEX_SET_SCENE_GET_URL + "?id=" + GetQueryString("complexSceneId"),
+					async: false,
+					success:function(json) {
+						if (json.returnCode == 0) {
+							oldcomplexSetScene = $.extend({}, json.object);
+							complexSetScene = json.object;
+							complexSetScene.saveVariables = JSON.parse(complexSetScene.saveVariables);
+							complexSetScene.useVariables = JSON.parse(complexSetScene.useVariables);							
+							if (complexSetScene.scenes != "") {
+								complexSetScene.scenes = (complexSetScene.scenes).split(",");
+							} else {
+								complexSetScene.scenes = [];
+							}
+						} else {
+							layer.alert(json.msg, {icon:5});
+						}
+					}					
+				});
+				editVariablesTemplate = Handlebars.compile($("#edit-variables-template").html());
+				showSceneVariablesTemplate = Handlebars.compile($("#show-scene-variables-template").html());
+				publish.renderParams.listPage.listUrl = SET_SCENE_LIST_URL + "?setId=" + setId + "&mode=0";
+				publish.renderParams.listPage.dtOtherSetting.serverSide = false;
+				df.resolve();
+				return false;
+			}
+					
+			//测试集中测试场景增加数据
+			if (GetQueryString("addDataFlag") == "0") {
+				setId = GetQueryString("setId");
+				publish.renderParams.listPage.listUrl = SCENE_LIST_NO_DATA_SCENES_URL + "?setId=" + setId;
+				publish.renderParams.listPage.dtOtherSetting.serverSide = false;
+				
+				$("#btn-tools").parent("div").hide();
+				
+				df.resolve();
+				return false;
+			}
+			//正常展示指定报文中的测试场景
+			messageId = GetQueryString("messageId");
+			interfaceName = GetQueryString("interfaceName");
+			messageName = GetQueryString("messageName");				
+			publish.renderParams.listPage.listUrl = SCENE_LIST_URL + "?messageId=" + messageId;
+									
+			df.resolve();			   		 	
    	 	},
 		editPage:{
 			editUrl:SCENE_EDIT_URL,
@@ -274,7 +447,10 @@ var mySetting = {
 			listUrl:SCENE_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0,4,5,6]
+			columnsJson:[0, 6, 7],
+			dtOtherSetting:{
+				"bStateSave": false
+			}
 		},
 		templateParams:templateParams		
 	};
@@ -285,73 +461,41 @@ $(function(){
 });
 
 /**********************************************************************************************************************/
-/**
- * 改变验证规则方法
- */
-function changeValidateRule(sceneId, ruleFlag, callback) {
-	$.get(SCENE_CHANGE_VALIDATE_RULE_URL,{messageSceneId:sceneId, validateRuleFlag:ruleFlag},function(data){
-		if(data.returnCode == 0) {				
-			refreshTable();	
-			layer.msg("操作成功!", {icon:1, time:1500});
-		}else{
-			layer.alert(data.msg,{icon:5});
-		}
-	});
-}
-
-/**
- * 保存验证内容
- * 全文验证或者关键字验证
- */
-function saveValidateJson(){	
-	var sendData = {};
-	if ($("#parameterName").length > 0) {
-		var parameterName = '{"LB":"' + ($("#LB").val()).replace(/\"/g, "\\\"") + '","RB":"' + ($("#RB").val()).replace(/\"/g, "\\\"") + '","ORDER":"' + $("#ORDER").val() + '"}';
-		sendData.parameterName = parameterName;
-	}	
-	
-	sendData.validateValue = $("#validateValue").val();
-	sendData.validateId = $("#validateId").val();
-	
-	$.post(VALIDATE_FULL_EDIT_URL, sendData, function(data){
-		if(data.returnCode == 0){
-			layer.closeAll('page');
-			layer.msg('已保存!', {icon:1, time:1500});
-		} else {
-			layer.alert(data.msg,{icon:5});
-		}
-	});		
-}
 
 /**
  * 场景测试页面渲染
  */
-function renderSceneTestPage() {
-	var index = layer.load(2, {shade:0.35});
+function renderSceneTestPage(flag) {
+	var index = layer.msg('加载中,请稍后...', {icon:16, time:60000, shade:0.35});
 	$.get(SCENE_GET_TEST_OBJECT_URL, {messageSceneId:messageSceneId}, function(data){					
 		if(data.returnCode == 0){
 			var selectUrl=$("#selectUrl");
 			var selectData=$("#selectData");
-			selectUrl.html('');			
+						
 			selectData.html('');
 			$(".textarea").val('');
-			$.each(data.urls,function(i,n){
-				selectUrl = selectUrl.append("<option value='"+n+"'>"+n+"</option>");
-			});				
+			
+			if (flag != 0) {
+				selectUrl.html('');				
+				$.each(data.urls,function(i,n){
+					selectUrl = selectUrl.append("<option value='"+n+"'>"+n+"</option>");
+				});	
+			}
+						
 			
 			if (data.testData.length > 0) {
 				$.each(data.testData,function(i,n){
-					selectData = selectData.append("<option data-id='" + n.dataId + "' value='"+i+"'>"+n.dataDiscr+"</option>");
+					selectData = selectData.append("<option data-id='" + n.dataId + "' value='" + i + "'>" + n.dataDiscr + "</option>");
 				});
 				$(".textarea").val(data.testData[0].dataJson);
 				$("#selectData").change(function(){
 					var p1 = $(this).children('option:selected').val();
 					$(".textarea").val(data.testData[p1].dataJson);
 				});
-			}																		
+			}
 		} else {
 			layer.alert(data.msg, {icon:5});
-		}
+		}	
 		layer.close(index);
 	});
 }
@@ -368,10 +512,10 @@ function sceneTest() {
 		return;
 	}
 	var dataId = $("#selectData > option:selected").attr("data-id");
-	var index = layer.load(2, {shade:0.35});
+	var index = layer.msg('正在进行测试...', {icon:16, time:60000, shade:0.35});
 	$.post(TEST_SCENE_URL, {messageSceneId:messageSceneId, dataId:dataId, requestUrl:requestUrl, requestMessage:requestMessage},function(data){
 		if(data.returnCode==0){
-			renderSceneTestPage();
+			renderSceneTestPage(0);
 			layer.close(index);
 			var color="";
 			var flag="";
@@ -401,7 +545,8 @@ function sceneTest() {
 				  shade: 0,
 				  type: 1,
 				  skin: 'layui-layer-rim', //加上边框		
-				  area: ['700px', '400px'], //宽高
+				  area: ['700px', '600px'], //宽高
+				  anim:-1,
 				  content: resultTemplate(resultData)
 				});
 		}else{
@@ -411,90 +556,4 @@ function sceneTest() {
 	});
 }
 
-/**
- * 展示不同的类型验证规则的编辑页面
- * @param type
- */
-function showValidatRulePage(type, sceneName) {
-	if (type == "0") {
-		layer_show(sceneName + '-关键字关联验证', validateKeywordHtml, '820', '360', 1, function() {
-			$.get(VALIDATE_GET_URL, {messageSceneId:messageSceneId, validateMethodFlag:"0"},function(data){
-				if(data.returnCode == 0) {
-					if (data.parameterName != "") {
-						var relevanceObject = JSON.parse(data.parameterName);
-						$("#ORDER").val(relevanceObject.ORDER);
-						$("#LB").val(relevanceObject.LB);
-						$("#RB").val(relevanceObject.RB);
-						$("#objectSeqText").text(relevanceObject.ORDER);
-					}
-					$("#parameterName").val(data.parameterName);
-					$("#validateValue").val(data.validateValue);
-					$("#validateId").val(data.validateId);
-				} else {
-					layer.alert(data.msg,{icon:5});
-				}
-			});
-		});
-	}
-	
-	if (type == "1") {
-		var index = layer.open({
-            type: 2,
-            title: sceneName + "-节点验证管理",
-            content: 'validateParameters.html?messageSceneId=' + messageSceneId
-        });
-		layer.full(index);
-	}
-	
-	if (type == "2") {
-		layer_show(sceneName + '-全文验证管理', validateFullJsonHtml, '800', '520', 1, function() {
-			$.get(VALIDATE_GET_URL, {messageSceneId:messageSceneId, validateMethodFlag:"2"},function(data){
-				if(data.returnCode == 0) {
-					$("#validateValue").val(data.validateValue);
-					$("#validateId").val(data.validateId);
-					validateValueOriginal = data.validateValue;
-				} else {
-					layer.alert(data.msg,{icon:5});
-				}
-			});
-		});
-	}
-	
-}
 
-/**
- * 显示场景备注
- */
-function showSceneMark(sceneName) {
-	layer.prompt({
-		formType: 2,
-		value: currSceneMark,
-		title: sceneName + '-备注',
-		area: ['500px', '300px']}, 
-		function(value, index, elem){
-			layer.close(index);
-		});
-}
-
-/**
- * 关键字验证
- * 取值顺序页面按键  减一
- */
-function reduceSeq() {
-	var seq=$("#objectSeqText").text();
-	if(seq==1){
-		return;
-	}
-	$("#objectSeqText").text(seq-1);
-	$("#ORDER").val(seq-1);
-}
-
-/**
- * 关键字验证
- * 取值顺序页面按键  加一
- */
-function addSeq() {
-	var seq=$("#objectSeqText").text();
-	$("#objectSeqText").text(parseInt(seq)+1);
-	$("#ORDER").val(parseInt(seq)+1);
-}

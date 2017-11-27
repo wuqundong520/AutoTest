@@ -1,5 +1,6 @@
 package com.dcits.business.base.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dcits.business.base.bean.PageModel;
@@ -58,15 +59,22 @@ public class BaseServiceImpl<T> implements BaseService<T>{
 	}
 
 	@Override
-	public int totalCount() {
+	public int totalCount(String ...filterCondition) {
 		// TODO Auto-generated method stub
-		return baseDao.totalCount();
+		return baseDao.totalCount(filterCondition);
 	}
 
 	@Override
 	public PageModel<T> findByPager(int dataNo, int pageSize, String orderDataName, String orderType, String searchValue, List<String> dataParams,String ...filterCondition) {
 		// TODO Auto-generated method stub
 		return baseDao.findByPager(dataNo, pageSize, orderDataName, orderType, searchValue, dataParams, filterCondition);
+	}
+
+
+	@Override
+	public int countByTime(Date ...time) {
+		// TODO Auto-generated method stub
+		return baseDao.countByTime(time);
 	}
 	
 	

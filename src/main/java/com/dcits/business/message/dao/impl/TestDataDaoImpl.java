@@ -31,7 +31,7 @@ public class TestDataDaoImpl extends BaseDaoImpl<TestData> implements TestDataDa
 	@Override
 	public List<TestData> getDatasByScene(Integer messageSceneId, int count) {
 		// TODO Auto-generated method stub
-		String hql = "from TestData t where t.messageScene.messageSceneId=:messageSceneId and t.status='0'";
+		String hql = "from TestData t where t.messageScene.messageSceneId=:messageSceneId and t.status!='1'";
 		return getSession().createQuery(hql).setInteger("messageSceneId", messageSceneId).setMaxResults(count).list();
 	}
 

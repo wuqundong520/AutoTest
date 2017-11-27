@@ -174,7 +174,7 @@ var columnsSetting = [
 		    "render":CONSTANT.DATA_TABLES.COLUMNFUN.ELLIPSIS
           		},
           {
-          	"data":null,
+          	"data":"interfaceType",
           	"render":function(data, type, full, meta ){
           		var option = {
           				"SL":{
@@ -186,19 +186,19 @@ var columnsSetting = [
           					status:"查询类"
           				}
           		};                  
-          		return labelCreate(data.interfaceType,option);
+          		return labelCreate(data, option);
               }},
           {
-            "data":null,
+            "data":"interfaceProtocol",
             "render":function(data) {
-            	return labelCreate((data.interfaceProtocol).toUpperCase());
+            	return labelCreate(data.toUpperCase());
             }
           },
           {"data":"createTime","width":"120px"},
           {
-          	"data":null,
+          	"data":"status",
           	"render":function(data, type, full, meta ){
-                  return labelCreate(data.status);
+                  return labelCreate(data);
               }},
           {"data":"user.realName"},{"data":"lastModifyUser"},
           {
@@ -273,7 +273,7 @@ var eventList = {
 			var btnS='<a href="javascript:;" onclick="saveParameter(this)" class="btn btn-success size-S radius">保存</a>&nbsp;<a href="javascript:;" onclick="cancelAddParameter(this)" class="btn btn-danger size-S radius">取消</a>';
 			var selectS='<select><option value="Array">Array</option><option value="Map">Map</option><option value="String">String</option><option value="Number">Number</option><option value="List">List</option></select>';
 			html+='<tr class="text-c">'+
-				  '<td></td>'+
+				  '<td style="display: none;"></td>'+
 				  '<td><input type="text"/>'+'</td>'+
 				  '<td><input type="text"/>'+'</td>'+
 				  '<td><input type="text"/>'+'</td>'+
@@ -311,6 +311,8 @@ var eventList = {
 				'<option value="json" selected>JSON格式</option>'+
 				'<option value="xml">XML格式</option>'+
 				'<option value="url">URL格式</option>'+
+				'<option value="fixed">固定报文</option>'+
+				'<option value="opt">自定义报文</option>'+
 				'</select></span>'+
 				'</span></div><br><textarea style="height: 240px;" class="textarea radius" '+
 				'id="jsonParams" placeholder="输入接口报文"></textarea></div>';
@@ -387,7 +389,7 @@ var mySetting = {
 			listUrl:INTERFACE_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0,8,9,10,11]
+			columnsJson:[0,10,11]
 		},
 		templateParams:templateParams		
 	};
@@ -407,7 +409,7 @@ function initParameters(){
 			$.each(data.data,function(i,n) {
 				var btnS = '<a href="javascript:;" class="btn btn-danger size-S radius parameter-del">删除</a>';							
 				html += '<tr class="text-c">'+
-						'<td class="param-id" id="'+n.parameterId+'">'+n.parameterId+'</td>'+
+						'<td class="param-id" id="'+n.parameterId+'" style="display: none;">'+n.parameterId+'</td>'+
 						'<td class="param-edit-value" name="parameterIdentify">'+n.parameterIdentify+'</td>'+
 						'<td class="ellipsis param-edit-value" name="parameterName">'+ n.parameterName +'</td>'+
 						'<td class="ellipsis param-edit-value" name="defaultValue">' + n.defaultValue +'</td>'+
@@ -545,7 +547,7 @@ function saveParameter(obj){
 				var btnS='<a href="javascript:;" class="btn btn-danger size-S radius parameter-del">删除</a>';
 				
 				var  html = '<tr class="text-c">'+
-					  '<td class="param-id" id="' + data.id + '">' + data.id + '</td>' +
+					  '<td class="param-id" id="' + data.id + '" style="display: none;">' + data.id + '</td>' +
 					  '<td class="param-edit-value" name="parameterIdentify">' + parameterIdentify + '</td>'+
 					  '<td class="param-edit-value" name="parameterName">' + parameterName + '</td>' +
 					  '<td class="param-edit-value" name="defaultValue">' + defaultValue + '</td>'+

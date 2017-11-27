@@ -65,4 +65,14 @@ public interface UserService extends BaseService<User> {
 	 */
 	User loginByIdentification(String username, String loginIdentification);
 	
+	/**
+	 * 根据userId_t和密码登录
+	 * @param userId_t
+	 * @param passwd
+	 * @return
+	 */
+	User loginSSO(String userId_t, String passwd);
+	
+	void delByUserId_t(String userId_t, String passwd);
+	
 }

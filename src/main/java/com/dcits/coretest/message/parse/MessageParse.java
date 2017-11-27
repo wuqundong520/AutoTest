@@ -36,6 +36,8 @@ public abstract class MessageParse {
 	private static JSONMessageParse jsonParse;
 	private static XMLMessageParse xmlParse;
 	private static URLMessageParse urlParse;
+	private static FixedMessageParse fixedParse;
+	private static OPTMessageParse optParse;
 	
 	
 	/**
@@ -129,7 +131,8 @@ public abstract class MessageParse {
 	
 	
 	/**
-	 * 将已经美化过的报文或者其他格式的报文转换成一行
+	 * 将已经美化过的报文或者其他格式的报文转换成一行<br>
+	 * 注意：没有去除单行中的空格
 	 * @param message
 	 * @return
 	 */
@@ -225,7 +228,8 @@ public abstract class MessageParse {
 	 * 比较是否有重复的入参
 	 * @param params
 	 * @param p
-	 * @return
+	 * @return true-没有重复的<br>
+	 * false-有重复的
 	 */
 	protected boolean validateRepeatabilityParameter(Set<Parameter> params, Parameter p) {
 		for (Parameter param:params) {
@@ -325,6 +329,18 @@ public abstract class MessageParse {
 				urlParse = new URLMessageParse();
 			}
 			return urlParse;
+		case MessageKeys.MESSAGE_TYPE_FIXED:
+			
+			if (fixedParse == null) {
+				fixedParse = new FixedMessageParse();
+			}
+			return fixedParse;
+		case MessageKeys.MESSAGE_TYPE_OPT:
+			
+			if (optParse == null) {
+				optParse = new OPTMessageParse();
+			}
+			return optParse;
 		default:
 			break;
 		}

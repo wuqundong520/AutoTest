@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 
 import org.apache.struts2.json.annotations.JSON;
 
+import com.dcits.annotation.FieldNameMapper;
+
 /**
  * 用户邮件pojo
  * @author xuwangcheng
@@ -12,9 +14,6 @@ import org.apache.struts2.json.annotations.JSON;
  */
 public class Mail implements Serializable {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	/**
@@ -23,7 +22,7 @@ public class Mail implements Serializable {
 	private Integer mailId;
 	
 	/**
-	 * 接收也用户
+	 * 接收用户
 	 */
 	private User receiveUser;
 	
@@ -58,8 +57,10 @@ public class Mail implements Serializable {
 	private Timestamp sendTime;
 	
 	/**发送用户的用户名*/
+	@FieldNameMapper("sendUser.realName")
 	private String sendUserName;
 	/**接收用户的用户名*/
+	@FieldNameMapper("receiveUser.realName")
 	private String receiveUserName;
 	
 	public Mail() {
@@ -93,27 +94,19 @@ public class Mail implements Serializable {
 	}
 
 	public String getSendUserName() {
-		return sendUserName;
-	}
-
-	public void setSendUserName() {
-		this.sendUserName = "ϵͳ";
+		this.sendUserName = "系统";
 		if(this.getSendUser()!=null){
 			this.sendUserName = this.getSendUser().getRealName();
 		}
-		
+		return sendUserName;
 	}
 
 	public String getReceiveUserName() {
-		return receiveUserName;
-	}
-
-	public void setReceiveUserName() {
 		this.receiveUserName = "";
 		if(this.getReceiveUser()!=null){
 			this.receiveUserName = this.getReceiveUser().getRealName();
 		}
-		
+		return receiveUserName;
 	}
 
 	public Integer getMailId() {

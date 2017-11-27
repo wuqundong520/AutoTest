@@ -1,7 +1,9 @@
 package com.dcits.business.message.action;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,14 +11,17 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.dcits.business.base.action.BaseAction;
+import com.dcits.business.base.bean.PageModel;
 import com.dcits.business.message.bean.InterfaceInfo;
 import com.dcits.business.message.bean.Message;
 import com.dcits.business.message.bean.MessageScene;
 import com.dcits.business.message.bean.TestData;
 import com.dcits.business.message.service.MessageSceneService;
+import com.dcits.business.message.service.TestSetService;
 import com.dcits.constant.ReturnCodeConsts;
 import com.dcits.coretest.message.parse.MessageParse;
 import com.dcits.util.PracticalUtils;
+import com.dcits.util.StrutsUtils;
 
 /**
  * 报文场景Action
@@ -37,6 +42,12 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 	private Integer messageId;
 
 	private MessageSceneService messageSceneService;
+	@Autowired
+	private TestSetService testSetService;
+	
+	private Integer setId;
+	
+	private String mode;
 
 	@Autowired
 	public void setMessageSceneService(MessageSceneService messageSceneService) {
@@ -53,6 +64,52 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 		}
 		return this.filterCondition;
 	}	
+	
+	/**
+	 * 获取测试集场景
+	 * <br>
+	 * mode=0 获取拥有的<br>
+	 * mode=1 获取没有的
+	 * @return
+	 */
+	public String listSetScenes() {
+		Map<String,Object>  dt = StrutsUtils.getDTParameters(MessageScene.class);
+		PageModel<MessageScene> pu = messageSceneService.findSetScenesByPager(start, length
+				,(String)dt.get("orderDataName"),(String)dt.get("orderType")
+				,(String)dt.get("searchValue"),(List<String>)dt.get("dataParams"), setId, mode);
+		
+		jsonMap.put("draw", draw);
+		jsonMap.put("data", pu.getDatas());
+		
+		int count = testSetService.get(setId).getSceneNum();
+		if ("1".equals(mode)) {
+			count = messageSceneService.totalCount() - count;
+		} 
+		
+		jsonMap.put("recordsTotal", count);		
+		jsonMap.put("recordsFiltered", count);
+		
+		if (!((String)dt.get("searchValue")).equals("")) {
+			jsonMap.put("recordsFiltered", pu.getDatas().size());
+		}
+		
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		
+		return SUCCESS;
+	}
+	
+	@Override
+	public String edit() {
+		if (model.getMessageSceneId() == null) {
+			model.setCreateTime(new Timestamp(System.currentTimeMillis()));
+		}
+		
+		messageSceneService.edit(model);
+		
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		
+		return SUCCESS;
+	}
 	
 	/**
 	 * 变更验证规则
@@ -106,6 +163,32 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 		
 		return SUCCESS;
 	}
+	/**
+	 * 获取指定测试集中没有测试数据的测试场景列表
+	 * @return
+	 */
+	public String listNoDataScenes() {
+		List<MessageScene> noDataScenes = new ArrayList<MessageScene>();		
+		List<MessageScene> scenes = null;
+		
+		//全量
+		if (setId == 0) {
+			scenes = messageSceneService.findAll();
+		//测试集	
+		} else {
+			scenes = messageSceneService.getBySetId(setId);
+		}
+		
+		for(MessageScene ms:scenes){
+			if(ms.getEnabledTestDatas(1).size() < 1){
+				noDataScenes.add(ms);
+			}								
+		}	
+		
+		jsonMap.put("data", noDataScenes);
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		return SUCCESS;
+	}
 	
 	/***************************************GET-SET************************************************/
 	
@@ -113,4 +196,11 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 		this.messageId = messageId;
 	}
 
+	public void setSetId(Integer setId) {
+		this.setId = setId;
+	}
+	
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
 }

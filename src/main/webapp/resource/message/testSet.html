@@ -54,7 +54,7 @@
 		<div class="formControls col-xs-7 col-sm-9">
 			<span class="select-box radius">
 			  <select class="select" size="1" id="requestUrlFlag" name="requestUrlFlag" value="{{requestUrlFlag}}">
-			    <option value="0">默认选择</option>
+			    <option value="0">默认选择 [报文地址>接口mock地址>接口real地址]</option>
 			    <option value="1">优先使用接口设置的mock地址</option>
 			    <option value="2">优先使用接口设置的real地址</option>
 			  </select>
@@ -72,6 +72,12 @@
 		<div class="formControls col-xs-7 col-sm-9">
 			<input type="text" class="input-text radius" id="readTimeOut" name="readTimeOut" value="{{readTimeOut}}">
 		</div>
+	</div>
+	<div class="row cl">
+		<label class="form-label col-xs-4 col-sm-2">失败时最大重试次数：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text radius" id="retryCount" name="retryCount">
+			</div>
 	</div>				
 	<div class="row cl">
 		<label class="form-label col-xs-5 col-sm-3">测试前检查数据：</label>
@@ -83,6 +89,17 @@
 			  </select>
 			</span>
 		</div>
+	</div>	
+	<div class="row cl">
+		<label class="form-label col-xs-5 col-sm-3">测试模式：</label>
+				<div class="formControls col-xs-7 col-sm-9">
+				<span class="select-box radius">
+					<select class="select" size="1" id="runType" name="runType" value="{{runType}}">
+						<option value="0">并行测试</option>
+						<option value="1">串行测试</option>
+					</select>
+				</span>
+				</div>
 	</div>	
 	<div class="row cl">
 		<label class="form-label col-xs-5 col-sm-3">自定义请求地址：</label>

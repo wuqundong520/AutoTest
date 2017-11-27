@@ -1,0 +1,24 @@
+<article class="page-container">
+   <form action="" method="" class="form form-horizontal">
+    <div class="row cl save-variables">
+     <label class="form-label col-xs-4 col-sm-3" style="cursor: pointer;">保存变量：</label>
+     <div class="formControls col-xs-8 col-sm-9">
+     {{#each saveVariables}}
+     	<span class="label label-success radius edit-this-variables appoint">{{key}}={{value}}</span><i class="Hui-iconfont del-this-variables appoint" style="margin-right:8px;">&#xe6a6;</i>
+     {{/each}}
+     </div>
+    </div>
+    <div class="row cl parameter">
+     <label class="form-label col-xs-4 col-sm-3" style="cursor: pointer;">替换变量：</label>
+     <div class="formControls col-xs-8 col-sm-9">
+     {{#each useVariables}}
+     	 <span class="label label-success radius edit-this-variables appoint">{{key}}={{value}}</span><i class="Hui-iconfont del-this-variables appoint" style="margin-right:8px;">&#xe6a6;</i>	
+     {{/each}}
+     </div>
+    </div>
+   </form>
+   <div>
+   	<p class="c-red"><strong>保存变量：</strong>从该场景测试的返回报文中按照节点路径获取值并保存在指定名称的变量中。</p>
+   	<p class="c-red"><strong>替换变量：</strong>从测试上下文中获取指定名称的变量，如果有同名的则优先使用最近保存的(和组合场景中各测试场景的排序有关)。</p>
+   </div>
+</article>

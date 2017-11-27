@@ -31,8 +31,8 @@ var columnsSetting = [
 						    	return  '<span title="' + data + '">' + data + '</span>';
 						    },
 						    "createdCell":function(td, cellData, rowData, row, col){
-						    			var infoList=rowData.messageInfo.split(",");
-						    			var data="[报文名]-"+infoList[1]+"<br>[场景名]-"+infoList[2];
+						    			var infoList = rowData.messageInfo.split(",");
+						    			var data = "[报文名]-" + infoList[1] + "<br>[场景名]-" + infoList[2];
 										var index;
 								        $(td).mouseover(function(){
 								        	index=layer.tips(data, td, {
@@ -47,7 +47,7 @@ var columnsSetting = [
 						  
 					  },
 					  {
-						  "data":null,
+						  "data":"runStatus",
 						  "render":function(data) {
 							  var option = {
                   		  			"0":{
@@ -63,7 +63,7 @@ var columnsSetting = [
 	          		  					status:"STOP"
               		  					}
                   		  		};	
-                  		  	return labelCreate(data.runStatus, option);
+                  		  	return labelCreate(data, option);
 						  }
 					  
 					  },
@@ -134,7 +134,7 @@ var mySetting = {
 		listPage:{
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0, 2, 3, 6],
+			columnsJson:[0, 6],
 			dtOtherSetting:{
 				"bStateSave": false,//状态保存			
 			}

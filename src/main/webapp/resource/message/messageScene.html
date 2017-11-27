@@ -42,10 +42,9 @@
 </div>
 </div>
 <div id="scene-test-page"  style="display: none;"></div>
-<div id="validate-full-json-page"  style="display: none;"></div>
-<div id="validate-keyword-page"  style="display: none;"></div>
 <div id="edit-page"  style="display: none;"></div>
 <div id="template-page" style="display: none;"></div>
+<div id="show-scene-variables" style="display: none;"></div>
 <script id="scene-test-result" type="text/x-handlebars-template">
 	<table class="table table-bg">
 		<tr>
@@ -76,6 +75,63 @@
 		</tr>
 	</table>
 </script>
+<script id="edit-variables-template" type="text/x-handlebars-template">
+	<div class="page-container">
+		<form action="" method="" class="form form-horizontal">
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">节点路径</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text radius" id="scene-variables-key" value={{key}}>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">变量名</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text radius" id="scene-variables-value" value={{value}}>
+				</div>
+			</div>
+			<div class="row cl">
+				<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+					<input class="btn btn-danger radius" type="button" value="&nbsp;&nbsp;确定保存&nbsp;&nbsp;" id="save-new-varibales">
+				</div>
+			</div>
+		</form>
+	</div>
+</script>
+<script id="show-scene-variables-template" type="text/x-handlebars-template">
+<article class="page-container">
+   <form action="" method="" class="form form-horizontal">
+    <div class="row cl">
+     <label class="form-label col-xs-4 col-sm-3" style="cursor: pointer;font-size:18px;" id="save-variables">保存变量</label>
+     <div class="formControls col-xs-8 col-sm-9">
+     {{#each saveVariables}}
+     	<span class="label label-default radius edit-this-variables appoint">{{key}}:{{value}}</span><i class="Hui-iconfont del-this-variables appoint" style="margin-right:8px;">&#xe6a6;</i>
+     {{/each}}
+     </div>
+    </div>
+    <div class="row cl">
+     <label class="form-label col-xs-4 col-sm-3" style="cursor: pointer;font-size:18px;" id="use-variables">替换变量</label>
+     <div class="formControls col-xs-8 col-sm-9">
+     {{#each useVariables}}
+     	 <span class="label label-default radius edit-this-variables appoint">{{key}}:{{value}}</span><i class="Hui-iconfont del-this-variables appoint" style="margin-right:8px;">&#xe6a6;</i>	
+     {{/each}}
+     </div>
+    </div>
+	<br>
+	<div class="row cl">
+     	<div class="formControls col-xs-12 col-sm-12">
+     		<span class="c-red"><strong>保存变量：</strong>从该场景测试的返回报文中按照节点路径获取值并保存在指定名称的变量中。</span>
+    	</div>
+	</div>
+	<div class="row cl">
+     	<div class="formControls col-xs-12 col-sm-12">
+     		<p class="c-red"><strong>替换变量：</strong>从测试上下文中获取指定名称的变量，如果有同名的则优先使用最近保存的(和组合场景中各测试场景的排序有关)。</p>
+		</div>
+    </div>
+   </form>
+</article>
+</script>
+<input type="button" id="save-scene-variables" style="display: none;"/>
 <script type="text/javascript" src="../../libs/jquery/1.9.1/jquery.js"></script>
 <script type="text/javascript" src="../../libs/layer/2.1/layer.js"></script>
 <script type="text/javascript" src="../../libs/jquery.validation/1.14.0/jquery.validate.min.js"></script> 

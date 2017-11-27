@@ -1,9 +1,11 @@
 package com.dcits.business.base.dao.impl;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +113,7 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
 		// TODO Auto-generated method stub
 		PageModel<T> pm = new PageModel<T>(orderDataName, orderType, searchValue, dataParams, dataNo, pageSize);
 		
-		String hql = "from " + clazz.getSimpleName();
+		String hql = "from " + clazz.getSimpleName() + " o";
 		
 		if (searchValue != "" || filterCondition != null && filterCondition.length > 0) {
 			hql += " where ";
@@ -174,5 +176,24 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
 	public T findUnique(String sql) {
 		// TODO Auto-generated method stub	
 		return (T)getSession().createQuery(sql).uniqueResult();
+	}
+
+	@Override
+	public int countByTime(Date ...time) {
+		// TODO Auto-generated method stub
+		int count = 0;
+		String hql = "select count(t) from " + clazz.getSimpleName() + " t where t.createTime>:endTime1";			
+		if (time.length > 1) {
+			hql += " and t.createTime<:endTime2";
+		}
+		Query query = getSession().createQuery(hql).setTimestamp("endTime1", time[0]);
+		if (time.length > 1) {
+			query.setTimestamp("endTime2", time[1]);
+		}
+		Long temp = (Long)query.uniqueResult();
+		if (temp != null) {
+			count = temp.intValue();
+		}
+		return count;
 	}
 }

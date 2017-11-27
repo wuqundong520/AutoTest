@@ -58,28 +58,28 @@ public class BaseAction<T> extends ActionSupport implements ModelDriven<T> {
 	protected Integer id;
 		
 	/**
-	 * dataTable服务器处理参数
-	 * 请求计数
+	 * dataTable服务器处理参数<br>
+	 * 请求计数<br>
 	 * 保证不混淆前后请求展示的数据顺序
 	 */
 	protected Integer draw;
 	
 	/**
-	 * dataTable服务器处理参数
+	 * dataTable服务器处理参数<br>
 	 * 请求数据的起始位置
 	 */
 	protected Integer start;
 	
 	/**
-	 * dataTable服务器处理参数
+	 * dataTable服务器处理参数<br>
 	 * 本次请求的数据长度
 	 */
 	protected Integer length;
 	
 	/**
-	 * 远程校验接口名是否重复
-	 * 需要返回的标记
-	 * 没有重复(验证通过) 强制必须返回 true或者字符串"true"
+	 * 远程校验接口名是否重复<br>
+	 * 需要返回的标记<br>
+	 * 没有重复(验证通过) 必须返回 true或者字符串"true"<br>
 	 * 验证不通过 返回提示信息
 	 */
 	protected String checkNameFlag;
@@ -129,7 +129,7 @@ public class BaseAction<T> extends ActionSupport implements ModelDriven<T> {
 	}
 	
 	/**
-	 * 通用方法 listAll
+	 * 通用方法 listAll<br>
 	 * 获取所有的对应实体集合
 	 * @return 
 	 */
@@ -143,7 +143,7 @@ public class BaseAction<T> extends ActionSupport implements ModelDriven<T> {
 	
 	
 	/**
-	 * 通用del方法 
+	 * 通用del方法 <br>
 	 * 根据传入的id删除对应实体
 	 * @return
 	 */
@@ -155,7 +155,7 @@ public class BaseAction<T> extends ActionSupport implements ModelDriven<T> {
 	}
 	
 	/**
-	 * 通用get方法 
+	 * 通用get方法 <br>
 	 * 根据id获取指定实体信息
 	 * @return
 	 */
@@ -167,7 +167,7 @@ public class BaseAction<T> extends ActionSupport implements ModelDriven<T> {
 	}
 	
 	/**
-	 * 通用 edit方法
+	 * 通用 edit方法<br>
 	 * 编辑实体 如直接使用父类中此方法，必须 保证从前台传入的对应实体属性是完整的，否则请在子类中重写该方法
 	 * @return
 	 */
@@ -180,7 +180,7 @@ public class BaseAction<T> extends ActionSupport implements ModelDriven<T> {
 	}
 	
 	/**
-	 * 通用 save方法
+	 * 通用 save方法<br>
 	 * 保存新的实体对象,同时返回新增的实体ID的值  保证传入的属性是完整的  否则请在子类中重写该方法
 	 * @return
 	 */
@@ -202,8 +202,8 @@ public class BaseAction<T> extends ActionSupport implements ModelDriven<T> {
 	
 	
 	/**
-	 * 判断实体名称重复性
-	 * 新增或者修改状态下均可用
+	 * 判断实体名称重复性<br>
+	 * 新增或者修改状态下均可用<br>
 	 * 子类需要重写该方法
 	 */
 	public void checkObjectName() {
@@ -212,7 +212,7 @@ public class BaseAction<T> extends ActionSupport implements ModelDriven<T> {
 	
 	
 	/**
-	 * list和listAll方法中对 数据的加工
+	 * list和listAll方法中对 数据的加工<br>
 	 * 子类可重写该方法，对发给前台的数据进行再一次处理
 	 * @param o
 	 * @return

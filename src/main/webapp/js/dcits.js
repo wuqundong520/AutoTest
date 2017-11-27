@@ -66,7 +66,7 @@ var CONSTANT = {
             "language": {
                 "url": "../../js/zh_CN.txt"
             },
-            "lengthMenu": [[10, 15, 100], ['10', '15', '100']],  //显示数量设置
+            "lengthMenu": [[10, 20, 50, 100], ['10', '20', '50','100']],  //显示数量设置
             //行回调
             "createdRow": function ( row, data, index ){
                 $(row).addClass('text-c');
@@ -432,7 +432,7 @@ function delObj(tip, url, id, obj) {
  * @returns {Boolean}
  */
 function batchDelObjs(checkboxList, url, tableObj, opName) {
-	if (checkboxList.length<1) {
+	if (checkboxList.length < 1) {
 		return false;
 	}
 	
@@ -442,32 +442,32 @@ function batchDelObjs(checkboxList, url, tableObj, opName) {
 	
 	layer.confirm('确认' + opName + '选中的' + checkboxList.length + '条记录?', {icon:0, title:'警告'}, function(index) {
 		layer.close(index);
-		$wrapper.spinModal();
+		var loadindex = layer.msg('正在进行批量' + opName + "...", {icon:16, time:60000, shade:0.35});
 		var delCount = 0;
 		var errorTip = "";
-			$.each(checkboxList,function(i, n) {
-				var objId = $(n).val();//获取id
-				var objName = $(n).attr("name");	//name属性为对象的名称	
-				layer.msg("正在" + opName + objName + "...", {time: 999999});    
-					$.ajax({
-						type:"POST",
-						url:url,
-						data:{id:objId},
-						async:false,
-						success:function(data) {
-							if(data.returnCode != 0) {	
-								layer.msg(opName + objName + "失败!", {time:999999});
-								errorTip += "[" + objName + "]";
-							}else{
-								delCount = i+1;
-								layer.msg(opName + objName + "成功!", {time:999999});
-							}
+		$.each(checkboxList ,function(i, n) {
+			var objId = $(n).val();//获取id
+			var objName = $(n).attr("name");	//name属性为对象的名称	
+			//layer.msg("正在" + opName + objName + "...", {time: 999999});    
+				$.ajax({
+					type:"POST",
+					url:url,
+					data:{id:objId},
+					async:false,
+					success:function(data) {
+						if(data.returnCode != 0) {	
+							//layer.msg(opName + objName + "失败!", {time:999999});
+							errorTip += "[" + objName + "]";
+						}else{
+							delCount = i + 1;
+							//layer.msg(opName + objName + "成功!", {time:999999});
 						}
-						});			
-			});
-			layer.closeAll('dialog');
-			refreshTable();
-			$wrapper.spinModal(false);
+					}
+					});			
+		});
+		//layer.closeAll('dialog');
+		layer.close(loadindex);
+		refreshTable(null, function(json) {
 			if (errorTip != "") {
 				errorTip = "在" + opName + errorTip + "数据时发生了错误,请查看错误日志!";
 				layer.alert(errorTip, {icon:5}, function(index) {
@@ -477,7 +477,7 @@ function batchDelObjs(checkboxList, url, tableObj, opName) {
 			} else {
 				layer.msg("共" + opName + delCount + "条数据!", {icon:1, time:2000});
 			}
-
+		});					
 	});
 		
 }
@@ -577,8 +577,9 @@ function formValidate(formObj, rules, messages, ajaxUrl, closeFlag, ajaxCallback
  * @param tableObject 传入指定的DT对象，刷新指定的表格
  * @param ajaxUrl2 传入指定的ajax数据地址,刷新将会使用这个地址获取表格数据
  * @param callback 刷新完表格后的回调函数
+ * @param resetPaging 是否重置分页信息 false不重置  true 重置
  */
-function refreshTable(ajaxUrl2, callback, tableObject){
+function refreshTable(ajaxUrl2, callback, tableObject, resetPaging){
 	$wrapper.spinModal();
 	
 	if (tableObject == null) {
@@ -589,19 +590,23 @@ function refreshTable(ajaxUrl2, callback, tableObject){
 		callback = function(){};
 	}
 	
+	if (resetPaging == null) {
+		resetPaging = false;
+	}
+	
 	
 	if (ajaxUrl2 != null) {
 		tableObject.ajax.url(ajaxUrl2).load(function(json) {
 			publish.renderParams.listPage.dtAjaxCallback();
 			callback(json);
 			$wrapper.spinModal(false);
-		}, false);
+		}, resetPaging);
 	} else {
 		tableObject.ajax.reload(function(json) {
 			publish.renderParams.listPage.dtAjaxCallback();
 			callback(json);
 			$wrapper.spinModal(false);
-		}, false);
+		}, resetPaging);
 	}
 }
 
@@ -778,6 +783,7 @@ function layer_show (title, url, w, h, type, success, cancel, end) {
 		fix: false, //不固定
 		maxmin: false,
 		shade:0.4,
+		anim:5,
 		title: title,
 		content: url,
 		success:success,
@@ -786,6 +792,26 @@ function layer_show (title, url, w, h, type, success, cancel, end) {
 	return index;
 }
 
+
+/**
+ * 显示备注
+ * @param itemName
+ * @param markName
+ * @param obj
+ */
+function showMark(itemName, markName, obj) {
+	var data = table.row( $(obj).parents('tr') ).data();
+	layer.prompt({
+		formType: 2,
+		maxlength:65535,
+		anim:5,
+		value: data[markName],
+		title: itemName + '-备注',
+		area: ['500px', '300px']}, 
+		function(value, index, elem){
+			layer.close(index);
+		});
+}
 
 //对Date的扩展，将 Date 转化为指定格式的String   
 //月(M)、日(d)、小时(h)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，   
@@ -812,3 +838,8 @@ Date.prototype.Format = function(fmt)
 	fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));   
 	return fmt;   
 } 
+
+
+String.prototype.replaceAll = function(s1,s2){
+	　　return this.replace(new RegExp(s1,"gm"),s2);
+}

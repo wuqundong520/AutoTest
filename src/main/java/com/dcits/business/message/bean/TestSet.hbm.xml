@@ -33,5 +33,12 @@
         	<key column="set_id"></key>
         	<many-to-many class="com.dcits.business.message.bean.MessageScene" column="message_scene_id"></many-to-many>
         </set>
+        
+        <set name="css" cascade="all" lazy="true" inverse="true">
+            <key>
+                <column name="set_id" />
+            </key>
+            <one-to-many class="com.dcits.business.message.bean.ComplexSetScene" />
+        </set>
     </class>
 </hibernate-mapping>

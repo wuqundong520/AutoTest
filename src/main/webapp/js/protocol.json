@@ -4,7 +4,7 @@
 	    },
 	    "Authorization":{
 	    },
-	    "Method":"post",
+	    "Method":"POST",
 	    "ConnectTimeOut":"",
 	    "ReadTimeOut":"",
 	    "RecEncType":"UTF-8",
@@ -16,6 +16,8 @@
 	},
 	"WebService":{
 	    "ConnectTimeOut":"",
+	    "Namespace":"",
+	    "Method":"",
 	    "Username":"",
 	    "Password":""
 	}

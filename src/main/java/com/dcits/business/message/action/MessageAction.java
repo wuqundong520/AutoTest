@@ -151,7 +151,6 @@ public class MessageAction extends BaseAction<Message>{
 		model.setParameterJson(parseUtil.messageFormatBeautify(model.getParameterJson()));
 		model.setComplexParameter(parseUtil.parseMessageToObject(model.getParameterJson(), new ArrayList<Parameter>(params)));
 		messageService.edit(model);
-		
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);		
 		return SUCCESS;
 	}

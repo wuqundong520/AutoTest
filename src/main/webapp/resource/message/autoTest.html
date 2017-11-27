@@ -57,7 +57,14 @@
 			
 			<!-- STRAT -->
 			<div class="tabCon">
-				测试有关的说明
+				<div>
+					<br>
+					<p>接口测试是测试系统组件间接口的一种测试。接口测试主要用于检测外部系统与系统之间以及内部各个子系统之间的交互点。测试的重点是要检查数据的交换，传递和控制管理过程，以及系统间的相互逻辑依赖关系等。</p>
+					<br>
+					<h4>操作说明</h4>
+					<p>点击测试集测试将会展示登录账号创建的所有测试集，以供选择进行测试。点击全量测试将会对所有的测试场景进行批量测试。</p>
+					<p>选择 测试前检查数据 将会自动检测当前选择的所有测试场景是否有足够的测试数据(至少一条)。此操作将会增加测试总耗时。</p>
+				</div>
 			</div>
 			<!-- END -->
 			
@@ -71,7 +78,7 @@
 					<div class="formControls col-xs-8 col-sm-9">
 						<span class="select-box radius">
 						  <select class="select" size="1" id="requestUrlFlag" name="requestUrlFlag">
-						    <option value="0">默认选择</option>
+						    <option value="0">默认选择 [报文地址>接口mock地址>接口real地址]</option>
 						    <option value="1">优先使用接口设置的mock地址</option>
 						    <option value="2">优先使用接口设置的real地址</option>
 						  </select>
@@ -89,7 +96,24 @@
 					<div class="formControls col-xs-8 col-sm-9">
 						<input type="text" class="input-text radius" id="readTimeOut" name="readTimeOut">
 					</div>
-				</div>				
+				</div>	
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">失败时最大重试次数：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text radius" id="retryCount" name="retryCount">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">测试模式：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<span class="select-box radius">
+						  <select class="select" size="1" id="runType" name="runType">
+						    <option value="0">并行测试</option>
+						    <option value="1">串行测试</option>
+						  </select>
+						</span>
+					</div>
+				</div>			
 				<div class="row cl">
 					<label class="form-label col-xs-4 col-sm-2">测试前检查数据：</label>
 					<div class="formControls col-xs-8 col-sm-9">

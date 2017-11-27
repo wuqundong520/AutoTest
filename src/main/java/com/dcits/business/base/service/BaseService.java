@@ -1,5 +1,6 @@
 package com.dcits.business.base.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dcits.business.base.bean.PageModel;
@@ -53,7 +54,7 @@ public interface BaseService<T> {
 	 * 统计总实体实例的数量
 	 * @return 总数量
 	 */
-	 int totalCount();
+	 int totalCount(String ...filterCondition);
 	
 	/**
 	 * 获取分页列表
@@ -67,4 +68,12 @@ public interface BaseService<T> {
 	 * @return 符合分页条件的分页模型实例
 	 */
 	 PageModel<T> findByPager(int dataNo, int pageSize,String orderDataName,String orderType,String searchValue,List<String> dataParams,String ...filterCondition);
+	 
+	 /**
+	  * 统计指定日期之前创建的数量
+	  * <br>保证创建日期字段为 createTime
+	  * @param time 临界日期
+	  * @return
+	  */
+	 int countByTime(Date ...time);
 }

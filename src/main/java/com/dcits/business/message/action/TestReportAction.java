@@ -1,5 +1,10 @@
 package com.dcits.business.message.action;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +19,9 @@ import com.dcits.business.message.bean.TestSet;
 import com.dcits.business.message.service.TestReportService;
 import com.dcits.business.message.service.TestSetService;
 import com.dcits.constant.ReturnCodeConsts;
+import com.dcits.constant.SystemConsts;
+import com.dcits.util.PracticalUtils;
+import com.dcits.util.StrutsUtils;
 
 /**
  * 接口自动化<br>
@@ -88,11 +96,11 @@ public class TestReportAction extends BaseAction<TestReport> {
 		TestSet set = testSetService.get(Integer.valueOf(report.getTestMode()));
 		String title = "神州数码接口自动化测试报告";
 		
-		jsonMap.put("title", "全量测试  " + report.getStartTime() + " - " + title);
+		jsonMap.put("title", "全量测试  " + report.getCreateTime() + " - " + title);
 		
 		if (!"0".equals(report.getTestMode())) {
 			if (set == null) {
-				jsonMap.put("title", "接口测试  " + report.getStartTime() + " - " + title);
+				jsonMap.put("title", "接口测试  " + report.getCreateTime() + " - " + title);
 			} else {
 				jsonMap.put("title", set.getSetName() + " - " + title);
 			}
@@ -101,7 +109,7 @@ public class TestReportAction extends BaseAction<TestReport> {
 		Map<String, Object> desc = new HashMap<>();
 		
 		desc.put("sceneNum", report.getSceneNum());
-		desc.put("testDate", report.getStartTime());
+		desc.put("testDate", report.getCreateTime());
 		desc.put("successNum", report.getSuccessNum());
 		desc.put("failNum", report.getFailNum());
 		desc.put("stopNum", report.getStopNum());
@@ -110,6 +118,107 @@ public class TestReportAction extends BaseAction<TestReport> {
 		jsonMap.put("desc", desc);
 		jsonMap.put("data", report.getTrs());		
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		return SUCCESS;
+	}
+	
+	/**
+	 * 生成静态报告
+	 * @return
+	 */
+	public String generateStaticReportHtml() {
+		TestReport report = testReportService.get(model.getReportId());
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		//判断测试是否已经完成
+		if ("N".equals(report.getFinishFlag())) {
+			jsonMap.put("msg", "该项测试还未完成,请等待完成之后再查看静态报告!");
+			jsonMap.put("returnCode", ReturnCodeConsts.ILLEGAL_HANDLE_CODE);
+			return SUCCESS;
+		}
+		//最终生成文件： reportId_startTime.html
+		File htmlFile = new File(StrutsUtils.getProjectPath() + "/" + report.getReportHtmlPath());
+		//判断是否已经生成
+		if (htmlFile.exists()) {
+			jsonMap.put("path", "../../" + report.getReportHtmlPath());		
+			return SUCCESS;
+		}
+		
+		//存储文件夹
+		String saveFolder = StrutsUtils.getProjectPath() + "/" + SystemConsts.REPORT_VIEW_HTML_FOLDER;
+						
+		//获取固定部分
+		File fixedFile = new File(saveFolder + "/" + SystemConsts.REPORT_VIEW_HTML_FIXED_HTML);
+		BufferedOutputStream bos = null;
+		FileInputStream fis = null;
+		String encoding = "UTF-8";
+		boolean successFlag = true;
+		String msg = "";
+		try {
+			bos = new BufferedOutputStream(new FileOutputStream(htmlFile));
+			fis = new FileInputStream(fixedFile);
+			//读取固定内容
+			Long fileLength = fixedFile.length();
+			byte[] filecontent = new byte[fileLength.intValue()];
+			
+			fis.read(filecontent);			
+			
+			StringBuilder html = new StringBuilder();
+			html.append(new String(filecontent, encoding));
+			
+			//增加动态生成的部分
+			report.setSceneNum();
+			
+			TestSet set = testSetService.get(Integer.valueOf(report.getTestMode()));
+			String title = "神州数码接口自动化测试报告";
+			
+			if (!"0".equals(report.getTestMode())) {
+				if (set == null) {
+					title = "接口测试  " + report.getCreateTime() + " - " + title;
+				} else {
+					title = set.getSetName() + " - " + title;
+				}
+			}
+			
+			String successRate = String.format("%.2f", Double.valueOf(String.valueOf(((double)report.getSuccessNum() / report.getSceneNum() * 100))));
+			
+			html.append(PracticalUtils.createReport(report, title, successRate));
+			
+			//写入文件
+			bos.write(html.toString().getBytes(encoding));
+			bos.flush();
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.error("写静态报告文件出错!reportId=" + report.getReportId() + ",输出文件路径=" + StrutsUtils.getProjectPath() 
+					+ "/" + report.getReportHtmlPath(), e);
+			successFlag = false;
+			msg = "写静态报告文件出错!reportId=" + report.getReportId() + ",输出文件路径=" + StrutsUtils.getProjectPath() 
+					+ "/" + report.getReportHtmlPath() + "错误原因：<br>" + e.getMessage();
+		} finally {
+			if (bos != null) {
+				try {
+					bos.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		if (successFlag) {
+			jsonMap.put("path", "../../" + report.getReportHtmlPath());
+		} else {
+			jsonMap.put("returnCode", ReturnCodeConsts.SYSTEM_ERROR_CODE);
+			jsonMap.put("msg", msg);
+		}
+		
 		return SUCCESS;
 	}
 	

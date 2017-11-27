@@ -4,6 +4,7 @@ var reportId;
 var eventList = {
 	'tbody > tr':function() {
 		var id = $(this).attr("id");       
+        $(this).addClass('info').siblings('tr').removeClass('info');
         
         layer.open({
             type: 1,
@@ -13,7 +14,7 @@ var eventList = {
             //isOutAnim:false,
             //anim:-1,
             shade:0.4,
-            title: '详细结果',
+            title: resultData[id].messageInfo,
             shadeClose:true,
             content: $("#view-html").html(),
             success:function(layero) {            	
@@ -25,7 +26,7 @@ var eventList = {
             }
         });
 	},
-	'#status-views':{
+	'.select-view-mark':{
 		'change':function() {
 			renderReportView();
 		}
@@ -81,16 +82,18 @@ function renderReportView() {
 	var currIndex = layer.load(2, {shade:0.4});
     var dataHtml = '';
     var publicStatus = $("#status-views").val();
+    var publicProtocol = $("#protocol-views").val();
     $.each(resultData, function(i, report){
     	
-    	if (report.runStatus == publicStatus || publicStatus == "3") {
+    	if ((report.runStatus == publicStatus || publicStatus == "3")
+    			&& (report.protocolType == publicProtocol || publicProtocol == "all")) {
     		var messageInfo = (report.messageInfo).split(",");        	
             dataHtml += '<tr id="' + i + '">'    
                     + '<td>' + messageInfo[0] + '</td>'
                     + '<td>' + report.protocolType + '</td>'
                     + '<td>' + messageInfo[1] + '</td>'
                     + '<td>' + messageInfo[2] + '</td>'
-                    + '<td class="status">' + report.runStatus + '</td>'
+                    + '<td class="status"><span>' + report.runStatus + '</span></td>'
                     + '<td>' + report.useTime + '</td>'
                     + '</tr>';
     	}    	
@@ -100,20 +103,21 @@ function renderReportView() {
      var statusList = $(".status");
      var status;
      $.each(statusList, function(i, n){
-         status = $(n).text();
+    	 var $status = $(n).children('span');
+         status = $status.text();
          if (status == "0") {
-             $(n).css("color", "green");
-             $(n).text("SUCCESS");
+        	 $status.addClass('label label-success');
+        	 $status.text("Success");
          }
 
          if (status == "1") {
-        	 $(n).css("color", "red");
-        	 $(n).text("FAIL");
+        	 $status.addClass('label label-danger');
+        	 $status.text("Fail");
          }
 
          if (status == "2") {
-        	 $(n).css("color", "#aaaaaa");
-        	 $(n).text("STOP");
+        	 $status.addClass('label label-default');
+        	 $status.text("Stop");
          }
      });
      /*setTimeout(function() {

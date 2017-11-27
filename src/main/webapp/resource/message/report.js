@@ -9,6 +9,7 @@ var currIndex;//当前正在操作的layer窗口的index
 var REPORT_LIST_URL = "report-list";
 var REPORT_GET_URL = "report-get";
 var REPORT_DEL_URL = "report-del";
+var REPORT_DOWNLOAD_STATIS_HTML = "report-generateStaticReportHtml";
 
 
 var templateParams = {
@@ -38,14 +39,14 @@ var columnsSetting = [
 					{"data":"reportId"},
 					ellipsisData("setName"),
 					{
-						"data":null,
+						"data":"sceneNum",
 						"render":function(data, type, full, meta){
                           	var context =
                           		[{
                         			type:"primary",
                         			size:"M",
                         			markClass:"show-result",
-                        			name:data.sceneNum
+                        			name:data
                         		}];
                               return btnTextTemplate(context);
                               }
@@ -90,7 +91,7 @@ var columnsSetting = [
                               }
 					},
 					{
-						"data":null,
+						"data":"finishFlag",
 						"render":function(data) {
 							var option = {
                 		  			"Y":{
@@ -100,14 +101,15 @@ var columnsSetting = [
             		  				"N":{
             		  					btnStyle:"danger",
             		  					status:"未完成"
-            		  					}
+            		  					},
+            		  				 	
                 		  	};	
-                		  	return labelCreate(data.finishFlag, option);
+                		  	return labelCreate(data, option);
 							
 						}
 							
 					},
-					ellipsisData("startTime"),
+					ellipsisData("createTime"),
 					ellipsisData("finishTime"),
 					/*{
 						"data":"finishTime",
@@ -127,6 +129,10 @@ var columnsSetting = [
               	    		title:"查看报告",
               	    		markClass:"view-report",
               	    		iconFont:"&#xe695;"
+              	    	},{
+              	    		title:"离线报告",
+              	    		markClass:"download-report",
+              	    		iconFont:"&#xe640;"
               	    	},{
               	    		title:"删除报告",
               	    		markClass:"del-report",
@@ -184,7 +190,17 @@ var eventList = {
 		'.del-report':function() {
 			var data = table.row( $(this).parents('tr') ).data();
 			delObj("确定删除此测试报告吗？", REPORT_DEL_URL, data.reportId, this);
-		}				
+		},
+		'.download-report':function() { //下载离线报告
+			var data = table.row( $(this).parents('tr') ).data();
+			$.post(REPORT_DOWNLOAD_STATIS_HTML, {reportId:data.reportId}, function(json) {
+				if (json.returnCode == 0) {
+					window.open(json.path)
+				} else {
+					layer.alert(data.msg,{icon:5});
+				}
+			});
+		}
 };
 
 var mySetting = {
@@ -193,7 +209,7 @@ var mySetting = {
 			listUrl:REPORT_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0,2,3,4,5,6,7,12]			
+			columnsJson:[0,4,5,6,12]			
 		},
 		templateParams:templateParams	
 };

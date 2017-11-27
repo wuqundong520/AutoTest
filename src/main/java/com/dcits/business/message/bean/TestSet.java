@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.struts2.json.annotations.JSON;
 
+import com.dcits.annotation.FieldNameMapper;
 import com.dcits.business.user.bean.User;
 
 /**
@@ -56,13 +57,22 @@ public class TestSet implements Serializable {
 	/**
 	 * 包含场景数量
 	 */
-	@SuppressWarnings("unused")
+	@FieldNameMapper("size(ms)")
 	private Integer sceneNum;
 	
 	
 	private Set<MessageScene> ms = new HashSet<MessageScene>();
 
+	/**
+	 * 包含的组合场景
+	 */
+	private Set<ComplexSetScene> css = new HashSet<ComplexSetScene>();
 	
+	/**
+	 * 组合场景数量
+	 */
+	@FieldNameMapper("size(css)")
+	private Integer complexSetSceneNum;
 
 	public TestSet(Integer setId, String setName, User user,
 			Timestamp createTime, String status, String mark, TestConfig config) {
@@ -79,6 +89,13 @@ public class TestSet implements Serializable {
 	public TestSet() {
 	}
 	
+	
+	
+	
+	public Integer getComplexSetSceneNum() {
+		return this.css.size();
+	}
+
 	public TestConfig getConfig() {
 		return config;
 	}
@@ -152,6 +169,14 @@ public class TestSet implements Serializable {
 	public void setMs(Set<MessageScene> ms) {
 		this.ms = ms;
 	}
-	
+
+	@JSON(serialize=false)
+	public Set<ComplexSetScene> getCss() {
+		return css;
+	}
+
+	public void setCss(Set<ComplexSetScene> css) {
+		this.css = css;
+	}
 	
 }

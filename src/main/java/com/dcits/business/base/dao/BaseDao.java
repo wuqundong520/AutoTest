@@ -1,5 +1,6 @@
 package com.dcits.business.base.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dcits.business.base.bean.PageModel;
@@ -56,6 +57,14 @@ public interface BaseDao<T> {
 	 * @return 总数量
 	 */
 	 int totalCount(String ...filterCondition);
+	 
+	 /**
+	  * 统计指定日期之前创建的数量
+	  * <br>保证创建日期字段为 createTime
+	  * @param time 临界日期
+	  * @return
+	  */
+	 int countByTime(Date ...time);
 	
 	 /**
 	  * 获取分页列表

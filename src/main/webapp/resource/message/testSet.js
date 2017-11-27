@@ -17,12 +17,14 @@ var SET_NAME_CHECK_URL = "set-checkName"; //验证测试集名称是否重复
 var SET_RUN_SETTING_CONFIG_URL = "set-settingConfig";
 var UPDATE_TEST_CONFIG_URL = "test-updateConfig";
 
+var SCENE_LIST_URL = "scene-list";
+
 var settingConfigViewTemplate;
 
 var selectMode = "1";//是否为选择模式，只供选择0-是   1-不是
 
 var templateParams = {
-		tableTheads:["名称", "场景数", "状态", "创建用户", "创建时间", "运行时配置","操作"],
+		tableTheads:["名称", "场景数", "组合场景数","状态", "创建用户", "创建时间", "运行时配置","操作"],
 		btnTools:[{
 			type:"primary",
 			size:"M",
@@ -104,20 +106,33 @@ var columnsSetting = [
                       {"data":"setId"},
                       ellipsisData("setName"),
                       {
-                    	  "data":null,
+                    	  "data":"sceneNum",
                           "render":function(data, type, full, meta){
                           	var context =
                           		[{
                         			type:"default",
                         			size:"M",
                         			markClass:"show-scenes",
-                        			name:data.sceneNum
+                        			name:data
                         		}];
                               return btnTextTemplate(context);
                               }
                       },
                       {
-                    	  "data":null,
+                    	  "data":"complexSetSceneNum",
+                          "render":function(data, type, full, meta){
+                          	var context =
+                          		[{
+                        			type:"default",
+                        			size:"M",
+                        			markClass:"show-complex-set-scenes",
+                        			name:data
+                        		}];
+                              return btnTextTemplate(context);
+                              }
+                      },
+                      {
+                    	  "data":"status",
                     	  "render":function(data) {
                     		  	var option = {
                     		  			"0":{
@@ -129,7 +144,7 @@ var columnsSetting = [
                 		  					status:"禁用"
                 		  					}
                     		  	};	
-                    		  	return labelCreate(data.status, option);							
+                    		  	return labelCreate(data, option);							
                     	  }
                       },
                       {"data":"user.realName"},{"data":"createTime"},
@@ -203,10 +218,10 @@ var eventList = {
 		".run-setting-config":function() {
 			var that = table.row($(this).parents('tr'));
 			var data = that.data();
-			var tip = "【自定义】,点击'默认'将会恢复为默认配置,点击'自定义'修改或者查看当前配置!"
+			var tip = "<strong><span class=\"c-primary\">【自定义】</span></strong><br>点击<span class=\"c-warning\">'默认'</span>将会恢复为默认配置<br>点击<span class=\"c-warning\">'自定义'</span>修改或者查看当前配置!"
 			var mode = 1;
 			if (data.config == null) {
-				tip = "【默认】,点击'自定义'将会创建自定义的配置信息,点击'默认'返回!";
+				tip = "<strong><span class=\"c-primary\">【默认】</span></strong><br>点击<span class=\"c-warning\">'自定义'</span>将会创建自定义的配置信息<br>点击<span class=\"c-warning\">'默认'</span>返回!";
 				mode = 0;
 			}
 			layer.confirm('当前选择的运行时配置为：' + tip, {icon: 0,title:'提示', btn:['默认', '自定义']}
@@ -246,8 +261,14 @@ var eventList = {
 			var data = table.row( $(this).parents('tr') ).data();
 			parent.$("#relatedId").val(data.setId);
 			parent.$("#choose-task-set").siblings("span").remove();
-			parent.$("#choose-task-set").before('<span>' + data.setName + '&nbsp;</span>');
+			parent.$("#choose-task-set").before('<span>' + data.setName + '&nbsp;</span>');	
 			parent.layer.close(parent.layer.getFrameIndex(window.name));
+		}, 
+		".show-complex-set-scenes":function() { //组合场景
+			var data = table.row( $(this).parents('tr') ).data();			
+			$(this).attr("data-title", data.setName + " - 测试集 - 组合场景");
+			$(this).attr("_href", "resource/message/complexSetScene.html?setId=" + data.setId);
+			Hui_admin_tab(this);
 		}
 };
 
@@ -290,7 +311,7 @@ var mySetting = {
 			listUrl:SET_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0, 3, 7, 8]			
+			columnsJson:[0, 8, 9]			
 		},
 		templateParams:templateParams		
 	};
@@ -329,7 +350,9 @@ function resetOptions () {
 		$("#readTimeOut").val(configData.readTimeOut);
 		$("#checkDataFlag").val(configData.checkDataFlag);
 		$("#configId").val(configData.configId);
+		$("#runType").val(configData.runType);
 		$("#customRequestUrl").val(configData.customRequestUrl);
+		$("#retryCount").val(configData.retryCount);
 	}
 }
 

@@ -72,6 +72,18 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 		// TODO Auto-generated method stub
 		return userDao.loginByIdentification(username, loginIdentification);
 	}
+	
+	@Override
+	public User loginSSO(String userId_t, String passwd) {
+		// TODO Auto-generated method stub
+		return userDao.loginSSO(userId_t, passwd);
+	}
+
+	@Override
+	public void delByUserId_t(String userId_t, String passwd) {
+		// TODO Auto-generated method stub
+		userDao.delByUserId_t(userId_t, passwd);
+	}
 
 	
 }

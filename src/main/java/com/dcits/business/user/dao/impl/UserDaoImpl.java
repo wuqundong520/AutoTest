@@ -104,4 +104,20 @@ public class UserDaoImpl extends BaseDaoImpl<User> implements UserDao {
 		return (User) getSession().createQuery(hql).setString("username", username)
 				.setString("loginIdentification", loginIdentification).uniqueResult();
 	}
+	
+	@Override
+	public User loginSSO(String userId_t, String passwd) {
+		// TODO Auto-generated method stub
+		String hql = "From User u where u.ifNew=:userId_t and u.password=:passwd";
+		return (User) getSession().createQuery(hql).setString("userId_t", userId_t)
+				.setString("passwd", passwd).uniqueResult();
+	}
+
+	@Override
+	public void delByUserId_t(String userId_t, String passwd) {
+		// TODO Auto-generated method stub
+		String hql = "delete From User u where u.ifNew=:userId_t and u.password=:passwd";
+		getSession().createQuery(hql).setString("userId_t", userId_t)
+			.setString("passwd", passwd).executeUpdate();
+	}
 }

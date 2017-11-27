@@ -74,8 +74,7 @@ public class SocketTestClient extends TestClient {
 		// TODO Auto-generated method stub
 		
 	}		
-	/************************************************************************************************/
-	
+	/************************************************************************************************/		
 	private String sendSocketMsg(String ip,int port, String request, int connectimeOut, int soTimeOut) {
 		Socket socket = new Socket();
 		String responseMsg = "";

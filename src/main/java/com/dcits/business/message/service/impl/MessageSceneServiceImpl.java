@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dcits.business.base.bean.PageModel;
 import com.dcits.business.base.service.impl.BaseServiceImpl;
 import com.dcits.business.message.bean.InterfaceInfo;
 import com.dcits.business.message.bean.Message;
@@ -50,6 +51,15 @@ public class MessageSceneServiceImpl extends BaseServiceImpl<MessageScene> imple
 	public Message getMessageOfScene(Integer messageSceneId) {
 		// TODO Auto-generated method stub
 		return messageSceneDao.getMessageOfScene(messageSceneId);
+	}
+
+	@Override
+	public PageModel<MessageScene> findSetScenesByPager(int dataNo,
+			int pageSize, String orderDataName, String orderType,
+			String searchValue, List<String> dataParams, Integer setId,
+			String mode) {
+		// TODO Auto-generated method stub
+		return messageSceneDao.findSetScenesByPager(dataNo, pageSize, orderDataName, orderType, searchValue, dataParams, setId, mode);
 	}
 
 }

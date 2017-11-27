@@ -10,18 +10,18 @@
             <column name="id" />
             <generator class="native"></generator>
         </id>
-        <many-to-one name="selfParameter" class="com.dcits.business.message.bean.Parameter" lazy="false" cascade="save-update">
+        <many-to-one name="selfParameter" class="com.dcits.business.message.bean.Parameter" lazy="proxy" cascade="save-update">
             <column name="self_parameter_id" />
         </many-to-one>             
         
-        <set name="childComplexParameters" cascade="all-delete-orphan" lazy="false" inverse="true">
+        <set name="childComplexParameters" cascade="all-delete-orphan" lazy="true" inverse="true">
             <key>
                 <column name="next_complex_parameter_id" />
             </key>
             <one-to-many class="com.dcits.business.message.bean.ComplexParameter" />
         </set>
         
-        <many-to-one name="parentComplexParameter" class="com.dcits.business.message.bean.ComplexParameter" lazy="false">
+        <many-to-one name="parentComplexParameter" class="com.dcits.business.message.bean.ComplexParameter" lazy="proxy">
             <column name="next_complex_parameter_id" />
         </many-to-one>  
         

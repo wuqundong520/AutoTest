@@ -29,57 +29,57 @@
     <table class="table table-border table-bordered table-bg">
         <thead>
         <tr>
-            <th colspan="7" scope="col">我的测试统计</th>
+            <th colspan="7" scope="col">测试统计</th>
         </tr>
         <tr class="text-c">
             <th>统计</th>
-            <th>测试项目</th>
-            <th>测试方案</th>
-            <th>测试结果</th>
+            <th>测试接口</th>
+            <th>测试报文</th>
+            <th>测试场景</th>
+            <th>测试用例集</th>
             <th>测试报告</th>
-            <th>测试模板</th>
         </tr>
         </thead>
         <tbody>
         <tr class="text-c">
             <td>总数</td>
-            <td>92</td>
-            <td>9</td>
-            <td>0</td>
-            <td>8</td>
-            <td>20</td>
+            <td count-type="interfaceInfo">0</td>
+            <td count-type="message">0</td>
+            <td count-type="messageScene">0</td>
+            <td count-type="testSet">0</td>
+            <td count-type="testReport">0</td>
         </tr>
         <tr class="text-c">
             <td>今日</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
+            <td count-type="interfaceInfo">0</td>
+            <td count-type="message">0</td>
+            <td count-type="messageScene">0</td>
+            <td count-type="testSet">0</td>
+            <td count-type="testReport">0</td>
         </tr>
         <tr class="text-c">
             <td>昨日</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
+            <td count-type="interfaceInfo">0</td>
+            <td count-type="message">0</td>
+            <td count-type="messageScene">0</td>
+            <td count-type="testSet">0</td>
+            <td count-type="testReport">0</td>
         </tr>
         <tr class="text-c">
             <td>本周</td>
-            <td>2</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
+            <td count-type="interfaceInfo">0</td>
+            <td count-type="message">0</td>
+            <td count-type="messageScene">0</td>
+            <td count-type="testSet">0</td>
+            <td count-type="testReport">0</td>
         </tr>
         <tr class="text-c">
             <td>本月</td>
-            <td>2</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
+            <td count-type="interfaceInfo">0</td>
+            <td count-type="message">0</td>
+            <td count-type="messageScene">0</td>
+            <td count-type="testSet">0</td>
+            <td count-type="testReport">0</td>
         </tr>
         </tbody>
     </table>
@@ -95,7 +95,7 @@
 <script type="text/javascript" src="libs/layer/2.1/layer.js"></script>
 <script type="text/javascript" src="libs/h-ui/js/H-ui.js"></script>
 <script>
-    $(document).ready(function(){
+    $(document).ready(function(){   	
     	getUserInfo();   
     });
     
@@ -107,7 +107,8 @@
     		if (!($.isEmptyObject(userInfo))) {
     			getSetting();       
     	    	getMailNum(); 
-    	    	//setInterval(getMailNum,15000); 
+    	    	getStatisticalQuantity();
+    	    	//setInterval(getMailNum,30000); 
     			$("#group_name").text(userInfo.role.roleGroup);
             	$("#real_name").text(userInfo.realName);
             	$("#last_login_time").text(lastLoginTime);
@@ -120,7 +121,7 @@
                 }
     		}
     	});
-    	$.post("user-getLoginUserInfo",function(data) {
+    	$.post("user-getLoginUserInfo", {tooken:parent.$("#tooken").val()}, function(data) {
     		if (data.returnCode == 0) {
     			userInfo = data.data;
     			lastLoginTime = data.lastLoginTime;
@@ -128,24 +129,24 @@
     		} else if (data.returnCode == 7) {
     			var username = getCookie("username");
             	var password = getCookie("password");
-            	if (username!=null&&password != null) {
+            	if (username != null && password != null && parent.$("#tooken").val() == null) {
             		$.post("user-toLogin",{
                         username:username,
                         password:password
-                    },function(data) {
+                    }, function(data) {
                         if (data.returnCode == 0) {
                         	userInfo = data.data;
                         	lastLoginTime = data.lastLoginTime;
                         	df.resolve();
                         } else {
-                        	parent.window.location.href="login.html";
+                        	parent.window.location.href = parent.$("#backUrl").val();
                         }
                     });
             	} else {
-            		parent.window.location.href = "login.html";
+            		parent.window.location.href = parent.$("#backUrl").val();
             	}
     		}else{
-    			parent.window.location.href = "login.html";
+    			parent.window.location.href = parent.$("#backUrl").val();
     		}	
     		
     	});
@@ -153,9 +154,9 @@
     
     //获取设置
     function getSetting() {
-    	$.get("global-getWebSettings",function(data) {
+    	$.get("global-getWebSettings", function(data) {
        		if(data.returnCode == 0){			
-       			$("#notice").text(data.notice);
+       			$("#notice").html(data.notice);
        			parent.$("#version").text("V"+data.version);
        		}
        	});
@@ -163,12 +164,41 @@
     
 	//获取当前用户的未读邮件数量
 	function getMailNum(){
-		$.get("mail-getNoReadMailNum",function(data) {
+		$.get("mail-getNoReadMailNum", function(data) {
 			if (data.returnCode === 0 && data.mailNum !== 0) {
 				parent.$(".noReadMailNum").text(data.mailNum);
 			} else {
 				parent.$(".noReadMailNum").text("");
 			}
+		});
+	}
+	
+	/**
+	* 获取测试统计量
+	*/
+	function getStatisticalQuantity() {
+		$.get("global-getStatisticalQuantity", function(data) {
+			if(data.returnCode == 0){			
+       			$.each(data.counts, function(itemName, countInfo) {
+       				$("td[count-type='" + itemName + "']").eq(0).text(countInfo.totalCount);
+       				$("td[count-type='" + itemName + "']").eq(1).text(countInfo.todayCount);
+       				$("td[count-type='" + itemName + "']").eq(2).text(countInfo.yesterdayCount);
+       				$("td[count-type='" + itemName + "']").eq(3).text(countInfo.thisWeekCount);
+       				$("td[count-type='" + itemName + "']").eq(4).text(countInfo.thisMonthCount);
+       				
+       				/* $.each($("td[count-type='" + itemName + "']"), function(i, n) {
+       					var count = $(n).text();
+       					$(n).text('').append('<span class="badge badge-success radius">' + count + '</span>');
+       					 if (Number(count) > 0) {
+       						$(n).text('').append('<span class="badge badge-success radius">' + count + '</span>');
+           				} else {
+           					$( n).text('').append('<span class="badge badge-default radius">' + count + '</span>');
+           				} 
+       				}); */
+       				
+       				
+       			});
+       		}
 		});
 	}
 </script>

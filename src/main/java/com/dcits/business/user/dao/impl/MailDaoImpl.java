@@ -53,9 +53,8 @@ public class MailDaoImpl extends BaseDaoImpl<Mail> implements MailDao {
 	}
 	
 	@Override
-	public void changeStatus(Integer mailId,String statusName,String status) {
-		String hql = "update Mail set "+statusName+"=:status "
-				+ "where mailId=:mailId";
+	public void changeStatus(Integer mailId, String statusName, String status) {
+		String hql = "update Mail set " + statusName + "=:status " + "where mailId=:mailId";
 		
 		getSession().createQuery(hql)
 			.setString("status", status)

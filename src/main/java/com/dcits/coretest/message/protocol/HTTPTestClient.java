@@ -41,13 +41,13 @@ public class HTTPTestClient extends TestClient {
 	
 	private static final String ENC_CHARSET = "utf-8";
 	
-	private static final String REC_ENC_CHARSET = "GBK";
+	private static final String REC_ENC_CHARSET = "utf-8";
 	
 	private static final int MAX_TOTAL_CONNECTION_COUNT = 1000;
 	
 	private static final int DEFAULT_MAX_PER_ROUTE_CONNECTION_COUNT = 500;
 	
-	private static final String DEFAULT_HTTP_METHOD = "post";
+	private static final String DEFAULT_HTTP_METHOD = "POST";
 	
 	static {
 		HttpParams params = new BasicHttpParams();  
@@ -106,7 +106,7 @@ public class HTTPTestClient extends TestClient {
 		
 		if (callParameterMap != null) {
 			headers = (Map<String, String>) callParameterMap.get(MessageKeys.HTTP_PARAMETER_HEADER);
-			method = (String) callParameterMap.get(MessageKeys.HTTP_PARAMETER_METHOD);
+			method = (String) callParameterMap.get(MessageKeys.PUBLIC_PARAMETER_METHOD);
 			encType = (String) callParameterMap.get(MessageKeys.HTTP_PARAMETER_ENC_TYPE);
 			recEncType = (String) callParameterMap.get(MessageKeys.HTTP_PARAMETER_REC_ENC_TYPE);
 		}
@@ -116,19 +116,28 @@ public class HTTPTestClient extends TestClient {
 		long useTime = 0;
 		HttpRequestBase request = null;	
     	Object[] returnInfo = null;
-		try {			    			
-			if ("get".equalsIgnoreCase(method)) {
-				returnInfo = doGet(requestUrl, headers, requestMessage);
-			} else {
-				returnInfo = doPost(requestUrl, headers, requestMessage, encType);
-			}
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			LOGGER.info("发送请求出错", e);
-			returnMap.put(MessageKeys.RESPONSE_MAP_PARAMETER_TEST_MARK, "发送报文到接口出错：" + e.getMessage());
-			returnMap.put(MessageKeys.RESPONSE_MAP_PARAMETER_STATUS_CODE, "false");	
-		}
+    	
+    	//失败重试
+    	boolean requestSuccessFlag = false;
+    	int retryCount = 0;
+    	while (!requestSuccessFlag && config.getRetryCount() > retryCount) {
+    		try {			    			
+    			if ("get".equalsIgnoreCase(method)) {
+    				returnInfo = doGet(requestUrl, headers, requestMessage);
+    			} else {
+    				returnInfo = doPost(requestUrl, headers, requestMessage, encType);
+    			}
+    			requestSuccessFlag = true;
+    		} catch (Exception e) {
+    			// TODO Auto-generated catch block
+    			LOGGER.info("发送请求出错", e);
+    			returnMap.put(MessageKeys.RESPONSE_MAP_PARAMETER_TEST_MARK, "发送报文到接口出错：" + e.getMessage());
+    			returnMap.put(MessageKeys.RESPONSE_MAP_PARAMETER_STATUS_CODE, "false");	
+    		} finally {
+    			retryCount++;
+    		}
+    	}
+		
 		
 		if (returnInfo != null) {
 			response = (HttpResponse) returnInfo[0];

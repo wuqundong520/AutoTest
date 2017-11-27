@@ -1,6 +1,5 @@
 package com.dcits.business.system.action;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +11,7 @@ import com.dcits.business.base.action.BaseAction;
 import com.dcits.business.system.bean.GlobalSetting;
 import com.dcits.business.system.service.GlobalSettingService;
 import com.dcits.constant.ReturnCodeConsts;
+import com.dcits.util.SettingUtil;
 import com.dcits.util.StrutsUtils;
 
 /**
@@ -50,17 +50,27 @@ public class GlobalSettingAction extends BaseAction<GlobalSetting>{
 		return o;
 	}
 	
+	/**
+	 * 测试统计
+	 * @return
+	 */
+	public String getStatisticalQuantity () {
+		
+		jsonMap.put("counts", SettingUtil.countStatistics());
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		
+		return SUCCESS;
+	}
 	
 	/**
 	 * 获取当前网站的所有设置属性
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public String getWebSettings() {
-		Map<String,GlobalSetting> settingMap = (Map<String, GlobalSetting>) StrutsUtils.getApplicationMap().get("settingMap");
+		Map<String,GlobalSetting> settingMap = SettingUtil.getGlobalSettingMap();
 		
 		for (GlobalSetting setting:settingMap.values()) {
-			jsonMap.put(setting.getSettingName(), setting.getSettingValue() == null ? setting.getDefaultValue() : setting.getSettingValue());
+			jsonMap.put(setting.getSettingName(), SettingUtil.getSettingValue(setting.getSettingName()));
 		}
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
 		
@@ -75,14 +85,15 @@ public class GlobalSettingAction extends BaseAction<GlobalSetting>{
 	public String edit() {
 		for (Map.Entry<String, Object> entry:StrutsUtils.getParametersMap().entrySet()) {
 			globalSettingService.updateSetting(entry.getKey(), ((String[])entry.getValue())[0]);
+			SettingUtil.updateGlobalSettingValue(entry.getKey(), ((String[])entry.getValue())[0]);
 		}
-		List<GlobalSetting> settings = globalSettingService.findAll();
+		/*List<GlobalSetting> settings = globalSettingService.findAll();
 		Map<String,GlobalSetting> globalSettingMap = new HashMap<String,GlobalSetting>();
 		//更新完成之后需要将更新的设置重新加载在session中
 		for (GlobalSetting g:settings) {
 			globalSettingMap.put(g.getSettingName(), g);
 		}
-		StrutsUtils.getApplicationMap().put("settingMap", globalSettingMap);
+		StrutsUtils.getApplicationMap().put("settingMap", globalSettingMap);*/
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
 		
 		return SUCCESS;

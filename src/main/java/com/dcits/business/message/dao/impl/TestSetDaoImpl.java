@@ -49,8 +49,8 @@ public class TestSetDaoImpl extends BaseDaoImpl<TestSet> implements TestSetDao {
 	@Override
 	public List<TestSet> getUserSets(Integer userId) {
 		// TODO Auto-generated method stub
-		String hql = "from TestSet t where t.user.userId=:userId";
-		return getSession().createQuery(hql).setInteger("userId", userId).setCacheable(true).list();
+		String hql = "from TestSet t where t.status='0'";
+		return getSession().createQuery(hql).setCacheable(true).list();
 	}
 
 	@Override

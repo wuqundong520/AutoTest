@@ -4,16 +4,20 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.SessionMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.dcits.business.base.action.BaseAction;
+import com.dcits.business.message.service.TestConfigService;
+import com.dcits.business.user.bean.Role;
 import com.dcits.business.user.bean.User;
 import com.dcits.business.user.service.UserService;
 import com.dcits.constant.ReturnCodeConsts;
+import com.dcits.constant.SystemConsts;
 import com.dcits.util.MD5Util;
 import com.dcits.util.PracticalUtils;
 import com.dcits.util.StrutsUtils;
@@ -36,11 +40,10 @@ public class UserAction extends BaseAction<User>{
 	 */
 	private String mode;
 
-	/**
-	 * LOGGER
-	 */
-	private static Logger LOGGER = Logger.getLogger(UserAction.class);
+	@Autowired
+	private TestConfigService testConfigService;
 	
+	private String tooken;
 	
 	private UserService userService;
 	@Autowired
@@ -48,6 +51,86 @@ public class UserAction extends BaseAction<User>{
 		super.setBaseService(userService);
 		this.userService = userService;
 	}
+	
+	/**
+	 * 与测试服务中心的用户同步接口
+	 * @return
+	 */
+	public String sync() {
+		String userId = ServletActionContext.getRequest().getParameter("userid");
+		String passwd = ServletActionContext.getRequest().getParameter("passwd");
+		String mode = ServletActionContext.getRequest().getParameter("mode");
+		String userName = ServletActionContext.getRequest().getParameter("username");
+		
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		switch (StringUtils.isEmpty(mode) ? "null" : mode) {
+		case "m": //修改
+			 User user = userService.loginSSO(userId, passwd);
+			 if (user != null) {
+				 user.setPassword(ServletActionContext.getRequest().getParameter("passwdnew"));
+				 user.setUsername(userName);
+				 user.setRealName(userName);
+				 userService.edit(user);
+			 }
+			break;
+		case "a"://增加
+			User user1 = userService.loginSSO(userId, passwd);
+			if (user1 != null) {
+				jsonMap.put("returnCode", ReturnCodeConsts.SYSTEM_ERROR_CODE);
+				jsonMap.put("msg", "重复的用户");
+				return SUCCESS;
+			}
+			user1 = new User();
+			user1.setIfNew(userId);
+			user1.setCreateTime(new Timestamp(System.currentTimeMillis()));
+			user1.setLastLoginTime(new Timestamp(System.currentTimeMillis()));
+			user1.setPassword(passwd);
+			user1.setUsername(userName + "_XQ");
+			user1.setRealName(userName);
+			user1.setStatus("0");
+			user1.setRole(new Role(SystemConsts.ADMIN_ROLE_ID));
+			
+			userService.edit(user1);
+			break;
+		case "d"://删除
+			userService.delByUserId_t(userId, passwd);
+			break;
+		default:
+			jsonMap.put("returnCode", ReturnCodeConsts.SYSTEM_ERROR_CODE);
+			jsonMap.put("msg", "参数错误!");
+			break;
+		}
+		
+		return SUCCESS;
+	}
+	
+	
+	/**
+	 * 提供的用户单点登录接口
+	 * @return
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public String createTooken() throws NoSuchAlgorithmException {
+		String userId = ServletActionContext.getRequest().getParameter("userid");
+		String passwd = ServletActionContext.getRequest().getParameter("passwd");
+		
+		model = userService.loginSSO(userId, passwd);
+		
+		if (model == null) {
+			jsonMap.put("returnCode", ReturnCodeConsts.USER_ERROR_ACCOUT_CODE);
+			jsonMap.put("msg", "账号密码不正确!");
+			return SUCCESS;
+		}
+		
+		String tooken = MD5Util.code(userId + passwd + System.currentTimeMillis()); 
+		StrutsUtils.getApplicationMap().put(tooken, model);
+		
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		jsonMap.put("tooken", tooken);
+		
+		return SUCCESS;
+	}
+	
 	
 	
 	/**
@@ -133,13 +216,40 @@ public class UserAction extends BaseAction<User>{
 	 */
 	public String getLoginUserInfo() {
 		
-		User user = (User)StrutsUtils.getSessionMap().get("user");				
+		//User user = (User)StrutsUtils.getSessionMap().get("user");				
+		User user = null;
+		
+		if (StringUtils.isNotEmpty(tooken)) {
+			user = (User) StrutsUtils.getApplicationMap().get(tooken);
+		}
+		
+		String userTooken = (String) StrutsUtils.getSessionMap().get("tooken");
+		
+		if (user != null) {
+			StrutsUtils.getApplicationMap().remove(tooken);
+			
+			if (!tooken.equals(userTooken)) {
+				StrutsUtils.getSessionMap().put("tooken", tooken);
+			}
+		}
+		
+		if (user == null ) {
+			user = (User) StrutsUtils.getSessionMap().get("user");
+		}
+		
 		jsonMap.put("msg", "用户未登录");
 		jsonMap.put("returnCode", ReturnCodeConsts.NOT_LOGIN_CODE);
 		
 		if (user != null) {
 			jsonMap.put("data", user);
-			jsonMap.put("lastLoginTime", StrutsUtils.getSessionMap().get("lastLoginTime"));
+			jsonMap.put("lastLoginTime",PracticalUtils.formatDate(PracticalUtils.FULL_DATE_PATTERN, user.getLastLoginTime()));
+			
+			StrutsUtils.getSessionMap().put("user", user);	
+			//StrutsUtils.getSessionMap().put("lastLoginTime", PracticalUtils.formatDate(PracticalUtils.FULL_DATE_PATTERN, user.getLastLoginTime()));
+			
+			user.setLastLoginTime(new Timestamp(System.currentTimeMillis()));
+			userService.edit(user);
+						
 			jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
 		}
 		return SUCCESS;
@@ -174,7 +284,7 @@ public class UserAction extends BaseAction<User>{
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			LOGGER.error("密码加密失败!", e);
+			LOGGER.error("加密失败!", e);
 			return ERROR;
 		}		
 		return SUCCESS;
@@ -189,10 +299,13 @@ public class UserAction extends BaseAction<User>{
 		try {
 			userService.resetPasswd(user.getUserId(), MD5Util.code(model.getPassword()));
 			user.setPassword(MD5Util.code(model.getPassword()));
+			//重置登录标识
+			user.setLoginIdentification("");
+			userService.edit(user);
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			LOGGER.error("密码加密失败!", e);
+			LOGGER.error("加密失败!", e);
 			return ERROR;
 		}		
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
@@ -309,4 +422,7 @@ public class UserAction extends BaseAction<User>{
 		this.mode = mode;
 	}
 	
+	public void setTooken(String tooken) {
+		this.tooken = tooken;
+	}
 }

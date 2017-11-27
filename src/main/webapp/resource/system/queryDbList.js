@@ -34,9 +34,8 @@ var templateParams = {
 			label:"数据库类型",  			
 			select:[{	
 				name:"dbType",
-				option:[{value:"mysql",text:"MYSQL",selected:true },
-				        {value:"oracle",text:"ORACLE"},
-				        {value:"redis",text:"REDIS"}]
+				option:[{value:"mysql", text:"MYSQL", selected:true},
+				        {value:"oracle", text:"ORACLE"}]
 				}]
 		},
 		{
@@ -68,11 +67,8 @@ var templateParams = {
 				}]
 		},
 		{
-			edit:false,
-			required:true,
-			label:"&nbsp;&nbsp;密码",  			
+			label:"&nbsp;&nbsp;密码",
 			input:[{	
-				hidden:false,
 				name:"dbPasswd"
 				}]
 		},
@@ -95,8 +91,10 @@ var columnsSetting = [{"data":null,
 	{
     "data":null,
     "render":function(data, type, full, meta ){
-    	var htmlContent = '<a href="javascript:;" onclick="layer.alert(\''+data.dbPasswd+'\',{icon:4,title:\'数据库密码查看\'});">*******</a>';
-        return htmlContent; 
+    	if (data.dbPasswd != "" && data.dbPasswd != null) {
+    		return '<a href="javascript:;" onclick="layer.alert(\''+data.dbPasswd+'\',{icon:4,title:\'数据库密码查看\'});">*******</a>';
+    	}
+        return ""; 
     }
 	},
 	{
@@ -108,8 +106,10 @@ var columnsSetting = [{"data":null,
 	{
 	    "data":null,
 	    "render":function(data, type, full, meta ){
-	    	var context = '<a href="javascript:;" onclick="layer.alert(\''+data.dbMark+'\',{icon:0,title:\'数据库备注查看\'});" class="btn btn-success size-S radius">查看</a>';
-            return context;
+	    	if (data.dbMark != "" && data.dbMark != null) {
+	    		return '<a href="javascript:;" onclick="layer.alert(\''+data.dbMark+'\',{icon:0,title:\'数据库备注查看\'});" class="btn btn-success size-S radius">查看</a>';
+	    	}
+	    	return "";
 	    }
 		},
 	{
@@ -185,9 +185,6 @@ var mySetting = {
 				},
 				dbUsername:{
 					required:true
-				},
-				dbPasswd:{
-					required:true
 				}
 			},
 		},
@@ -195,7 +192,7 @@ var mySetting = {
 			listUrl:"db-list",
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0,2,3,4,5,7]
+			columnsJson:[0, 5, 7, 8]
 		},
 		templateParams:templateParams		
 	};

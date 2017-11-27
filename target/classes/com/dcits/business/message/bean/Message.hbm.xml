@@ -10,7 +10,7 @@
             <column name="message_id" />
             <generator class="native"></generator>
         </id>
-        <many-to-one name="interfaceInfo" class="com.dcits.business.message.bean.InterfaceInfo" lazy="proxy" cascade="save-update">
+        <many-to-one name="interfaceInfo" class="com.dcits.business.message.bean.InterfaceInfo" lazy="proxy" cascade="save-update" >
             <column name="interface_id" />
         </many-to-one>
         <many-to-one name="user" class="com.dcits.business.user.bean.User" lazy="proxy">
@@ -47,7 +47,7 @@
         	<one-to-many class="com.dcits.business.message.bean.MessageScene"/>
         </set>
           
-         <many-to-one name="complexParameter" unique="true" lazy="false" cascade="all-delete-orphan">
+         <many-to-one name="complexParameter" unique="true" lazy="proxy" cascade="all-delete-orphan">
         	<column name="complex_parameter_id"></column>
         </many-to-one>
         

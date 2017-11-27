@@ -23,20 +23,20 @@
     <script type="text/javascript" src="http://lib.h-ui.net/DD_belatedPNG_0.0.8a-min.js" ></script>
     <script>DD_belatedPNG.fix('*');</script>
     <![endif]-->
-    <title>首页-自动化测试平台</title>
+    <title>首页-接口自动化测试平台</title>
     </head>
 <body>
 <header class="navbar-wrapper">
     <div class="navbar navbar-fixed-top">
-        <div class="container-fluid cl"> <a class="logo navbar-logo f-l mr-10 hidden-xs" href="">自动化测试平台</a> <a class="logo navbar-logo-m f-l mr-10 visible-xs" href="">神州数码</a> <span class="logo navbar-slogan f-l mr-10 hidden-xs" id="version"></span> <a aria-hidden="false" class="nav-toggle Hui-iconfont visible-xs" href="javascript:;">&#xe667;</a>
+        <div class="container-fluid cl"> <a class="logo navbar-logo f-l mr-10 hidden-xs" href="">接口自动化测试平台</a> <a class="logo navbar-logo-m f-l mr-10 visible-xs" href="">神州数码</a> <span class="logo navbar-slogan f-l mr-10 hidden-xs" id="version"></span> <a aria-hidden="false" class="nav-toggle Hui-iconfont visible-xs" href="javascript:;">&#xe667;</a>
             <nav class="nav navbar-nav">
                 <ul class="cl">
                     <li class="dropDown dropDown_hover"><a href="javascript:;" class="dropDown_A"><i class="Hui-iconfont">&#xe600;</i>快捷入口<i class="Hui-iconfont">&#xe6d5;</i></a>
                         <ul class="dropDown-menu menu radius box-shadow">
-                        	<li><a href="javascript:;" onclick="to_myTask('我的测试任务','htmls/user/myTasks.html','800','500')"><i class="Hui-iconfont">&#xe687;</i> 当前任务情况</a></li>
-                            <li><a _href="htmls/interfaceTest/A_reportList.html" data-title="测试报告-接口自动化" href="javascript:void(0)" class="openIframeNew"><i class="Hui-iconfont">&#xe636;</i>接口测试报告</a></li>
+                        	<li><a href="javascript:;" onclick="javascript:;"><i class="Hui-iconfont">&#xe687;</i> 当前任务情况</a></li>
+                            <!-- <li><a _href="htmls/interfaceTest/A_reportList.html" data-title="测试报告-接口自动化" href="javascript:void(0)" class="openIframeNew"><i class="Hui-iconfont">&#xe636;</i>接口测试报告</a></li>
                             <li><a _href="" data-title="测试报告-APP自动化" href="javascript:void(0)" class="openIframeNew"><i class="Hui-iconfont">&#xe6a2;</i> APP测试报告</a></li>
-                            <li><a _href="htmls/webTest/webReportList.html" data-title="测试报告-Web自动化" href="javascript:void(0)" class="openIframeNew"><i class="Hui-iconfont">&#xe6d2;</i>WEB测试报告</a></li>                           
+                            <li><a _href="htmls/webTest/webReportList.html" data-title="测试报告-Web自动化" href="javascript:void(0)" class="openIframeNew"><i class="Hui-iconfont">&#xe6d2;</i>WEB测试报告</a></li>   -->                         
                         </ul>
                     </li>
                 </ul>
@@ -46,12 +46,12 @@
                     <li id="role_name"></li>
                     <li class="dropDown dropDown_hover"> <a href="#" class="dropDown_A" id="real_name"><i class="Hui-iconfont">&#xe6d5;</i></a>
                         <ul class="dropDown-menu menu radius box-shadow">
-                            <li><a _href="htmls/user/myUserInfo.html" data-title="我的信息" href="javascript:void(0)" class="openIframeNew">个人信息</a></li>
-                            <li><a href="javascript:;" onclick="to_changeUser();">切换账户</a></li>
+                            <li class="redirect-to-page"><a href="javascript:" onclick="to_changePasswd();">修改密码</a></li>
+                            <li class="redirect-to-page"><a href="javascript:;" onclick="to_changeUser();">切换账户</a></li>
                             <li><a href="javascript:;" onclick="to_logout()">退出</a></li>
                         </ul>
                     </li>
-                    <li id="Hui-msg"> <a _href="htmls/user/mailList.html" data-title="我的邮件" href="javascript:void(0)" title="消息" class="openIframeNew"><span class="badge badge-danger noReadMailNum"></span><i class="Hui-iconfont" style="font-size:18px">&#xe68a;</i></a> </li>
+                    <li id="Hui-msg"> <a _href="resource/user/mail.html" data-title="我的邮件" href="javascript:void(0)" title="消息" class="openIframeNew"><span class="badge badge-danger noReadMailNum"></span><i class="Hui-iconfont" style="font-size:18px">&#xe68a;</i></a> </li>
                     <li id="Hui-skin" class="dropDown right dropDown_hover"> <a href="javascript:;" class="dropDown_A" title="换肤"><i class="Hui-iconfont" style="font-size:18px">&#xe62a;</i></a>
                         <ul class="dropDown-menu menu radius box-shadow">
                             <li><a href="javascript:;" data-val="default" title="默认（黑色）">默认（黑色）</a></li>
@@ -82,7 +82,7 @@
                 </ul>
             </dd>
         </dl>
-        <dl id="menu-web">
+        <!-- <dl id="menu-web">
             <dt><i class="Hui-iconfont">&#xe6d2;</i> Web自动化测试<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
             <dd>
                 <ul>
@@ -98,21 +98,21 @@
                     <li><a _href="htmls/webTest/downloadUtil.html" data-title="工具下载-Web自动化" href="javascript:void(0)">工具下载</a></li>
                 </ul>
             </dd>
-        </dl>
-        <dl id="menu-app">
+        </dl> -->
+        <!-- <dl id="menu-app">
             <dt><i class="Hui-iconfont">&#xe6a2;</i> APP自动化测试<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
             <dd>
                 <ul>
                 </ul>
             </dd>
-        </dl>
+        </dl> -->
         <dl id="menu-tool">
             <dt><i class="Hui-iconfont">&#xe63c;</i> 测试工具<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
             <dd>
                 <ul>
-                	<li><a _href="" data-title="接口Mock" href="javascript:void(0)">接口Mock</a></li>
                     <li><a _href="resource/util/formatJson.html" data-title="JSON格式化" href="javascript:void(0)">JSON格式化</a></li> 
-                    <li><a _href="resource/util/formatXml.html" data-title="XML格式化" href="javascript:void(0)">XML格式化</a></li>                   
+                    <li><a _href="resource/util/formatXml.html" data-title="XML格式化" href="javascript:void(0)">XML格式化</a></li> 
+                    <li><a href="reportHtml/神州数码接口自动化工具操作手册V1.0.docx">操作手册</a></li>                  
                 </ul>
             </dd>
         </dl>
@@ -121,8 +121,8 @@
             <dd>
                 <ul>
                     <li><a _href="" data-title="接口自动化" href="javascript:void(0)">接口自动化</a></li>
-                    <li><a _href="" data-title="Web自动化" href="javascript:void(0)">Web自动化</a></li>
-                    <li><a _href="" data-title="APP自动化" href="javascript:void(0)">APP自动化</a></li>
+                    <!-- <li><a _href="" data-title="Web自动化" href="javascript:void(0)">Web自动化</a></li>
+                    <li><a _href="" data-title="APP自动化" href="javascript:void(0)">APP自动化</a></li> -->
                 </ul>
             </dd>
         </dl>
@@ -130,8 +130,7 @@
             <dt><i class="Hui-iconfont">&#xe62c;</i> 个人设置<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
             <dd>
                 <ul>
-                    <li><a _href="htmls/user/myUserInfo.html" data-title="我的信息" href="javascript:void(0)">我的信息</a></li>
-                    <li><a _href="htmls/user/mailList.html" data-title="我的邮件" href="javascript:void(0)">我的邮件</a></li>
+                    <li><a _href="resource/user/mail.html" data-title="我的消息" href="javascript:void(0)">我的消息</a></li>
                 </ul>
             </dd>
         </dl>
@@ -167,6 +166,8 @@
         </div>
     </div>
     <input type="hidden" id="user_id"/>
+    <input type="hidden" id="tooken"/>
+    <input type="hidden" id="backUrl"/>
 </section>
 <script type="text/javascript" src="libs/jquery/1.9.1/jquery.js"></script>
 <script type="text/javascript" src="libs/layer/2.1/layer.js"></script>
@@ -174,6 +175,17 @@
 <script type="text/javascript" src="libs/h-ui.admin/js/H-ui.admin.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
+    	
+    	var tooken = GetQueryString("tooken");
+    	var backUrl = GetQueryString("backUrl");
+    	
+    	$("#tooken").val(tooken);
+    	$("#backUrl").val(backUrl == null ? "login.html" : "http://" + backUrl);
+    	
+    	if (tooken != null && tooken != "") {
+    		$(".redirect-to-page").hide();
+    	}
+    	
     	$(".openIframeNew").on("click",function(){
     		Hui_admin_tab(this);
     	});   	      	
@@ -182,6 +194,41 @@
     function to_myTask(title,url,w,h){
         layer_show(title,url,w,h);
     }
+    
+    //修改密码
+    function to_changePasswd() {
+    	layer.prompt({
+  		  formType: 1,
+  		  value: '',
+  		  title: '验证旧密码'
+  		}, function(value, index, elem){
+  			layer.close(index);
+  		  $.post("user-verifyPasswd", {password: value}, function (data) {
+  			 if (data.returnCode == 0) {
+  				 layer.prompt({
+  					  formType: 1,
+  					  value: '',
+  					  title: '请输入新密码'
+  					}, function(value1, index1, elem){
+  						layer.close(index1);
+  						layer.confirm('确定要将密码修改为"' + value1 + '"吗？', {icon:0, title:'警告'}, function(index2) {
+  							layer.close(index2);
+  				    		$.get("user-modifyPasswd",{password:value1}, function(data) {
+  				    			if (data.returnCode == 0) {
+  				                    layer.msg('密码修改成功,设置自动登录的需要重新输入密码!', {icon:1, time:1500});
+  				        		} else {
+  				        			layer.alert(data.msg, {icon: 5});
+  				        		}
+  				    		});
+  				    		
+  				    	});
+  					});
+  			 }else{
+  				 layer.alert(data.msg, {icon:5});
+  			 }
+  		  });
+  		});
+    }
    
     //手动点击logout会清除登录信息cookie
     function to_logout(){
@@ -189,7 +236,7 @@
     		if(data.returnCode==0){
     			clearCookie("username");
     			clearCookie("password");
-    			window.location.href="login.html";
+    			window.location.href = $("#backUrl").val();
     		}
     	});    	
     }
@@ -238,7 +285,7 @@
         var username = $("#username").val();
         var password = $("#password").val();
         var tipMsg = $("#loginTip");
-        if(username!="" && username!=null && password!="" && password!=null){
+        if(username != "" && username != null && password != "" && password != null){
             $.post("user-toLogin",{
                 username:username,
                 password:password
@@ -254,6 +301,17 @@
         }else{
             tipMsg.text("请填写完整再提交登陆");
         }
+    }
+    
+    /**
+     * 获取地址栏参数
+     * @param name
+     * @returns
+     */
+    function GetQueryString(name) {
+    	var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    	var r = window.location.search.substr(1).match(reg);
+    	if(r != null) return decodeURIComponent(r[2]); return null;
     }
     
 </script>

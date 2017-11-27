@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dcits.business.message.bean.ComplexSetScene;
 import com.dcits.business.message.bean.InterfaceInfo;
 import com.dcits.business.message.bean.Message;
 import com.dcits.business.message.bean.MessageScene;
@@ -16,6 +18,7 @@ import com.dcits.business.message.bean.TestData;
 import com.dcits.business.message.bean.TestReport;
 import com.dcits.business.message.bean.TestResult;
 import com.dcits.business.message.bean.TestSet;
+import com.dcits.business.message.service.ComplexSetSceneService;
 import com.dcits.business.message.service.MessageSceneService;
 import com.dcits.business.message.service.TestConfigService;
 import com.dcits.business.message.service.TestDataService;
@@ -25,6 +28,7 @@ import com.dcits.business.message.service.TestSetService;
 import com.dcits.business.user.bean.User;
 import com.dcits.business.user.service.UserService;
 import com.dcits.constant.MessageKeys;
+import com.dcits.coretest.message.TestComplexScene;
 import com.dcits.coretest.message.parse.MessageParse;
 import com.dcits.coretest.message.protocol.TestClient;
 import com.dcits.util.PracticalUtils;
@@ -41,6 +45,8 @@ import com.dcits.util.PracticalUtils;
 @Service
 public class MessageAutoTest {
 	
+	private Logger LOGGER = Logger.getLogger(MessageAutoTest.class);
+	
 	@Autowired
 	private MessageSceneService messageSceneService;
 	@Autowired
@@ -55,6 +61,10 @@ public class MessageAutoTest {
 	private UserService userService;
 	@Autowired
 	private TestReportService testReportService;
+	@Autowired
+	private MessageValidateResponse validateUtil;
+	@Autowired
+	private ComplexSetSceneService complexSetSceneService;
 	
 	/**
 	 * 单场景测试
@@ -78,7 +88,7 @@ public class MessageAutoTest {
 		result.setRequestUrl(requestUrl);
 		result.setRequestMessage(requestMessage);
 		result.setProtocolType(info.getInterfaceProtocol());
-		
+		LOGGER.debug("当前请求报文为：" + requestMessage);
 		if (!PracticalUtils.isNormalString(requestMessage)) {
 			result.setMark("缺少测试数据,请检查!");
 			result.setUseTime(0);
@@ -106,14 +116,14 @@ public class MessageAutoTest {
 		}
 				
 		
-		Map<String,String> map = MessageValidateResponse.validate(result.getResponseMessage(), requestMessage, scene, msg.getMessageType());
+		Map<String,String> map = validateUtil.validate(result.getResponseMessage(), requestMessage, scene, msg.getMessageType());
 		
-		if ("0".equals(map.get("status"))) {
+		if ("0".equals(map.get(MessageValidateResponse.VALIDATE_MAP_STATUS_KEY))) {
 			result.setRunStatus(MessageKeys.TEST_RUN_STATUS_SUCCESS);				
 		} else {
 			result.setRunStatus(MessageKeys.TEST_RUN_STATUS_FAIL);
 		}
-		result.setMark(map.get("msg"));
+		result.setMark(map.get(MessageValidateResponse.VALIDATE_MAP_MSG_KEY));
 		return result;
 	}
 	
@@ -121,6 +131,7 @@ public class MessageAutoTest {
 	 * 批量测试
 	 * @param user
 	 * @param setId
+	 * @param autoTestFlag 是否为系统自动化测试
 	 * @return
 	 */
 	public int[] batchTest (User user, Integer setId, boolean autoTestFlag) {		
@@ -128,13 +139,14 @@ public class MessageAutoTest {
 		List<MessageScene> scenes = null;
 		
 		TestSet set = null;
+				
 		//全量
 		if (setId == 0) {
 			scenes = messageSceneService.findAll();
 		//测试集	
 		} else {
 			scenes = messageSceneService.getBySetId(setId);
-			set = testSetService.get(setId);
+			set = testSetService.get(setId);			
 		}				
 		
 		if (scenes.size() == 0) {
@@ -142,6 +154,8 @@ public class MessageAutoTest {
 		}
 		
 		
+		
+		//选择测试配置
 		TestConfig config1 = testConfigService.getConfigByUserId(user.getUserId());
 		
 		if (set != null && set.getConfig() != null) {
@@ -156,7 +170,7 @@ public class MessageAutoTest {
 		report.setUser(user);
 		report.setFinishFlag("N");
 		report.setTestMode(String.valueOf(setId));
-		report.setStartTime(new Timestamp(System.currentTimeMillis()));
+		report.setCreateTime(new Timestamp(System.currentTimeMillis()));
 		int ret = testReportService.save(report);
 		report.setReportId(ret);
 		
@@ -169,7 +183,7 @@ public class MessageAutoTest {
 		final int totalCount = scenes.size();
 		final Object lock = new Object();
 		
-		List<Object[]> testObjects = new ArrayList<>();
+		final List<Object[]> testObjects = new ArrayList<>();
 		
 		//准备测试数据
 		for (MessageScene scene:scenes) {	
@@ -215,52 +229,134 @@ public class MessageAutoTest {
 			String requestMessage = "";
 			os[3] = 0;
 			if (datas.size() > 0) {
-				requestMessage = parseUtil.depacketizeMessageToString(msg.getComplexParameter(), datas.get(0).getParamsData());						
-				if (info.getInterfaceType().equalsIgnoreCase(MessageKeys.INTERFACE_TYPE_SL)) {
+				TestData d = datas.get(0);
+				requestMessage = parseUtil.depacketizeMessageToString(msg.getComplexParameter(), d.getParamsData());	
+				if (info.getInterfaceType().equalsIgnoreCase(MessageKeys.INTERFACE_TYPE_SL) && d.getStatus().equals("0")) {
 					os[3] = datas.get(0).getDataId();
-				}
-				
+				}				
 			}
 			
 			os[0] = requestUrl;
 			os[1] = requestMessage;
 			os[2] = scene;
-			
 			testObjects.add(os);
 		}
 		
+		//筛选组合场景和独立场景
+		List<ComplexSetScene> complexScenes  = complexSetSceneService.listComplexScenesBySetId(setId);
+		final List<Object> testScenes = new ArrayList<Object>();
+		for (ComplexSetScene s:complexScenes) {
+			String[] ids = s.getScenes().split(",");
+			TestComplexScene testComplexScene = new TestComplexScene();
+			testComplexScene.setComplexSetScene(s);
+			for (String id:ids) {
+				Object[] testSceneInfo = findByMessageSceneId(testObjects, Integer.valueOf(id));
+				if (testSceneInfo != null) {
+					testComplexScene.getTestObjects().add(testSceneInfo);
+					testObjects.remove(testSceneInfo);					
+				}
+			}
+			testScenes.add(testComplexScene);
+		}
 		
-		for (final Object[] os:testObjects) {
-			new Thread(){
-				public void run() {
-					//进行测试
-					TestResult result = singleTest((String)os[0], (String)os[1], (MessageScene)os[2], config);
-					result.setTestReport(report);
-					testResultService.save(result);
-					
-					//更新测试数据的状态
-					if ((int)os[3] != 0 
-							&& result.getRunStatus().equals("0")) {
-						testDataService.updateDataValue((int)os[3], "status", "1");
-					}
-					synchronized (lock) {
-						finishCount[0]++;
-					}
-					//判断是否完成
-					if (finishCount[0] == totalCount) {
-						report.setFinishFlag("Y");
-						report.setFinishTime(new Timestamp(System.currentTimeMillis()));
-						testReportService.edit(report);
+		//将剩余的不是组合场景的也添加到一起
+		testScenes.addAll(testObjects);
+		
+		new Thread(){
+			public void run() {
+				for (final Object testSceneInfo:testScenes) {
+					Thread testThread = new Thread(){
+						public void run() {
+							
+							//判断是组合场景还是单独的场景
+							if (testSceneInfo instanceof TestComplexScene) {
+								//组合场景
+								TestComplexScene testComplexScene = (TestComplexScene) testSceneInfo;
+								for (Object[] os:testComplexScene.getTestObjects()) {
+									TestResult result = singleTest((String)os[0], (String)os[1], (MessageScene)os[2], config);	
+									result.setTestReport(report);
+									testResultService.save(result);
+									//更新测试数据的状态
+									if ((int)os[3] != 0 
+											&& result.getRunStatus().equals("0")) {
+										testDataService.updateDataValue((int)os[3], "status", "1");
+									}
+									synchronized (lock) {
+										finishCount[0]++;
+									}
+								}
+								//判断是否完成
+								if (finishCount[0] == totalCount) {
+									report.setFinishFlag("Y");
+									report.setFinishTime(new Timestamp(System.currentTimeMillis()));
+									testReportService.edit(report);
+								}
+								
+							} else {
+								//单独场景
+								//进行测试
+								Object[] os = (Object[]) testSceneInfo;
+								TestResult result = singleTest((String)os[0], (String)os[1], (MessageScene)os[2], config);
+								result.setTestReport(report);
+								testResultService.save(result);
+								
+								//更新测试数据的状态
+								if ((int)os[3] != 0 
+										&& result.getRunStatus().equals("0")) {
+									testDataService.updateDataValue((int)os[3], "status", "1");
+								}
+								synchronized (lock) {
+									finishCount[0]++;
+								}
+							}
+							
+							
+							//判断是否完成
+							if (finishCount[0] == totalCount) {
+								report.setFinishFlag("Y");
+								report.setFinishTime(new Timestamp(System.currentTimeMillis()));
+								testReportService.edit(report);
+							}
+						}
+					};
+					testThread.start();
+					if ("1".equals(config.getRunType())) {
+						try {
+							testThread.join();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
-			}.start();
-		}
+			};
+		}.start();
 		
 		return new int[]{report.getReportId(), totalCount};
 		
 	}
 	
+	/**
+	 * 测试组合场景
+	 * @return
+	 */
+	public List<TestResult> testComplexSetScene (TestComplexScene testComplexScene, TestConfig config, TestReport report) {
+		List<TestResult> results = new ArrayList<TestResult>();
+		
+		
+		return results;
+	}
+	
 	private String replaceParameter(String constomReuqestUrl, String interfaceName) {
 		return constomReuqestUrl.replaceAll(MessageKeys.CUSTOM_REQUEST_URL_REPLACE_PARAMETER, interfaceName);
+	}
+	
+	private Object[] findByMessageSceneId (List<Object[]> testObjects, Integer messageSceneId) {
+		for (Object[] s:testObjects) {
+			if (((MessageScene)s[2]).getMessageSceneId() == messageSceneId) {
+				return s;
+			}
+		}
+		return null;
 	}
 }

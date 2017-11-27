@@ -106,6 +106,13 @@ public class Role implements Serializable {
 		this.roleName = roleName;
 		this.mark = mark;
 	}
+	
+	
+	
+	public Role(Integer roleId) {
+		super();
+		this.roleId = roleId;
+	}
 	public Role() {
 		super();
 		// TODO Auto-generated constructor stub

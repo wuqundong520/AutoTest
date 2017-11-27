@@ -1,6 +1,5 @@
 package com.dcits.business.message.action;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,12 +87,12 @@ public class AutoTestAction extends ActionSupport implements ModelDriven<TestCon
 			config = testConfigService.getConfigByUserId(0);
 		}
 		
-		TestResult result = autoTest.singleTest(requestUrl, requestMessage, scene, testConfigService.getConfigByUserId(user.getUserId()));
+		TestResult result = autoTest.singleTest(requestUrl, requestMessage, scene, config);
 		
 		testResultService.save(result);
 		
 		if (scene.getMessage().getInterfaceInfo().getInterfaceType().equalsIgnoreCase(MessageKeys.INTERFACE_TYPE_SL) 
-				&& result.getRunStatus().equals("0")) {
+				&& result.getRunStatus().equals("0") && testDataService.get(dataId).getStatus().equals("0")) {
 			testDataService.updateDataValue(dataId, "status", "1");
 		}
 		
@@ -114,7 +113,8 @@ public class AutoTestAction extends ActionSupport implements ModelDriven<TestCon
 		if (user == null) {
 			user = userService.get(SystemConsts.ADMIN_USER_ID);
 		}
-				
+		
+		
 		int[] result = autoTest.batchTest(user, setId, false);
 		
 		if (result == null) {
@@ -169,7 +169,6 @@ public class AutoTestAction extends ActionSupport implements ModelDriven<TestCon
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
 
 		List<MessageScene> scenes = null;
-		
 		//全量
 		if (setId == 0) {
 			scenes = messageSceneService.findAll();
@@ -183,16 +182,16 @@ public class AutoTestAction extends ActionSupport implements ModelDriven<TestCon
 			return SUCCESS;
 		}
 				
-		List<MessageScene> noDataScenes = new ArrayList<MessageScene>();
+		int noDataCount = 0;
 		
 		for(MessageScene ms:scenes){
 			if(ms.getEnabledTestDatas(1).size() < 1){
-				noDataScenes.add(ms);
+				noDataCount++;
 			}								
 		}
 		
-		jsonMap.put("count", noDataScenes.size());
-		jsonMap.put("data", noDataScenes);
+		jsonMap.put("count", noDataCount);
+		//jsonMap.put("data", noDataScenes);
 		
 		return SUCCESS;
 	}

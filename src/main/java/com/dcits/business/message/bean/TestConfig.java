@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @version 1.0.0.0,2017.07.09
  *
  */
-public class TestConfig implements Serializable,Cloneable {
+public class TestConfig implements Serializable, Cloneable {
 	
 	/**
 	 * 
@@ -64,16 +64,20 @@ public class TestConfig implements Serializable,Cloneable {
 	private String checkDataFlag;
 	
 	/**
-	 * 是否后台执行 0-是 1-否
-	 * <br>已废弃
+	 * 测试模式<br>
+	 *  0-并行  1-串行
+	 *
 	 */
-	@Deprecated
-	private String backgroundExecFlag;
+	private String runType;
+	/**
+	 * 重试次数
+	 */
+	private Integer retryCount;
 	
 	public TestConfig(Integer userId, String requestUrlFlag,
 			Integer connectTimeOut, Integer readTimeOut, String httpMethodFlag,
 			String customRequestUrl, String checkDataFlag,
-			String backgroundExecFlag) {
+			String runType, Integer retryCount) {
 		super();
 		this.userId = userId;
 		this.requestUrlFlag = requestUrlFlag;
@@ -82,7 +86,8 @@ public class TestConfig implements Serializable,Cloneable {
 		this.httpMethodFlag = httpMethodFlag;
 		this.customRequestUrl = customRequestUrl;
 		this.checkDataFlag = checkDataFlag;
-		this.backgroundExecFlag = backgroundExecFlag;
+		this.runType = runType;
+		this.retryCount = retryCount;
 	}
 
 	public TestConfig() {
@@ -90,6 +95,15 @@ public class TestConfig implements Serializable,Cloneable {
 		// TODO Auto-generated constructor stub
 	}
 
+	
+	public void setRetryCount(Integer retryCount) {
+		this.retryCount = retryCount;
+	}
+	
+	public Integer getRetryCount() {
+		return retryCount;
+	}
+	
 	public Integer getConfigId() {
 		return configId;
 	}
@@ -156,12 +170,12 @@ public class TestConfig implements Serializable,Cloneable {
 		this.checkDataFlag = checkDataFlag;
 	}
 
-	public String getBackgroundExecFlag() {
-		return backgroundExecFlag;
+	public String getRunType() {
+		return runType;
 	}
 
-	public void setBackgroundExecFlag(String backgroundExecFlag) {
-		this.backgroundExecFlag = backgroundExecFlag;
+	public void setRunType(String runType) {
+		this.runType = runType;
 	}
 	
 	@Override

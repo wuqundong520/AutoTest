@@ -11,7 +11,7 @@
             <generator class="native"></generator>
         </id>
         <property name="parameterIdentify" type="java.lang.String">
-            <column name="parameter_identify" length="120"/>
+            <column name="parameter_identify" length="1000"/>
         </property>
         <property name="parameterName" type="java.lang.String">
             <column name="parameter_name" length="120" />

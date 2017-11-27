@@ -9,6 +9,8 @@ import org.apache.struts2.json.annotations.JSON;
 
 import com.dcits.annotation.FieldNameMapper;
 import com.dcits.business.user.bean.User;
+import com.dcits.constant.SystemConsts;
+import com.dcits.util.PracticalUtils;
 
 /**
  * 测试报告
@@ -32,7 +34,7 @@ public class TestReport implements Serializable{
 	/**
 	 * 前台展示字段 本次测试场景总数量
 	 */
-	@FieldNameMapper(FieldNameMapper.IGNORE_FLAG)
+	@FieldNameMapper("size(trs)")
 	private Integer sceneNum;
 	/**
 	 * 前台展示字段 成功数
@@ -55,7 +57,7 @@ public class TestReport implements Serializable{
 	/**
 	 * 测试开始时间
 	 */
-	private Timestamp startTime;
+	private Timestamp createTime;
 	/**
 	 * 全部场景测试完成时的时间
 	 */
@@ -76,17 +78,17 @@ public class TestReport implements Serializable{
 	/**
 	 * 前台展示字段,测试集名称
 	 */
-	@FieldNameMapper(FieldNameMapper.IGNORE_FLAG)
+	@FieldNameMapper("testMode")
 	private String setName;
 	
 	private Set<TestResult> trs = new HashSet<TestResult>();
 	
 	public TestReport(String testMode, String finishFlag,
-			Timestamp startTime, User user) {
+			Timestamp createTime, User user) {
 		super();
 		this.testMode = testMode;
 		this.finishFlag = finishFlag;
-		this.startTime = startTime;
+		this.createTime = createTime;
 		this.user = user;
 	}
 	
@@ -95,6 +97,13 @@ public class TestReport implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 	
+	/**
+	 * 获取静态文件路径
+	 * @return
+	 */
+	public String getReportHtmlPath() {
+		return SystemConsts.REPORT_VIEW_HTML_FOLDER + "/" + this.reportId + "_" + PracticalUtils.formatDate("yyyyMMddHHmmss", this.createTime) + ".html";
+	}
 		
 	public String getSetName() {
 		return setName;
@@ -178,11 +187,11 @@ public class TestReport implements Serializable{
 		this.finishFlag = finishFlag;
 	}
 	@JSON(format="yyyy-MM-dd HH:mm:ss")
-	public Timestamp getStartTime() {
-		return startTime;
+	public Timestamp getCreateTime() {
+		return createTime;
 	}
-	public void setStartTime(Timestamp startTime) {
-		this.startTime = startTime;
+	public void setCreateTime(Timestamp createTime) {
+		this.createTime = createTime;
 	}
 	@JSON(format="yyyy-MM-dd HH:mm:ss")
 	public Timestamp getFinishTime() {

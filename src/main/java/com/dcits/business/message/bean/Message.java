@@ -87,11 +87,11 @@ public class Message implements Serializable{
 	 */
 	private ComplexParameter complexParameter;
 	
-    @SuppressWarnings("unused")
+    @FieldNameMapper("size(scenes)")
 	private Integer sceneNum = this.getSceneNum();
 
     // Constructors
-
+    
     /** default constructor */
     public Message() {
     }
@@ -269,13 +269,4 @@ public class Message implements Serializable{
     public void setLastModifyUser(String lastModifyUser) {
         this.lastModifyUser = lastModifyUser;
     }
-   
-
-
-
-
-
-
-
-
 }

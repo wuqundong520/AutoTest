@@ -38,7 +38,7 @@
             <column name="last_login_time" length="19" />
         </property>
         <property name="ifNew" type="java.lang.String">
-            <column name="if_new" length="1" />
+            <column name="if_new" length="65535" />
         </property>
     </class>
 </hibernate-mapping>

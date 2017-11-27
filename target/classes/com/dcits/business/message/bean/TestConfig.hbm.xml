@@ -36,8 +36,12 @@
             <column name="check_Data_Flag" length="1"/>
         </property>
         
-        <property name="backgroundExecFlag" type="java.lang.String">
-            <column name="background_Exec_Flag" length="1"/>
+        <property name="runType" type="java.lang.String">
+            <column name="run_type" length="1"/>
+        </property>
+        
+        <property name="retryCount" type="java.lang.Integer">
+            <column name="retry_count" length="3"/>
         </property>
     </class>
 </hibernate-mapping>

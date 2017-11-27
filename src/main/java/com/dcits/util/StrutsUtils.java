@@ -13,7 +13,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.dcits.annotation.util.AnnotationUtil;
-import com.dcits.business.system.bean.GlobalSetting;
 import com.opensymphony.xwork2.ActionContext;
 
 /**
@@ -58,7 +57,7 @@ public class StrutsUtils {
 	 * 获取parameterMap
 	 * @return
 	 */
-	public static Map<String,Object> getParametersMap() {
+	public static Map<String,Object> getParametersMap() {		
 		return ActionContext.getContext().getParameters();
 	}
 	
@@ -81,7 +80,7 @@ public class StrutsUtils {
 		//全局搜索条件
 		String searchValue = ServletActionContext.getRequest().getParameter("search[value]");
 		//需要排序的那一列属性名称
-		String orderDataName = ServletActionContext.getRequest().getParameter("columns["+orderColumnNum+"][data]");
+		String orderDataName = ServletActionContext.getRequest().getParameter("columns[" + orderColumnNum + "][data]");
 		orderDataName = AnnotationUtil.getRealColumnName(clazz, orderDataName, 1);
 		//获取当前所有的展示字段
 		//必须是当前实体类所拥有的的字段，不考虑其他情况
@@ -130,21 +129,23 @@ public class StrutsUtils {
 	}
 	
 	
-	@SuppressWarnings("unchecked")
-	/**
+/*	@SuppressWarnings("unchecked")
+	*//**
 	 * 获取全局设置项
 	 * @param settingKey
 	 * @return
-	 */
+	 *//*
 	public static String getSettingValue(String settingKey) {
-		Map<String,GlobalSetting> settingMap = (Map<String, GlobalSetting>) StrutsUtils.getApplicationMap().get("settingMap");
+		
+		Map<String,GlobalSetting> settingMap = (Map<String, GlobalSetting>) StrutsUtils.getApplicationMap().get(SystemConsts.APPLICATION_ATTRIBUTE_WEB_SETTING);
+		
 		GlobalSetting setting = settingMap.get(settingKey);
 		if (setting != null) {
 			return setting.getSettingValue() == null ? setting.getDefaultValue() : setting.getSettingValue();
 		}
 		return null;
 		
-	}
+	}*/
 	
 	/**
 	 * 获取项目根路径

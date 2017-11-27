@@ -20,6 +20,7 @@ import com.dcits.business.user.bean.OperationInterface;
 import com.dcits.business.user.service.OperationInterfaceService;
 import com.dcits.constant.SystemConsts;
 import com.dcits.coretest.task.JobManager;
+import com.dcits.util.SettingUtil;
 
 
 /**
@@ -72,7 +73,8 @@ public class InitWebListener implements ServletContextListener {
 			globalSettingMap.put(g.getSettingName(), g);
 		}
 		//放置到全局context中
-		context.setAttribute(SystemConsts.APPLICATION_ATTRIBUTE_WEB_SETTING, globalSettingMap);	
+		//context.setAttribute(SystemConsts.APPLICATION_ATTRIBUTE_WEB_SETTING, globalSettingMap);	
+		SettingUtil.setSettingMap(globalSettingMap);
 		
 		//获取查询数据库信息
 		LOGGER.info("获取查询数据库信息!");
@@ -81,8 +83,8 @@ public class InitWebListener implements ServletContextListener {
 		for (DataDB db:dbs) {
 			dataDBMap.put(String.valueOf(db.getDbId()), db);
 		}
-		
-		context.setAttribute(SystemConsts.APPLICATION_ATTRIBUTE_QUERY_DB, dbs);
+		SettingUtil.setQueryDBMap(dataDBMap);
+		//context.setAttribute(SystemConsts.APPLICATION_ATTRIBUTE_QUERY_DB, dbs);
 		
 		//启动quartz定时任务
 		jobManager.startTasks();

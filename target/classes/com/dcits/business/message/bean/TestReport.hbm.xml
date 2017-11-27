@@ -19,8 +19,8 @@
         <property name="finishFlag" type="java.lang.String">
             <column name="finish_flag" length="1" />
         </property>
-        <property name="startTime" type="java.sql.Timestamp">
-            <column name="start_time" length="19" />
+        <property name="createTime" type="java.sql.Timestamp">
+            <column name="create_time" length="19" />
         </property>
         <property name="finishTime" type="java.sql.Timestamp">
             <column name="finish_time" length="19" />

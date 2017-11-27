@@ -2,6 +2,7 @@ package com.dcits.business.message.service;
 
 import java.util.List;
 
+import com.dcits.business.base.bean.PageModel;
 import com.dcits.business.base.service.BaseService;
 import com.dcits.business.message.bean.InterfaceInfo;
 import com.dcits.business.message.bean.Message;
@@ -42,4 +43,7 @@ public interface MessageSceneService extends BaseService<MessageScene>{
 	 * @return
 	 */
 	Message getMessageOfScene(Integer messageSceneId);
+	
+	PageModel<MessageScene> findSetScenesByPager(int dataNo, int pageSize, String orderDataName, String orderType
+			, String searchValue, List<String> dataParams, Integer setId, String mode);
 }

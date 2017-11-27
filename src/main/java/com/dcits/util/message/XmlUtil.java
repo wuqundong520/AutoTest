@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -302,17 +303,21 @@ public class XmlUtil {
 		if (type == null) {
 			return text;
 		}
-
+			
+		if (StringUtils.isEmpty(text)) {
+			return "";
+		}
+		
 		switch (type.toUpperCase()) {
 		case "INT":
 		case "INTEGER":
-			return Integer.parseInt(text);
+			return Integer.valueOf(text);
 		case "NUMBER":
 		case "LONG":
-			return Long.parseLong(text);
+			return Long.valueOf(text);
 		case "DOUBLE":
 		case "FLOAT":
-			return Double.parseDouble(text);
+			return Double.valueOf(text);
 		default:
 			return text;
 		}

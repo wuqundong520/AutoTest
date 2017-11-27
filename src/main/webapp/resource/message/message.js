@@ -66,6 +66,12 @@ var templateParams = {
 				},{
 					value:"url",
 					text:"URL"
+				},{
+					value:"fixed",
+					text:"固定报文"
+				},{
+					value:"opt",
+					text:"自定义格式"
 				}]
 				}]
 		},
@@ -176,9 +182,9 @@ var columnsSetting = [
                       	"render":CONSTANT.DATA_TABLES.COLUMNFUN.ELLIPSIS
                       	},
                       	{
-                     	   "data":null,
+                     	   "data":"messageType",
                      	   "render":function(data) {
-                     		   return labelCreate((data.messageType).toUpperCase());
+                     		   return labelCreate(data.toUpperCase());
                      	   }
                          
                         },
@@ -188,9 +194,9 @@ var columnsSetting = [
               		    "render":CONSTANT.DATA_TABLES.COLUMNFUN.ELLIPSIS  
               		    },
                        {
-                        	"data":null,
+                        	"data":"status",
                         	"render":function(data, type, full, meta ){
-                                return labelCreate(data.status);
+                                return labelCreate(data);
                                 }
               		    },
               		    {"data":"user.realName"},{"data":"lastModifyUser"},
@@ -208,14 +214,14 @@ var columnsSetting = [
                                 }
               		    },
               		    {
-              		    	"data":null,
+              		    	"data":"sceneNum",
                             "render":function(data, type, full, meta){
                             	var context =
                             		[{
                           			type:"default",
                           			size:"M",
                           			markClass:"show-scenes",
-                          			name:data.sceneNum
+                          			name:data
                           		}];
                                 return btnTextTemplate(context);
                                 }
@@ -263,7 +269,9 @@ var eventList = {
 				currentCallParamterSpan.text($("#call-parameter-name").val() + '=' +  $("#call-parameter-value").val());
 			} else {
 				$("label:contains('" + $(this).attr("parent-parameter-name") + "')").siblings('div')
-					.append('<span class="label label-success radius edit-this-call-parameter appoint">' + $("#call-parameter-name").val() + '=' +  $("#call-parameter-value").val() + '</span><i class="Hui-iconfont del-this-call-parameter appoint" style="margin-right:8px;">&#xe6a6;</i>');
+					.append('<span class="label label-success radius edit-this-call-parameter appoint">' + $("#call-parameter-name")
+					.val() + '=' +  $("#call-parameter-value").val() 
+					+ '</span><i class="Hui-iconfont del-this-call-parameter appoint" style="margin-right:8px;">&#xe6a6;</i>');
 			}
 			
 			layer.close($(this).attr("layer-index"));
@@ -365,10 +373,14 @@ var eventList = {
 		},
 		".show-scenes":function(){
 			var data = table.row( $(this).parents('tr') ).data();			
-			currIndex = layer_show(data.interfaceName + "-" + data.messageName + "-场景列表", "messageScene.html?messageId=" + data.messageId
+			/*currIndex = layer_show(data.interfaceName + "-" + data.messageName + "-场景列表", "messageScene.html?messageId=" + data.messageId
 					+ "&interfaceName=" + data.interfaceName + "&messageName=" + data.messageName
 					, "" , "", 2);
-			layer.full(currIndex);
+			layer.full(currIndex);*/			
+			$(this).attr("data-title", data.interfaceName + "-" + data.messageName + " " + "场景管理");
+			$(this).attr("_href", "resource/message/messageScene.html?messageId=" + data.messageId
+					+ "&interfaceName=" + data.interfaceName + "&messageName=" + data.messageName);
+			Hui_admin_tab(this);
 		},
 		".add-object":function() {
 			publish.renderParams.editPage.modeFlag = 0;					
@@ -485,7 +497,10 @@ var mySetting = {
 		listPage:{
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0, 9, 10, 11]
+			columnsJson:[0, 9, 11],
+			dtOtherSetting:{
+				"bStateSave": false
+			}
 		},
 		templateParams:templateParams		
 	};

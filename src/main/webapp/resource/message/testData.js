@@ -80,6 +80,9 @@ var templateParams = {
 				},{
 					value:"1",
 					text:"已使用"
+				},{
+					value:"2",
+					text:"可重复使用"
 				}]
 				}]
 		},
@@ -101,15 +104,14 @@ var columnsSetting = [
                           }},
                       {"data":"dataId"},
                       {
-                    	  "data":null,
+                    	  "data":"dataDiscr",
                     	  "className":"appoint ellipsis",
                           "render":function(data, type, full, meta){  
-                        	  	data = data.dataDiscr||"";
                           		return '<span title="' + data + '">' + data + '</span>';
                             }
             		    },
                       {
-                    	  "data":null,
+                    	  "data":"status",
                     	  "render":function(data) {
                     		  	var option = {
                     		  			"0":{
@@ -119,9 +121,13 @@ var columnsSetting = [
                 		  				"1":{
                 		  					btnStyle:"danger",
                 		  					status:"已使用"
-                		  					}
+                		  					},
+                		  				"2":{
+                		  					btnStyle:"success",
+                		  					status:"可重复使用"
+                		  				}
                     		  	};	
-                    		  	return labelCreate(data.status, option);							
+                    		  	return labelCreate(data, option);							
                     	  }
                       },                                      
                       {

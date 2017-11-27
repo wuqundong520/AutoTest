@@ -29,7 +29,7 @@ public class SceneValidateRuleDaoImpl extends BaseDaoImpl<SceneValidateRule> imp
 	@Override
 	public List<SceneValidateRule> getParameterValidate(Integer messageSceneId) {
 		// TODO Auto-generated method stub
-		String hql = "From SceneValidateRule s where s.messageScene.messageSceneId=:messageSceneId and s.validateMethodFlag='1'";
+		String hql = "From SceneValidateRule s where s.messageScene.messageSceneId=:messageSceneId";
 		return  getSession().createQuery(hql).setInteger("messageSceneId", messageSceneId).setCacheable(true).list();
 	}
 
