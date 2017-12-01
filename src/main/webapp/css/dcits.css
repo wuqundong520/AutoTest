@@ -159,3 +159,9 @@
 .content h3{ margin-top:20px;font-size:16px}
 .content p{text-indent:2em;margin-top:20px}
 .content ul{text-indent:2em}
+
+.dt-buttons {
+	float: right;
+}
+
+

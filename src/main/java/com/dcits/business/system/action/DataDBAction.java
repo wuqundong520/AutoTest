@@ -14,6 +14,7 @@ import com.dcits.business.system.bean.DataDB;
 import com.dcits.business.system.service.DataDBService;
 import com.dcits.constant.ReturnCodeConsts;
 import com.dcits.util.DBUtil;
+import com.dcits.util.SettingUtil;
 
 /**
  * 
@@ -52,12 +53,20 @@ public class DataDBAction extends BaseAction<DataDB> {
 			model.setDbMark(model.getDbUrl() + "上的" + model.getDbType() + "数据库!");
 		}
 		dataDBService.edit(model);
-		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
-		
+		SettingUtil.updateQueryDBMap(model, null);
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);	
 		return SUCCESS;
 	}
 	
-	
+	@Override
+	public String del() {
+		// TODO Auto-generated method stub
+		dataDBService.delete(id);
+		SettingUtil.updateQueryDBMap(null, id);
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);		
+		return SUCCESS;
+	}
+
 	/**
 	 * 测试指定的查询数据库从本地是否能够连接成功
 	 * @return

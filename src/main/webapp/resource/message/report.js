@@ -3,14 +3,6 @@ var $wrapper = $('#div-table-container');
 
 var currIndex;//当前正在操作的layer窗口的index
 
-/**
- * ajax地址
- */
-var REPORT_LIST_URL = "report-list";
-var REPORT_GET_URL = "report-get";
-var REPORT_DEL_URL = "report-del";
-var REPORT_DOWNLOAD_STATIS_HTML = "report-generateStaticReportHtml";
-
 
 var templateParams = {
 		tableTheads:["测试集", "场景数", "成功数", "失败数", "异常数", "进度", "开始时间", "结束时间", "测试人" ,"备注", "操作"],
@@ -111,15 +103,6 @@ var columnsSetting = [
 					},
 					ellipsisData("createTime"),
 					ellipsisData("finishTime"),
-					/*{
-						"data":"finishTime",
-						"render":function(data) {
-							if (data == null) {
-								return "";
-							}
-							return data;
-						}
-					},*/
 					{"data":"createUserName"},
 					ellipsisData("mark"),
 					{
@@ -181,7 +164,7 @@ var eventList = {
 		},
 		'.view-report':function() {
 			var data = table.row( $(this).parents('tr') ).data();
-			if(data.sceneNum < 1){
+			if (data.sceneNum < 1) {
 	    		layer.alert("当前测试报告中没有任何测试详情结果", {icon:5});
 	    		return false;
 	    	}   	
@@ -193,11 +176,15 @@ var eventList = {
 		},
 		'.download-report':function() { //下载离线报告
 			var data = table.row( $(this).parents('tr') ).data();
+			if (data.sceneNum < 1) {
+	    		layer.alert("当前测试报告中没有任何测试详情结果", {icon:5});
+	    		return false;
+	    	} 
 			$.post(REPORT_DOWNLOAD_STATIS_HTML, {reportId:data.reportId}, function(json) {
 				if (json.returnCode == 0) {
 					window.open(json.path)
 				} else {
-					layer.alert(data.msg,{icon:5});
+					layer.alert(json.msg,{icon:5});
 				}
 			});
 		}

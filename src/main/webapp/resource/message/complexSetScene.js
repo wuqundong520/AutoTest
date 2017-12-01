@@ -8,13 +8,7 @@ var validateValueOriginal; //原始验证值
 
 var thisMark = "";
 var table;
-/**
- * ajax地址
- */
-var COMPLEX_SET_SCENE_LIST_URL = "set-listComplexScenes"; //获取场景列表
-var COMPLEX_SET_SCENE_EDIT_URL = "set-editComplexScene";  //场景编辑
-var COMPLEX_SET_SCENE_GET_URL = "set-getComplexScene"; //获取指定场景信息
-var COMPLEX_SET_SCENE_DEL_URL = "set-delComplexScene"; //删除指定场景
+
 
 var templateParams = {
 		tableTheads:["名称", "包含场景", "创建时间", "备注", "操作"],

@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.dcits.business.base.action.BaseAction;
-import com.dcits.business.message.bean.ComplexParameter;
 import com.dcits.business.message.bean.Message;
 import com.dcits.business.message.bean.Parameter;
 import com.dcits.business.message.service.ComplexParameterService;
@@ -169,20 +168,6 @@ public class MessageAction extends BaseAction<Message>{
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
 		jsonMap.put("object", msg);
 		
-		return SUCCESS;
-	}
-
-
-	//测试用
-	public String test() {
-		/*jsonStr = "{\"ROOT\":{\"ReturnCode\":\"0000\",\"msg\":\"ok\",\"data\":[{\"userid\":11,\"username\":\"aa\"},{\"userid\":11,\"username\":\"aa\"}]}}";
-		//jsonStr = "{\"aa\":\"aa\",\"bb\":11}";		
-		ComplexParameter cp = parse.parseMessageToObject(jsonStr, new ArrayList<Parameter>(interfaceInfoService.get(9).getParameters()));*/
-		MessageParse parse = MessageParse.getParseInstance("json");
-		ComplexParameter cp = complexParameterService.get(1);
-		System.out.println(cp.toString());
-		System.out.println("================S=" + parse.depacketizeMessageToString(cp, null));
-		//complexParameterService.save(cp);
 		return SUCCESS;
 	}
 	

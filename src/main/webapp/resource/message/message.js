@@ -10,16 +10,6 @@ var protocolType;
 
 var addParameterTemplate;
 
-/**
- * ajax地址
- */
-var MESSAGE_LIST_URL = "message-list"; //获取接口列表
-var MESSAGE_EDIT_URL = "message-edit";  //接口编辑
-var MESSAGE_GET_URL = "message-get"; //获取指定接口信息
-var MESSAGE_DEL_URL = "message-del"; //删除指定接口
-var MESSAGE_FORMAT_URL = "message-format";//格式json串
-var MESSAGE_VALIDATE_JSON_URL = "message-validateJson";//报文json串验证
-
 var templateParams = {
 		tableTheads:["接口","报文名", "类型", "创建时间", "状态", "创建用户", "最后修改", "入参报文", "场景", "操作"],
 		btnTools:[{
@@ -211,7 +201,7 @@ var columnsSetting = [
                           			name:"获取"
                           		}];
                                 return btnTextTemplate(context);
-                                }
+                               }
               		    },
               		    {
               		    	"data":"sceneNum",
@@ -513,14 +503,14 @@ $(function(){
 /**************************************************************************************/
 function getParameterJson(){
 	$("#parameter-json-textarea").spinModal();
-	$.get("message-get",{id:messageId},function(data){
-		if(data.returnCode==0){						
+	$.get(MESSAGE_GET_URL, {id:messageId}, function(data) {
+		if (data.returnCode == 0) {						
 			$(".textarea").val(data.object.parameterJson);
 			if (data.object.parameterJson == null || data.object.parameterJson == "") {
 				$(".textarea").attr("placeholder","该报文没有设置入参内容或者对应接口入参节点发生变化,请检查并重新设置！");
 			}
 			$("#parameter-json-textarea").spinModal(false);
-		}else{
+		} else {
 			layer.alert(data.msg, {icon: 5});
 		}
 	});

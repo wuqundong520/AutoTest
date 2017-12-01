@@ -59,6 +59,7 @@
 		<tx:attributes>
 			<tx:method name="get*" read-only="true"/>
 			<tx:method name="find*" read-only="true"/>
+			<tx:method name="list*" read-only="true"/>
 			<tx:method name="*" propagation="REQUIRED"/>
 		</tx:attributes>
 	</tx:advice>

@@ -49,6 +49,7 @@ public class Mail implements Serializable {
 	/**
 	 * 阅读状态
 	 */
+	@FieldNameMapper(ifSearch=false)
 	private String readStatus;
 	
 	/**
@@ -57,10 +58,10 @@ public class Mail implements Serializable {
 	private Timestamp sendTime;
 	
 	/**发送用户的用户名*/
-	@FieldNameMapper("sendUser.realName")
+	@FieldNameMapper(fieldPath="sendUser.realName")
 	private String sendUserName;
 	/**接收用户的用户名*/
-	@FieldNameMapper("receiveUser.realName")
+	@FieldNameMapper(fieldPath="receiveUser.realName")
 	private String receiveUserName;
 	
 	public Mail() {

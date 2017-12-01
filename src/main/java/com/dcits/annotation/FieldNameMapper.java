@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FieldNameMapper {
-	public static final String IGNORE_FLAG = "NULL";
-	String value() default "";
+	String fieldPath() default ""; //对应的HQL中的查询名
+	boolean ifSearch() default true; //该字段要被模糊查询
 }

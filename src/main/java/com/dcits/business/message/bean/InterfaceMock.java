@@ -74,7 +74,7 @@ public class InterfaceMock implements Serializable {
 	/**
 	 * 创建用户名
 	 */
-	@FieldNameMapper("user.realName")
+	@FieldNameMapper(fieldPath="user.realName")
 	private String createUserName;
 	
 	public InterfaceMock(String interfaceName, String mockUrl,

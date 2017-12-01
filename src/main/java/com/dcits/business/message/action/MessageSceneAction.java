@@ -3,7 +3,6 @@ package com.dcits.business.message.action;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,17 +10,16 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.dcits.business.base.action.BaseAction;
-import com.dcits.business.base.bean.PageModel;
 import com.dcits.business.message.bean.InterfaceInfo;
 import com.dcits.business.message.bean.Message;
 import com.dcits.business.message.bean.MessageScene;
 import com.dcits.business.message.bean.TestData;
 import com.dcits.business.message.service.MessageSceneService;
+import com.dcits.business.message.service.TestDataService;
 import com.dcits.business.message.service.TestSetService;
 import com.dcits.constant.ReturnCodeConsts;
 import com.dcits.coretest.message.parse.MessageParse;
 import com.dcits.util.PracticalUtils;
-import com.dcits.util.StrutsUtils;
 
 /**
  * 报文场景Action
@@ -44,9 +42,12 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 	private MessageSceneService messageSceneService;
 	@Autowired
 	private TestSetService testSetService;
+	@Autowired
+	private TestDataService testDataService;
 	
 	private Integer setId;
 	
+	@SuppressWarnings("unused")
 	private String mode;
 
 	@Autowired
@@ -72,6 +73,7 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 	 * mode=1 获取没有的
 	 * @return
 	 */
+	/*@SuppressWarnings("unchecked")
 	public String listSetScenes() {
 		Map<String,Object>  dt = StrutsUtils.getDTParameters(MessageScene.class);
 		PageModel<MessageScene> pu = messageSceneService.findSetScenesByPager(start, length
@@ -96,15 +98,23 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
 		
 		return SUCCESS;
-	}
+	}*/
 	
 	@Override
 	public String edit() {
 		if (model.getMessageSceneId() == null) {
 			model.setCreateTime(new Timestamp(System.currentTimeMillis()));
+			model.setMessageSceneId(messageSceneService.save(model));
+			//新增时默认该该场景添加一条默认数据		
+			TestData defaultData = new TestData();
+			defaultData.setDataDiscr("默认数据");
+			defaultData.setStatus("0");
+			defaultData.setMessageScene(model);
+			defaultData.setParamsData("");	
+			testDataService.edit(defaultData);
+		} else {
+			messageSceneService.edit(model);
 		}
-		
-		messageSceneService.edit(model);
 		
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
 		
@@ -118,12 +128,6 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 	public String changeValidateRule() {		
 		messageSceneService.updateValidateFlag(model.getMessageSceneId(), model.getValidateRuleFlag());
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
-		return SUCCESS;
-	}
-
-	public String getValidateRule() {
-		
-		
 		return SUCCESS;
 	}
 	

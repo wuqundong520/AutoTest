@@ -1,6 +1,8 @@
 var resultData;
 var reportId;
 
+var currentIndex;
+
 var eventList = {
 	'tbody > tr':function() {
 		var id = $(this).attr("id");       
@@ -38,7 +40,8 @@ var mySetting = {
 		userDefaultRender:false,    
    	 	userDefaultTemplate:false,
    	 	customCallBack:function(params){
-   	 		
+   	 		 currentIndex = layer.msg('正在努力加载中...', {icon:16, time:99999, shade:0.7});
+   	 		 
 	   	 	//esc关闭所有弹出层
 	       	 $(window).keydown (function(e) {
 	       		 var keycode = event.which;
@@ -49,7 +52,7 @@ var mySetting = {
 	       	 });
    	 		
    	 		reportId = GetQueryString("reportId"); 
-	   	 	$.get("report-getReportDetail?reportId=" + reportId, function(data){
+	   	 	$.get(REPORT_GET_DETAILS_URL + "?reportId=" + reportId, function(data){
 				if (data.returnCode == 0) {
 					
 					$(".panel-heading").text(data.title);
@@ -79,7 +82,7 @@ $(function(){
 
 
 function renderReportView() {
-	var currIndex = layer.load(2, {shade:0.4});
+	
     var dataHtml = '';
     var publicStatus = $("#status-views").val();
     var publicProtocol = $("#protocol-views").val();
@@ -123,5 +126,5 @@ function renderReportView() {
      /*setTimeout(function() {
     	 layer.close(currIndex);
      }, 3000)*/
-     layer.close(currIndex);
+     layer.close(currentIndex);
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -194,32 +195,30 @@ public class MessageAutoTest {
 			InterfaceInfo info = messageSceneService.getInterfaceOfScene(scene.getMessageSceneId());
 			Message msg = messageSceneService.getMessageOfScene(scene.getMessageSceneId());
 			
-			String requestUrl = "";
+			//请求地址选择
+			String requestUrl = info.getRequestUrlReal();
 			
-			if (!PracticalUtils.isNormalString(config.getCustomRequestUrl())) {
-				//按照配置中优先级选择，不满足条件的默认选择real地址
-				requestUrl = info.getRequestUrlReal();
-				
-				if ("0".equals(config.getRequestUrlFlag()) 
-						&& PracticalUtils.isNormalString(msg.getRequestUrl())) {
-					requestUrl = msg.getRequestUrl();
-				}
-				
-				if ("0".equals(config.getRequestUrlFlag()) 
-						&& !PracticalUtils.isNormalString(msg.getRequestUrl())
-						&& PracticalUtils.isNormalString(info.getRequestUrlMock())) {
-					requestUrl = info.getRequestUrlMock();
-				}
-				
-				if ("1".equals(config.getRequestUrlFlag())
-						&& PracticalUtils.isNormalString(info.getRequestUrlMock())) {
-					requestUrl = info.getRequestUrlMock();
-				}
-			} else {
-				//按照测试配置的自定义请求地址设置
-				requestUrl = replaceParameter(config.getCustomRequestUrl(), info.getInterfaceName());
+			//按照配置中优先级选择，不满足条件的默认选择real地址
+			if ("0".equals(config.getRequestUrlFlag()) 
+					&& PracticalUtils.isNormalString(msg.getRequestUrl())) {
+				requestUrl = msg.getRequestUrl();
 			}
 			
+			if ("0".equals(config.getRequestUrlFlag()) 
+					&& !PracticalUtils.isNormalString(msg.getRequestUrl())
+					&& PracticalUtils.isNormalString(info.getRequestUrlMock())) {
+				requestUrl = info.getRequestUrlMock();
+			}
+			
+			if ("1".equals(config.getRequestUrlFlag())
+					&& PracticalUtils.isNormalString(info.getRequestUrlMock())) {
+				requestUrl = info.getRequestUrlMock();
+			}
+			
+			if (StringUtils.isNotBlank(config.getCustomRequestUrl())) {
+				//按照测试配置的自定义请求地址进行设置
+				requestUrl = replaceSetCustomRequestUrl(config.getCustomRequestUrl(), requestUrl);				
+			}		
 			
 			//选择测试数据
 			List<TestData> datas = testDataService.getDatasByScene(scene.getMessageSceneId(), 1);
@@ -250,6 +249,9 @@ public class MessageAutoTest {
 			TestComplexScene testComplexScene = new TestComplexScene();
 			testComplexScene.setComplexSetScene(s);
 			for (String id:ids) {
+				if (StringUtils.isBlank(id)) {
+					continue;
+				}
 				Object[] testSceneInfo = findByMessageSceneId(testObjects, Integer.valueOf(id));
 				if (testSceneInfo != null) {
 					testComplexScene.getTestObjects().add(testSceneInfo);
@@ -337,18 +339,22 @@ public class MessageAutoTest {
 	}
 	
 	/**
-	 * 测试组合场景
+	 * 替换测试集配置中的自定义请求地址
+	 * @param constomReuqestUrl
+	 * @param interfaceName
 	 * @return
 	 */
-	public List<TestResult> testComplexSetScene (TestComplexScene testComplexScene, TestConfig config, TestReport report) {
-		List<TestResult> results = new ArrayList<TestResult>();
+	private String replaceSetCustomRequestUrl(String constomReuqestUrl, String requestUrl) {
+		try {
+			String prefix = requestUrl.substring(0, requestUrl.indexOf("/") + 2);
+			String urlPath = requestUrl.substring(requestUrl.indexOf("/") + 2);
+			urlPath = urlPath.substring(urlPath.indexOf("/"));
+			return prefix + constomReuqestUrl + urlPath;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return constomReuqestUrl;
+		}
 		
-		
-		return results;
-	}
-	
-	private String replaceParameter(String constomReuqestUrl, String interfaceName) {
-		return constomReuqestUrl.replaceAll(MessageKeys.CUSTOM_REQUEST_URL_REPLACE_PARAMETER, interfaceName);
 	}
 	
 	private Object[] findByMessageSceneId (List<Object[]> testObjects, Integer messageSceneId) {
@@ -358,5 +364,13 @@ public class MessageAutoTest {
 			}
 		}
 		return null;
+	}
+	
+	public static void main(String[] args) {
+		String[] ids = "".split(",");
+		for(String s:ids) {
+			System.out.println("==="+s);
+		}
+		System.out.println(ids.length);
 	}
 }

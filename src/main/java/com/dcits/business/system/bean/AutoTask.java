@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 
 import org.apache.struts2.json.annotations.JSON;
 
+import com.dcits.annotation.FieldNameMapper;
+
 /**
  * 
  * 自动化测试任务
@@ -27,6 +29,7 @@ public class AutoTask {
 	 * 0 - 接口自动化     1 - web自动化
 	 * 
 	 */
+	@FieldNameMapper(ifSearch=false)
 	private String taskType;
 	
 	/**
@@ -59,8 +62,10 @@ public class AutoTask {
 	 * 0 - 可运行<br>
 	 * 1 - 不可运行
 	 */
+	@FieldNameMapper(ifSearch=false)
 	private String status;
 	
+	@FieldNameMapper(fieldPath="relatedId")
 	private String setName = "";
 	
 	public AutoTask() {

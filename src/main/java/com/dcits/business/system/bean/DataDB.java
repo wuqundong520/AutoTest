@@ -2,6 +2,8 @@ package com.dcits.business.system.bean;
 
 import java.io.Serializable;
 
+import com.dcits.annotation.FieldNameMapper;
+
 /**
  * 测试查询用数据信息
  * @author xuwangcheng
@@ -40,6 +42,7 @@ public class DataDB implements Serializable {
 	/**
 	 * 数据库密码
 	 */
+	@FieldNameMapper(ifSearch=false)
 	private String dbPasswd;
 	
 	/**

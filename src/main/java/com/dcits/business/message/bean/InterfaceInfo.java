@@ -74,6 +74,7 @@ public class InterfaceInfo implements Serializable {
 	 * 0 可用
 	 * 1 不可用
 	 */
+	@FieldNameMapper(ifSearch=false)
 	private String status;
 	
 	/**
@@ -98,10 +99,10 @@ public class InterfaceInfo implements Serializable {
 	 */
 	private String interfaceProtocol;
 	
-	@FieldNameMapper("size(parameters)")
+	@FieldNameMapper(fieldPath="size(parameters)",ifSearch=false)
 	private Integer parametersNum;
 	
-	@FieldNameMapper("size(messages)")
+	@FieldNameMapper(fieldPath="size(messages)",ifSearch=false)
 	private Integer messagesNum;
 	
     /** default constructor */

@@ -37,7 +37,6 @@ public class CallMethodInterceptor extends AbstractInterceptor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public String intercept(ActionInvocation arg0) throws Exception {
-		
 		try {
 			String timeTag = String.valueOf(System.currentTimeMillis());
 			//请求接口路径
@@ -60,7 +59,7 @@ public class CallMethodInterceptor extends AbstractInterceptor {
 				}
 			}
 			
-			if (isCommon==0) {
+			if (isCommon == 0) {
 				logger.info("[" + timeTag + "]" + "接口" + actionName + "未在接口列表定义,为通用接口,请求放行!");
 				return arg0.invoke();
 			}

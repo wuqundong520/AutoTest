@@ -22,29 +22,6 @@ var sceneTestHtml; //场景测试
 
 var thisMark = "";
 var table;
-/**
- * ajax地址
- */
-var SCENE_LIST_URL = "scene-list"; //获取场景列表
-var SCENE_EDIT_URL = "scene-edit";  //场景编辑
-var SCENE_GET_URL = "scene-get"; //获取指定场景信息
-var SCENE_DEL_URL = "scene-del"; //删除指定场景
-var SCENE_CHANGE_VALIDATE_RULE_URL = "scene-changeValidateRule";
-var SCENE_GET_TEST_OBJECT_URL = "scene-getTestObject"; //获取场景的测试数据和测试地址
-
-var SCENE_LIST_NO_DATA_SCENES_URL = "scene-listNoDataScenes"; //获取指定测试集中没有测试数据的测试场景列表
-
-var TEST_SCENE_URL = "test-sceneTest";
-
-//var SET_SCENE_LIST_URL = "scene-listSetScenes";
-var SET_SCENE_LIST_URL = "set-listScenes";
-
-var VALIDATE_GET_URL = "validate-getValidate";
-var VALIDATE_FULL_EDIT_URL = "validate-validateFullEdit";
-
-//组合场景
-var COMPLEX_SET_SCENE_GET_URL = "set-getComplexScene"; //获取指定场景信息
-var COMPLEX_SET_SCENE_EDIT_VARIABLES = "set-editComplexSceneVariables";//更新组合场景变量信息
 
 var templateParams = {
 		tableTheads:["接口", "报文", "场景名", "测试数据", "验证规则", "备注", "操作"],
@@ -223,8 +200,12 @@ var eventList = {
 			messageSceneId = data.messageSceneId;
 			var index = layer.open({
 	            type: 2,
+	            anim:5,
 	            title: data.sceneName + "-验证规则管理",
-	            content: 'validateParameters.html?messageSceneId=' + messageSceneId
+	            content: 'validateParameters.html?messageSceneId=' + messageSceneId,
+	            cancel:function() {
+	            	refreshTable();
+	            }
 	        });
 			layer.full(index);
 			
@@ -234,9 +215,17 @@ var eventList = {
 			var title = data.interfaceName + "-" + data.messageName + "-" + data.sceneName + " " + "测试数据";
 			var url = "testData.html?messageSceneId=" + data.messageSceneId + "&sceneName=" + data.sceneName;
 			
-			var index = layer_show(title, url, '1000','700', 2, null, function() {
-				refreshTable();
-			});		
+			var index = layer.open({
+	            type: 2,
+	            title: title,
+	            content: url,
+	            anim:5,
+	            cancel:function() {
+	            	refreshTable();
+	            }
+	        });
+			
+			layer.full(index);
 		},
 		".show-complex-scene-variables":function() {//展示组合场景中场景的变量管理
 			var data = table.row( $(this).parents('tr') ).data();

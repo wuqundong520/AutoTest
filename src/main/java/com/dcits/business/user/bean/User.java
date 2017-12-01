@@ -7,6 +7,8 @@ import java.util.Date;
 
 import org.apache.struts2.json.annotations.JSON;
 
+import com.dcits.annotation.FieldNameMapper;
+
 
 /**
  * 用户信息pojo
@@ -49,6 +51,7 @@ public class User implements Serializable {
 	/**
 	 * 当前状态
 	 */
+	@FieldNameMapper(ifSearch=false)
 	private String status;
 	
 	/***

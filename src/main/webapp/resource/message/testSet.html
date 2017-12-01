@@ -102,10 +102,10 @@
 				</div>
 	</div>	
 	<div class="row cl">
-		<label class="form-label col-xs-5 col-sm-3">自定义请求地址：</label>
+		<label class="form-label col-xs-5 col-sm-3">自定义IP/PORT：</label>
 		<div class="formControls col-xs-7 col-sm-9">
-			<input type="text" class="input-text radius" id="customRequestUrl" name="customRequestUrl" value="{{customRequestUrl}}" placeholder="e.g: http://ip:port/service/${interfaceName}"><br>
-			<p class="c-red">你可以使用&nbsp;<span class="label label-warning radius"> ${interfaceName} </span>&nbsp;来替代接口名称，该值对测试集下的所有场景有效,且优先级高于接口和报文中配置的请求地址,请注意!<p>
+			<input type="text" class="input-text radius" id="customRequestUrl" name="customRequestUrl" value="{{customRequestUrl}}" placeholder="13.152.10.24:10086"><br>
+			<p class="c-red">该值会替换原先请求地址(按优先级选择的地址)中的 <span class="label label-success"> IP </span> 和 <span class="label label-success"> PORT </span> , 该值只对该测试集下的场景有效!<p>
 		</div>
 	</div>				
 	<div class="row cl">
@@ -127,6 +127,11 @@
 <script type="text/javascript" src="../../libs/h-ui.admin/js/H-ui.admin.js"></script>
 <script type="text/javascript" src="../../libs/handlebars.js"></script>
 <script type="text/javascript" src="../../js/jquery.spin.merge.js"></script>
+<script type="text/javascript" src="../../libs/colResizable/colResizable-1.6.min.js"></script>
+<script type="text/javascript" src="../../libs/datatables/Buttons-1.4.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="../../libs/datatables/Buttons-1.4.2/js/jszip.min.js"></script>
+<script type="text/javascript" src="../../libs/datatables/Buttons-1.4.2/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="../../js/requestUrls.js"></script>
 <script type="text/javascript" src="../../js/dcits.js"></script>
 </body>
 </html>

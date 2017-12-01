@@ -2,6 +2,8 @@ var table;
 //遮罩层覆盖区域
 var $wrapper = $('#div-table-container');
 
+
+
 var templateParams = {
 		tableTheads:["用户名","姓名","角色","当前状态","最近登录","创建时间","操作"],
 		btnTools:[{
@@ -85,7 +87,7 @@ var templateParams = {
 
 var columnsSetting = [{"data":null,
 	 "render":function(data, type, full, meta){
-		  		return checkboxHmtl(data.username+'-'+data.realName,data.userId,"selectUser");
+		  		return checkboxHmtl(data.username + '-' + data.realName, data.userId, "selectUser");
 	           }},
 	{"data":"userId"},
 	{"data":"username"},
@@ -150,12 +152,12 @@ var columnsSetting = [{"data":null,
 
 
 var beforeEditInit = function(df){
-	$.get("role-listAll",function(result){
-		if(result.returnCode==0){
+	$.get(ROLE_LIST_ALL_URL, function(result) {
+		if (result.returnCode == 0) {
 			var roles = result.data;
 			var optionHtml='';
-			for(var i=0;i<roles.length;i++){
-				optionHtml+='<option value="'+roles[i].roleId+'">'+roles[i].roleName+'</option>';
+			for (var i = 0;i < roles.length;i++) {
+				optionHtml += '<option value="' + roles[i].roleId + '">' + roles[i].roleName + '</option>';
 			}
 			$("#role\\.roleId").html(optionHtml);
 			df.resolve();
@@ -170,16 +172,12 @@ var eventList = {
 			publish.init();
 			
 		},
-		".batch-del":function(){
-			var checkboxList = $(".selectUser:checked");
-			batchDelObjs(checkboxList,"user-del");
-		},
 		".reset-pass":function(){
 			//获取当前行数据
 			var data = table.row( $(this).parents('tr') ).data();
-			layer.confirm('确定要重置该用户的密码吗？',function(index){
-				$.get("user-resetPwd",{userId:data.userId},function(data){
-					if(data.returnCode==0){
+			layer.confirm('确定要重置该用户的密码吗？',function (index) {
+				$.get(USER_RESET_PASSWD_URL, {userId:data.userId}, function(data){
+					if(data.returnCode == 0){
 		                layer.msg('密码已重置为111111',{icon:1,time:1000});
 		    		}else{
 		    			layer.alert(data.msg, {icon: 5});
@@ -190,9 +188,9 @@ var eventList = {
 		},
 		".user-edit":function(){
 			var data = table.row( $(this).parents('tr') ).data();
-			if(data.username=="admin"){
+			if (data.username == "admin") {
 				layer.msg('不能修改预置管理员用户信息!',{time:1500});
-			}else{
+			} else {
 				publish.renderParams.editPage.modeFlag = 1;
 				publish.renderParams.editPage.objId = data.userId;
 				layer_show("编辑用户信息", editHtml, "600", "480",1);
@@ -202,21 +200,21 @@ var eventList = {
 		},
 		".user-lock":function(){
 			var data = table.row( $(this).parents('tr') ).data();
-			if(data.username=="admin"){
+			if(data.username == "admin"){
 				layer.msg('不能锁定预置管理员用户!',{time:1500});
 			}else{
 				var mode = "0";
 		    	var tipMsg = "确定需要解锁该用户吗?";
 		    	var tipMsg1 = "该用户已解锁!";
-		    	if(data.status=="0"){
+		    	if(data.status == "0"){
 		    		mode = "1";
 		    		tipMsg = "确认要锁定该用户吗(请谨慎操作,被锁定的用户将不能登录)";
 		    		tipMsg1 = "已锁定该用户,该用户将不能登录!";
 		    	}   	
-		    	layer.confirm(tipMsg,function(index){
+		    	layer.confirm(tipMsg, function(index) {
 		    		layer.close(index);
-		        	$.get("user-lock",{userId:data.userId,username:data.username,mode:mode},function(data){
-		        		if(data.returnCode==0){
+		        	$.get(USER_LOCK_URL, {userId:data.userId, username:data.username, mode:mode}, function(data) {
+		        		if(data.returnCode == 0){
 		        			table.ajax.reload(null,false);
 		                    layer.msg(tipMsg1,{icon:1,time:1000});
 		        		}else{
@@ -234,9 +232,9 @@ var mySetting = {
 		eventList:eventList,
 		editPage:{
 			beforeInit:beforeEditInit,
-			editUrl:"user-edit",
-			getUrl:"user-get",
-			rules:{username:{required:true, minlength:2, maxlength:20},realName:{required:true, minlength: 2, maxlength: 20}},
+			editUrl:USER_EDIT_URL,
+			getUrl:USER_GET_URL,
+			rules:{username:{required:true, minlength:2, maxlength:20}, realName:{required:true, minlength: 2, maxlength: 20}},
 			renderCallback:function(o){
 				var statusMsg='';
 				o.status == "0" ? statusMsg = "正常" : statusMsg = "锁定";
@@ -244,7 +242,7 @@ var mySetting = {
 			}
 		},
 		listPage:{
-			listUrl:"user-list",
+			listUrl:USER_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
 			columnsJson:[0, 8]

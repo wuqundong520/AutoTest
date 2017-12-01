@@ -29,7 +29,7 @@ import com.google.gson.JsonParser;
  * @version 2017.04.11,1.0.0.0
  *
  */
-public class JSONMessageParse extends MessageParse{	
+public class JSONMessageParse extends MessageParse {	
 	
 	private static ObjectMapper mapper = new ObjectMapper();
 	

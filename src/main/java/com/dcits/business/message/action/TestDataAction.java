@@ -159,7 +159,10 @@ public class TestDataAction extends BaseAction<TestData> {
 		return SUCCESS;
 	}
 
-	
+	/**
+	 * 批量导入数据
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public String importDatas() {
 		MessageScene scene = messageSceneService.get(messageSceneId);

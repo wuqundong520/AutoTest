@@ -7,21 +7,7 @@ var currIndex;//当前正在操作的layer窗口的index
 
 var parametersEditHmtl;
 
-/**
- * ajax地址
- */
-var PARAMS_GET_URL = "param-getParams"; //根据interfaceId来 获取parameters
-var PARAM_SAVE_URL = "param-save";   //保存新增的接口参数
-var PARAM_DEL_URL = "param-del";   //删除指定参数
-var PARAM_EDIT_URL = "param-edit";  //编辑参数的指定属性
-var PARAM_JSON_IMPORT_URL = "param-batchImportParams"; //导入json串
-var PARAM_DEL_ALL_URL = "param-delInterfaceParams";
-
-var INTERFACE_LIST_URL = "interface-list"; //获取接口列表
-var INTERFACE_CHECK_NAME_URL = "interface-checkName"; //检查新增接口名是否重复
-var INTERFACE_EDIT_URL = "interface-edit";  //接口编辑
-var INTERFACE_GET_URL = "interface-get"; //获取指定接口信息
-var INTERFACE_DEL_URL = "interface-del"; //删除指定接口
+var paramsCount = 0;
 
 
 
@@ -206,7 +192,7 @@ var columnsSetting = [
             	return labelCreate(data.toUpperCase());
             }
           },
-          {"data":"createTime","width":"120px"},
+          ellipsisData("createTime"),
           {
           	"data":"status",
           	"render":function(data, type, full, meta ){
@@ -263,6 +249,10 @@ var eventList = {
 			interfaceId = data.interfaceId;
 			layer_show(data.interfaceName + "-接口参数管理", parametersEditHmtl, "1000", "500", 1, function(){
 				initParameters();
+			},function() {
+				if (paramsCount != data.parametersNum) {
+					refreshTable();
+				}
 			});	
 		},
 		".interface-edit":function(){
@@ -336,7 +326,8 @@ var eventList = {
 			layer.confirm('确认要删除此参数吗？此操作将会导致该接口下的报文发生变化,请在删除之后同时更新报文!', {icon:0, title:'警告'}, function(index){		
 				layer.close(index);	
 		    	$.post(PARAM_DEL_URL,{"id":id},function(data){
-		    		if(data.returnCode==0){		    			
+		    		if(data.returnCode==0){		
+		    			paramsCount --;
 		    			if(that.parents('tr').siblings('tr').length<2){
 		    				$("#no-parameter-tip").text('没有参数,你可以手动增加或者通过JSON报文导入');
 		    			}
@@ -418,6 +409,7 @@ function initParameters(){
 	$.get(PARAMS_GET_URL + "?interfaceId=" + interfaceId, function(data) {
 		if(data.returnCode == 0){
 			var html = '';
+			paramsCount = data.data.length;
 			$.each(data.data,function(i,n) {
 				var btnS = '<a href="javascript:;" class="btn btn-danger size-S radius parameter-del">删除</a>';							
 				html += '<tr class="text-c">'+
@@ -556,6 +548,7 @@ function saveParameter(obj){
 		"interfaceInfo.interfaceId": interfaceId
 		}, function(data) {
 			if(data.returnCode == 0){
+				paramsCount ++;
 				var btnS='<a href="javascript:;" class="btn btn-danger size-S radius parameter-del">删除</a>';
 				
 				var  html = '<tr class="text-c">'+

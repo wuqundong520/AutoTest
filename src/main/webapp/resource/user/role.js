@@ -1,6 +1,10 @@
 var table;
 //遮罩层覆盖区域
 var $wrapper = $('#div-table-container');
+
+
+
+
 var templateParams = {
 		tableTheads:["角色组","角色名","权限","备注","操作"],
 		btnTools:[{
@@ -36,8 +40,7 @@ var templateParams = {
 				option: [
 				         {
 				        	 value:"性能测试组",
-				        	 text:"性能测试组",
-				        	 selected:true 
+				        	 text:"性能测试组",				        	  
 				         },
 				         {
 				        	 value:"CRM测试组",
@@ -54,6 +57,7 @@ var templateParams = {
 				         {
 				        	 value:"自动化测试组",
 				        	 text:"自动化测试组", 
+				        	 selected:true
 				         },
 				         {
 				        	 value:"测试开发组",
@@ -94,9 +98,9 @@ var columnsSetting = [
     {
     	"data":null,
     	"render":function(data, type, full, meta){
-		  		return checkboxHmtl(data.roleName,data.roleId,"selectRole");
+		  		return checkboxHmtl(data.roleName, data.roleId, "selectRole");
 	           }},
-	{"data":"roleId"},{"data":"roleGroup"},{"data":"roleName"},                                  
+	{"data":"roleId"}, {"data":"roleGroup"}, {"data":"roleName"},                                  
 	{
 	   "data":"oiNum",
 	   "render":function(data, type, full, meta ){
@@ -142,7 +146,7 @@ var columnsSetting = [
 var eventList = {
 		".batch-del-object":function(){
 			var checkboxList = $(".selectRole:checked");
-			batchDelObjs(checkboxList,"role-del");
+			batchDelObjs(checkboxList, ROLE_DEL_URL);
 		},
 		".add-object":function(){
 			publish.renderParams.editPage.modeFlag = 0;					
@@ -155,16 +159,16 @@ var eventList = {
 			currDelCheckOpId = [];
 			currAddCheckOpId = [];	
 			roleId = data.roleId;
-			layer_show("角色权限编辑",rolePowerHtml, "400", "660",1,function(){
+			layer_show("角色权限编辑",rolePowerHtml, "400", "600",1,function(){
 				$("#rolePowerTable").spinModal();
-				$.get("role-getNodes?roleId="+roleId,function(data){
-					if(data.returnCode==0){
-						var nodes=data.interfaces;						
-						$.each(nodes,function(i,n){
-							if(n.isParent=="true"){
-								n["open"]="true";
+				$.get(ROLE_GET_NODES_DETAILS_URL + "?roleId=" + roleId, function(data) {
+					if (data.returnCode == 0) {
+						var nodes = data.interfaces;						
+						$.each(nodes, function(i,n) {
+							if(n.isParent == "true"){
+								n["open"] = "true";
 							}
-							if(n.isOwn==true){
+							if(n.isOwn == true){
 								initCheckOpId.push(n.opId);
 							}
 						});
@@ -183,7 +187,7 @@ var eventList = {
 		},
 		".role-edit":function(){
 			var data = table.row( $(this).parents('tr') ).data();
-			if(data.roleName=="admin" || data.roleName=="default"){
+			if(data.roleName == "admin" || data.roleName == "default"){
 	  			layer.msg('不能修改预置管理员角色或者默认角色信息!',{time:1500});
 	  		}else{
 	  			publish.renderParams.editPage.modeFlag = 1;	
@@ -194,10 +198,10 @@ var eventList = {
 		},
 		".role-del":function(){
 			var data = table.row( $(this).parents('tr') ).data();
-			if(data.roleName=="admin" || data.roleName=="default"){
+			if(data.roleName == "admin" || data.roleName == "default"){
 				layer.msg('不能删除预置管理员角色或者默认角色信息!',{time:1500});
 			}else{
-				delObj("确认要删除此角色信息吗？","role-del",data.roleId,this);
+				delObj("确认要删除此角色信息吗？", ROLE_DEL_URL, data.roleId, this);
 			}
 			
 		}
@@ -213,12 +217,12 @@ var mySetting = {
 			});
 		},
 		editPage:{
-			editUrl:"role-edit",
-			getUrl:"role-get",
+			editUrl:ROLE_EDIT_URL,
+			getUrl:ROLE_GET_URL,
 			rules:{roleName:{isEnglish:true,minlength:4,maxlength:20},roleGroup:{required:true}},
 		},
 		listPage:{
-			listUrl:"role-list",
+			listUrl:ROLE_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
 			columnsJson:[0 ,6]
@@ -270,22 +274,22 @@ var zTreeSetting = {
 	};
 
 //Ztree中checkBox被选中或者取消时的回调
-function zTreeOnCheck(event, treeId, treeNode) {
+function zTreeOnCheck (event, treeId, treeNode) {
 	//判断是否是根节点
-	if(treeNode.isParent=="false"||treeNode.isParent==false){
+	if (treeNode.isParent == "false" || treeNode.isParent == false) {
 		//判断是被勾选还是取消勾选
-		if(treeNode.isOwn){
+		if (treeNode.isOwn) {
 			//被勾选,判断是否为初始的数据		
-			if(initCheckOpId.indexOf(treeNode.opId)==-1){
+			if (initCheckOpId.indexOf(treeNode.opId) == -1) {
 				currAddCheckOpId.push(treeNode.opId);
-			}else{
-				currDelCheckOpId.splice(currDelCheckOpId.indexOf(treeNode.opId),1);
+			} else {
+				currDelCheckOpId.splice(currDelCheckOpId.indexOf(treeNode.opId), 1);
 			}	
-		}else{
+		} else {
 			//取消勾选
-			if(initCheckOpId.indexOf(treeNode.opId)==-1){
-				currAddCheckOpId.splice(currAddCheckOpId.indexOf(treeNode.opId),1);
-			}else{
+			if (initCheckOpId.indexOf(treeNode.opId) == -1) {
+				currAddCheckOpId.splice(currAddCheckOpId.indexOf(treeNode.opId), 1);
+			} else {
 				currDelCheckOpId.push(treeNode.opId);
 			}
 		}
@@ -294,24 +298,24 @@ function zTreeOnCheck(event, treeId, treeNode) {
 
 
 //保存信息发送到服务端
-function saveChange(){	
+function saveChange() {	
 	//判断是否需要发送更新请求到后台
-	if(currDelCheckOpId.length<1&&currAddCheckOpId.length<1){
+	if (currDelCheckOpId.length < 1 && currAddCheckOpId.length < 1) {
 		layer.closeAll('page');
 		return;
 	}
 	var sendData = {"roleId":roleId};
-	if(currDelCheckOpId.length>0){
-		sendData["delOpIds"]=currDelCheckOpId.join(",");
+	if (currDelCheckOpId.length > 0) {
+		sendData["delOpIds"] = currDelCheckOpId.join(",");
 	}
 	if(currAddCheckOpId.length>0){
-		sendData["addOpIds"]=currAddCheckOpId.join(",");
+		sendData["addOpIds"] = currAddCheckOpId.join(",");
 	}
-	$.get("role-updateRolePower",sendData,function(data){
-		if(data.returnCode==0){
+	$.get(ROLE_UPDATE_POWER_URL, sendData, function(data) {
+		if (data.returnCode == 0) {
 			refreshTable();
 			layer.closeAll('page');
-		}else{
+		} else {
 			layer.alert(data.msg,{icon:5});
 		}
 	});

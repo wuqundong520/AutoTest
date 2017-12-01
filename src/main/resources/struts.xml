@@ -23,7 +23,7 @@
     			<!-- 异常处理 -->
     			<interceptor-ref name="defaultStack">  
   					<param name="exception.logEnabled">true</param>  
-  					<param name="exception.logLevel">debug</param>  
+  					<param name="exception.logLevel">info</param>  
 				</interceptor-ref>
     		</interceptor-stack>
 			<!-- 声明自定义拦截器 接口权限相关-->
@@ -220,6 +220,18 @@
 			<interceptor-ref name="myPrepareInterceptorsStack"></interceptor-ref>
 			<result type="json">
 				<param name="root">jsonMap</param>
+			</result>
+		</action>
+		
+		<!-- 全局变量 -->
+		<action name="variable-*" class="globalVariableAction" method="{1}">
+			<interceptor-ref name="callMethodInterceptor"></interceptor-ref>
+			<interceptor-ref name="myPrepareInterceptorsStack"></interceptor-ref>
+			<result type="json">
+				<param name="root">jsonMap</param>
+			</result>
+			<result type="json" name="check">
+				<param name="root">checkNameFlag</param>
 			</result>
 		</action>
 		

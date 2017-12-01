@@ -3,11 +3,6 @@ var $wrapper = $('#div-table-container');
 
 var currIndex;//当前正在操作的layer窗口的index
 var resultTemplate;
-/**
- * ajax地址
- */
-var RESULT_LIST_URL = "result-list";
-var RESULT_GET_URL = "result-get";
 
 var reportId;
 var runStatus = "all";
@@ -137,7 +132,8 @@ var mySetting = {
 			columnsJson:[0, 6],
 			dtOtherSetting:{
 				"bStateSave": false,//状态保存			
-			}
+			},
+			exportExcel:false
 		},
 		templateParams:templateParams		
 	};

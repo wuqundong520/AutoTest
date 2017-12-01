@@ -116,6 +116,7 @@ public class HTTPTestClient extends TestClient {
 		long useTime = 0;
 		HttpRequestBase request = null;	
     	Object[] returnInfo = null;
+    	String errorMsg = "";
     	
     	//失败重试
     	boolean requestSuccessFlag = false;
@@ -131,14 +132,17 @@ public class HTTPTestClient extends TestClient {
     		} catch (Exception e) {
     			// TODO Auto-generated catch block
     			LOGGER.info("发送请求出错", e);
-    			returnMap.put(MessageKeys.RESPONSE_MAP_PARAMETER_TEST_MARK, "发送报文到接口出错：" + e.getMessage());
-    			returnMap.put(MessageKeys.RESPONSE_MAP_PARAMETER_STATUS_CODE, "false");	
+    			errorMsg = e.getMessage();   			
     		} finally {
     			retryCount++;
     		}
     	}
 		
-		
+		if (!requestSuccessFlag) {
+			returnMap.put(MessageKeys.RESPONSE_MAP_PARAMETER_STATUS_CODE, "false");	
+			returnMap.put(MessageKeys.RESPONSE_MAP_PARAMETER_TEST_MARK, "发送请求出错：\n" + errorMsg);
+		}
+    	
 		if (returnInfo != null) {
 			response = (HttpResponse) returnInfo[0];
 			useTime = (long) returnInfo[1];
@@ -194,7 +198,7 @@ public class HTTPTestClient extends TestClient {
 	 * @return
 	 * @throws Exception
 	 */
-	private Object[] doGet(String host, Map<String, String> headers, String requestMessage)
+	public Object[] doGet(String host, Map<String, String> headers, String requestMessage)
 			throws Exception {
 
 		

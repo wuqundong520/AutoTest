@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.apache.struts2.json.annotations.JSON;
 
+import com.dcits.annotation.FieldNameMapper;
+
 /**
  * 出参验证规则
  * 
@@ -37,6 +39,7 @@ public class SceneValidateRule implements Serializable {
 	 * 获取validate_value的方式,当validate_method_flag为1时有效：<br>
 	 * 0-字符串,1-入参报文的值，其他为db_id，从指定数据库中查询
 	 */
+	@FieldNameMapper(ifSearch=false)
 	private String getValueMethod;
 	
 	/**
@@ -44,6 +47,7 @@ public class SceneValidateRule implements Serializable {
 	 * 1-节点参数验证<br>
 	 * 2-全文返回验证<br>
 	 */
+	@FieldNameMapper(ifSearch=false)
 	private String validateMethodFlag;
 	
 	/**
@@ -51,12 +55,14 @@ public class SceneValidateRule implements Serializable {
 	 * 复杂参数标记<br>
 	 * 0-复杂节点，1-简单节点
 	 */
+	@FieldNameMapper(ifSearch=false)
 	private String complexFlag;
 	
 	/**
 	 * 当validate_method_flag为1时有效：<br>
 	 * 0-需要强制验证,1-不需要验证
 	 */
+	@FieldNameMapper(ifSearch=false)
 	private String status;
 	private String mark;
 	

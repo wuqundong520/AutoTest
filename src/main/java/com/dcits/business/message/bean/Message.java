@@ -54,6 +54,7 @@ public class Message implements Serializable{
 	private Timestamp createTime;
 	
 	/**当前状态*/
+	@FieldNameMapper(ifSearch=false)
 	private String status;
 	
 	/**最后一次修改的用户realName*/
@@ -76,10 +77,10 @@ public class Message implements Serializable{
 	private Set<MessageScene> scenes = new HashSet<MessageScene>();
      
     /**所属接口名*/ 
-	@FieldNameMapper("interfaceInfo.interfaceName")
+	@FieldNameMapper(fieldPath="interfaceInfo.interfaceName")
 	private String interfaceName;
 	/**接口协议类型*/
-	@FieldNameMapper("interfaceInfo.interfaceProtocol")
+	@FieldNameMapper(fieldPath="interfaceInfo.interfaceProtocol")
 	private String protocolType;
 	
 	/**
@@ -87,7 +88,7 @@ public class Message implements Serializable{
 	 */
 	private ComplexParameter complexParameter;
 	
-    @FieldNameMapper("size(scenes)")
+    @FieldNameMapper(fieldPath="size(scenes)",ifSearch=false)
 	private Integer sceneNum = this.getSceneNum();
 
     // Constructors

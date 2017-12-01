@@ -34,7 +34,7 @@ public class TestReport implements Serializable{
 	/**
 	 * 前台展示字段 本次测试场景总数量
 	 */
-	@FieldNameMapper("size(trs)")
+	@FieldNameMapper(fieldPath="size(trs)",ifSearch=false)
 	private Integer sceneNum;
 	/**
 	 * 前台展示字段 成功数
@@ -72,13 +72,13 @@ public class TestReport implements Serializable{
 	/**
 	 * 前台展示字段,测试人姓名
 	 */
-	@FieldNameMapper("user.realName")
+	@FieldNameMapper(fieldPath="user.realName")
 	private String createUserName;
 	
 	/**
 	 * 前台展示字段,测试集名称
 	 */
-	@FieldNameMapper("testMode")
+	@FieldNameMapper(fieldPath="testMode",ifSearch=false)
 	private String setName;
 	
 	private Set<TestResult> trs = new HashSet<TestResult>();

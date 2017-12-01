@@ -1,0 +1,220 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="../../libs/html5.js"></script>
+    <script type="text/javascript" src="../../libs/respond.min.js"></script>
+    <script type="text/javascript" src="../../libs/PIE_IE678.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="../../libs/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../libs/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="../../libs/Hui-iconfont/1.0.7/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../libs/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="../../css/dcits.css" />
+    <!--[if IE 6]>
+    <script type="text/javascript" src="http://lib.h-ui.net/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <title>全局变量</title>
+</head>
+<body>
+<div id="list-page">
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 系统管理 <span class="c-gray en">&gt;</span> 全局变量 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:refreshTable();" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="cl pd-5 bg-1 bk-gray mt-0"> <span class="l" id="btn-tools"></span> </div>
+    <div class="mt-20" id="div-table-container">
+        <table class="table table-border table-bordered table-bg table-hover table-sort">
+            <thead>
+            <tr class="text-c" id="table-thead">  
+            <th style="width:50px"><input type="checkbox"></th>
+    		<th style="width:80px">ID</th>          	
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>	
+<script id="setting-variable-value-template" type="text/x-handlebars-template">
+<article class="page-container">
+<form action="" method="post" class="form form-horizontal" id="form-variable-value">
+	<div class="row cl setRuntimeSetting hide">
+		<label class="form-label col-xs-4 col-sm-3">接口地址选择：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<span class="select-box radius">
+			  <select class="select" size="1" id="requestUrlFlag" name="requestUrlFlag">
+			    <option value="0">默认选择 [报文地址>接口mock地址>接口real地址]</option>
+			    <option value="1">优先使用接口设置的mock地址</option>
+			    <option value="2">优先使用接口设置的real地址</option>
+			  </select>
+			</span>
+		</div>
+	</div>
+	<div class="row cl setRuntimeSetting hide">
+		<label class="form-label col-xs-4 col-sm-3">连接超时：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" id="connectTimeOut" class="input-text radius" name="connectTimeOut">
+		</div>
+	</div>
+	<div class="row cl setRuntimeSetting hide">
+		<label class="form-label col-xs-4 col-sm-3">读取超时：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text radius" id="readTimeOut" name="readTimeOut">
+		</div>
+	</div>	
+	<div class="row cl setRuntimeSetting hide">
+		<label class="form-label col-xs-4 col-sm-3">失败时最大重试次数：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text radius" id="retryCount" name="retryCount">
+		</div>
+	</div>
+	<div class="row cl setRuntimeSetting hide">
+		<label class="form-label col-xs-4 col-sm-3">测试模式：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<span class="select-box radius">
+			  <select class="select" size="1" id="runType" name="runType">
+			    <option value="0">并行测试</option>
+			    <option value="1">串行测试</option>
+			  </select>
+			</span>
+		</div>
+	</div>			
+	<div class="row cl setRuntimeSetting hide">
+		<label class="form-label col-xs-4 col-sm-3">测试前检查数据：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<span class="select-box radius">
+			  <select class="select" size="1" id="checkDataFlag" name="checkDataFlag">
+			    <option value="0">检查</option>
+			    <option value="1">不检查</option>
+			  </select>
+			</span>
+		</div>
+	</div>	
+	<div class="row cl setRuntimeSetting hide">
+		<label class="form-label col-xs-4 col-sm-3">自定义IP/PORT：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text radius" id="customRequestUrl" name="customRequestUrl" placeholder="13.152.10.24:10086"><br>
+			<p class="c-red">该值会替换原先请求地址(按优先级选择的地址)中的 <span class="label label-success"> IP </span> 和 <span class="label label-success"> PORT </span> , 该值只对该测试集下的场景有效!<p>
+		</div>
+	</div>	
+	
+	<div class="row cl relatedKeyWord hide">
+		<label class="form-label col-xs-4 col-sm-3">左边界：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="LB" placeholder="关联左边界">
+		</div>
+	</div>
+	<div class="row cl relatedKeyWord hide">
+		<label class="form-label col-xs-4 col-sm-3">右边界：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="RB" placeholder="关联右边界">
+		</div>
+	</div>
+	<div class="row cl relatedKeyWord hide">
+		<label class="form-label col-xs-4 col-sm-3">偏移字符数：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="OFFSET" placeholder="左起偏移字符数">
+		</div>
+	</div>
+	<div class="row cl relatedKeyWord hide">
+		<label class="form-label col-xs-4 col-sm-3">取值顺序(不需要请设置为1)：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="hidden" class="input-text" id="ORDER" value="1"/>
+			<a style="text-decoration:none" class="ml-5" onClick="reduceSeq();" href="javascript:;" title="减少"><i class="Hui-iconfont">&#xe6a1;</i></a>&nbsp;&nbsp;<span id="objectSeqText" >1</span>&nbsp;<a style="text-decoration:none" class="ml-5" onClick="addSeq();" href="javascript:;" title="增加"><i class="Hui-iconfont">&#xe600;</i></a>
+		</div>
+	</div>
+	<div class="row cl relatedKeyWord hide">
+		<label class="form-label col-xs-4 col-sm-3">取值长度：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="LENGHT" placeholder="左起截取的字符长度">
+		</div>
+	</div>
+	<div class="row cl relatedKeyWord hide">
+		<label class="form-label col-xs-4 col-sm-3">预期结果比对验证值：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<textarea style="height: 80px;" class="textarea radius" id="validateValue"></textarea>
+		</div>
+	</div>
+	<div class="row cl datetime hide">
+		<div class="formControls col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">		
+			<span class="label label-danger radius">yyyy</span> - 年份&nbsp;&nbsp;<span class="label label-danger radius">MM</span> - 月份&nbsp;&nbsp;<span class="label label-danger radius">dd</span> - 日期<br>
+			<span class="label label-danger radius">HH</span> - 小时(24小时制)&nbsp;&nbsp;<span class="label label-danger radius">hh</span> - 小时(12小时制)&nbsp;&nbsp;<span class="label label-danger radius">mm</span> - 分钟<br>
+			<span class="label label-danger radius">ss</span> - 秒钟
+		</div>
+	</div>
+	<div class="row cl datetime hide">
+		<label class="form-label col-xs-4 col-sm-3">日期格式化：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="datetimeFormat" placeholder="yyyy-MM-dd HH:mm:ss">
+		</div>
+	</div>
+			
+	<div class="row cl randomNum hide">
+		<label class="form-label col-xs-4 col-sm-3">随机数最小值：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="randomMin">
+		</div>
+	</div>	
+	<div class="row cl randomNum hide">
+		<label class="form-label col-xs-4 col-sm-3">随机数最大值：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="randomNumMax">
+		</div>
+	</div>		
+		
+	<div class="row cl randomString hide">
+		<label class="form-label col-xs-4 col-sm-3">模式：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<span class="select-box radius">
+			  <select class="select" size="1" id="randomStringMode" name="randomStringMode">
+			    <option value="0">只包含大写字母</option>
+			    <option value="1">只包含小写字母</option>
+			    <option value="2">包含大小写字母</option>
+			    <option value="3">包含字母和数字</option>
+			  </select>
+			</span>
+		</div>
+	</div>
+	
+	<div class="row cl randomString hide">
+		<label class="form-label col-xs-4 col-sm-3">字符串长度：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="randomStringNum">
+		</div>
+	</div>
+				
+	<div class="row cl">
+		<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+			<button class="btn btn-primary radius" type="button" id="save-setting-variable-value"><i class="Hui-iconfont">&#xe632;</i>保存</button>
+			<button class="btn btn-default radius" type="button" onclick="layer.close(settingLayerIndex);">&nbsp;&nbsp;返回&nbsp;&nbsp;</button>
+		</div>
+	</div>
+</form>	
+</article>
+</script>
+<div id="edit-page"  style="display: none;"></div>
+<div id="template-page" style="display: none;"></div>
+<script type="text/javascript" src="../../libs/jquery/1.9.1/jquery.js"></script>
+<script type="text/javascript" src="../../libs/layer/2.1/layer.js"></script>
+<script type="text/javascript" src="../../libs/jquery.validation/1.14.0/jquery.validate.min.js"></script> 
+<script type="text/javascript" src="../../libs/jquery.validation/1.14.0/validate-methods.js"></script> 
+<script type="text/javascript" src="../../libs/jquery.validation/1.14.0/messages_zh.min.js"></script> 
+<script type="text/javascript" src="../../libs/datatables/1.10.0/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../libs/h-ui/js/H-ui.js"></script>
+<script type="text/javascript" src="../../libs/h-ui.admin/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="../../libs/handlebars.js"></script>
+<script type="text/javascript" src="../../js/jquery.spin.merge.js"></script>
+<script type="text/javascript" src="../../libs/colResizable/colResizable-1.6.min.js"></script>
+<script type="text/javascript" src="../../libs/datatables/Buttons-1.4.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="../../libs/datatables/Buttons-1.4.2/js/jszip.min.js"></script>
+<script type="text/javascript" src="../../libs/datatables/Buttons-1.4.2/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="../../js/requestUrls.js"></script>
+<script type="text/javascript" src="../../js/dcits.js"></script>
+</body>
+</html>

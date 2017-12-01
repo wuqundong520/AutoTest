@@ -32,10 +32,10 @@ public class DataDBServiceImpl extends BaseServiceImpl<DataDB> implements DataDB
 	@Override
 	public Integer getMaxDBId() {
 		DataDB db = dataDBDao.getMaxDBId();
-		if (db==null) {
+		if (db == null) {
 			return 9999990;
 		} else {
-			return db.getDbId()+1;
+			return db.getDbId() + 1;
 		}
 	}
 }

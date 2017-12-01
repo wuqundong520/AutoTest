@@ -5,19 +5,6 @@ var setId; //当前正在操作的set
 var setName; //当前正在操作的setName
 var currIndex;//当前正在操作的layer窗口的index
 
-/**
- * ajax地址
- */
-var SET_LIST_URL = "set-list"; //获取测试集列表
-var SET_EDIT_URL = "set-edit";  //测试集信息编辑
-var SET_GET_URL = "set-get"; //获取指定测试集信息
-var SET_DEL_URL = "set-del"; //删除指定测试集
-var SET_NAME_CHECK_URL = "set-checkName"; //验证测试集名称是否重复
-
-var SET_RUN_SETTING_CONFIG_URL = "set-settingConfig";
-var UPDATE_TEST_CONFIG_URL = "test-updateConfig";
-
-var SCENE_LIST_URL = "scene-list";
 
 var settingConfigViewTemplate;
 
@@ -147,7 +134,7 @@ var columnsSetting = [
                     		  	return labelCreate(data, option);							
                     	  }
                       },
-                      {"data":"user.realName"},{"data":"createTime"},
+                      ellipsisData("user.realName"),ellipsisData("createTime"),
                       {
                     	  "data":null,
                     	  "render":function(data) {

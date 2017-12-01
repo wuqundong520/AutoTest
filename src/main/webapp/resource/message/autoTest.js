@@ -1,13 +1,6 @@
 var configData;
 var modeFlag = 0;//0为全量测试
 
-var BATCH_AUTO_TEST_URL = "test-scenesTest";
-var GET_REPORT_INFO_URL = "report-get";
-var GET_TEST_CONFIG_URL = "test-getConfig";
-var UPDATE_TEST_CONFIG_URL = "test-updateConfig";
-var LIST_MY_SETS_URL = "set-getMySet";
-var CHECK_DATA_URL = "test-checkHasData";
-
 var isTesting = false;//当前是否有测试任务?
 var reportId;
 var count;
@@ -161,7 +154,7 @@ function batchTest(setId) {
 }
 
 function getProcessInfo(intervalID) {
-	$.get(GET_REPORT_INFO_URL + "?reportId=" + reportId, function(json) {
+	$.get(REPORT_GET_URL + "?reportId=" + reportId, function(json) {
 		if (json.returnCode == 0) {
 			
 			$("#current-complete-count").text(json.report.sceneNum);

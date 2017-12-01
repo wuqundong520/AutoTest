@@ -103,7 +103,7 @@ public class SocketTestClient extends TestClient {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			LOGGER.debug("Send msg to Socket " + ip + ":" + port + "Fail！", e);
-			responseMsg = "Send msg to Socket " + ip + ":" + port + " Fail:" + e.getMessage();
+			responseMsg = "Send msg to Socket " + ip + ":" + port + " Fail:" + e.getCause().getMessage();
 		} finally {
 			try {
 				br.close();

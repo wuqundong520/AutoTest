@@ -1,7 +1,9 @@
 var table;
 //遮罩层覆盖区域
 var $wrapper = $('#div-table-container');
-var testUrl = "db-testDB";
+
+	
+		
 var templateParams = {
 		tableTheads:["类型","数据库名","用户名","密码","地址","备注","操作"],
 		btnTools:[{
@@ -141,16 +143,16 @@ var eventList = {
 		},
 		".batch-del-object":function(){
 			var checkboxList = $(".selectDb:checked");
-			batchDelObjs(checkboxList,"db-del");
+			batchDelObjs(checkboxList, QUERY_DB_DEL_URL);
 		},
 		".db-test":function(){
 			var data = table.row( $(this).parents('tr') ).data();
 			$wrapper.spinModal();
-	  		$.get(testUrl,{id:data.dbId},function(data){
+	  		$.get(QUERY_DB_LINK_TEST_URL, {id:data.dbId}, function(data){
 	  			$wrapper.spinModal(false);
-	  			if(data.returnCode==0){ 				
+	  			if (data.returnCode == 0) { 				
 	  				layer.alert("测试连接成功!", {icon: 1});
-	  			}else{
+	  			} else {
 	    			layer.alert(data.msg, {icon: 5});
 	  			}			
 	  		});
@@ -164,7 +166,7 @@ var eventList = {
 		},
 		".db-del":function(){
 			var data = table.row( $(this).parents('tr') ).data();
-			delObj("确认要删除此查询数据库信息吗？","db-del",data.dbId,this);
+			delObj("确认要删除此查询数据库信息吗？", QUERY_DB_DEL_URL, data.dbId, this);
 		}
 		
 };
@@ -172,8 +174,8 @@ var eventList = {
 var mySetting = {
 		eventList:eventList,
 		editPage:{
-			editUrl:"db-edit",
-			getUrl:"db-get",
+			editUrl:QUERY_DB_EDIT_URL,
+			getUrl:QUERY_DB_GET_URL,
 			rules:{
 				dbName:{
 					required:true,
@@ -189,7 +191,7 @@ var mySetting = {
 			},
 		},
 		listPage:{
-			listUrl:"db-list",
+			listUrl:QUERY_DB_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
 			columnsJson:[0, 5, 7, 8]

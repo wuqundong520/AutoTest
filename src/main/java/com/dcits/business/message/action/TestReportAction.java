@@ -90,6 +90,7 @@ public class TestReportAction extends BaseAction<TestReport> {
 	 * @return
 	 */
 	public String getReportDetail() {
+		
 		TestReport report = testReportService.get(model.getReportId());
 		report.setSceneNum();
 		
@@ -128,12 +129,13 @@ public class TestReportAction extends BaseAction<TestReport> {
 	public String generateStaticReportHtml() {
 		TestReport report = testReportService.get(model.getReportId());
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
-		//判断测试是否已经完成
-		if ("N".equals(report.getFinishFlag())) {
-			jsonMap.put("msg", "该项测试还未完成,请等待完成之后再查看静态报告!");
+		//判断测试是否已经完成 /判断是否有测试结果
+		if ("N".equals(report.getFinishFlag()) || report.getTrs().size() < 1) {
+			jsonMap.put("msg", "该项测试还未完成或者没有任何测试结果,请确认之后再查看离线报告!");
 			jsonMap.put("returnCode", ReturnCodeConsts.ILLEGAL_HANDLE_CODE);
 			return SUCCESS;
 		}
+
 		//最终生成文件： reportId_startTime.html
 		File htmlFile = new File(StrutsUtils.getProjectPath() + "/" + report.getReportHtmlPath());
 		//判断是否已经生成

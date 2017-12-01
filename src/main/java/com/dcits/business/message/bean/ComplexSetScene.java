@@ -73,7 +73,7 @@ public class ComplexSetScene  implements Serializable {
 	/**
 	 * 场景个数
 	 */
-	@FieldNameMapper("length(scenes)")
+	@FieldNameMapper(fieldPath="length(scenes)",ifSearch=false)
 	private Integer scenesNum;
 	
 	public ComplexSetScene() {

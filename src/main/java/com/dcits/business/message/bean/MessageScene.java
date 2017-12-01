@@ -71,16 +71,16 @@ public class MessageScene implements Serializable {
 	
 	private String validateMethodStr;
 	
-	@FieldNameMapper("size(testDatas)")
+	@FieldNameMapper(fieldPath="size(testDatas)",ifSearch=false)
 	private Integer testDataNum = getTestDataNum();
 	
-	@FieldNameMapper("size(rules)")
+	@FieldNameMapper(fieldPath="size(rules)",ifSearch=false)
 	private Integer rulesNum;
 	
-	@FieldNameMapper("message.messageName")
+	@FieldNameMapper(fieldPath="message.messageName")
 	private String messageName;
 
-	@FieldNameMapper("message.interfaceInfo.interfaceName")
+	@FieldNameMapper(fieldPath="message.interfaceInfo.interfaceName")
 	private String interfaceName;
 	
 	/**
@@ -289,7 +289,14 @@ public class MessageScene implements Serializable {
     	}
     	enabledTestDatas.removeAll(delTds);
 	}
-  
 
+	@Override
+	public String toString() {
+		return "MessageScene [messageSceneId=" + messageSceneId
+				+ ", sceneName=" + sceneName + ", mark=" + mark
+				+ ", createTime=" + createTime + "]";
+	}
+  
+	
 
 }

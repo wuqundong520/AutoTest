@@ -2,12 +2,6 @@ var table;
 //遮罩层覆盖区域
 var $wrapper = $('#div-table-container');
 
-//ajax地址
-var SET_LIST_SCENE_URL = "set-listScenes";//展示存在测试集或者不存在于测试集的测试场景
-var SET_OP_SCENE_URL = "set-opScene";//操作测试场景，添加到测试集或者从测试集删除
-
-//var SET_SCENE_LIST_URL = "scene-listSetScenes";
-var SET_SCENE_LIST_URL = "set-listScenes";
 
 var setId;
 var mode = 0; //0-管理  1-添加

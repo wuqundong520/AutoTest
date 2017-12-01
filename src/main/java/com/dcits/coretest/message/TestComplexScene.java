@@ -60,6 +60,7 @@ public class TestComplexScene  {
 		return complexSetScene;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setComplexSetScene(ComplexSetScene complexSetScene) {
 		this.complexSetScene = complexSetScene;
 		try {

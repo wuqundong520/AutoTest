@@ -5,6 +5,8 @@ import java.io.Serializable;
 import org.apache.struts2.json.annotations.JSON;
 // default package
 
+import com.dcits.annotation.FieldNameMapper;
+
 
 
 /**
@@ -41,6 +43,7 @@ public class TestData implements Serializable {
       * <br>0-可用  1-不可用/已使用
       * <br>新增   2 - 可重复使用，不论接口类型
       */
+     @FieldNameMapper(ifSearch=false)
      private String status;
      
      /**

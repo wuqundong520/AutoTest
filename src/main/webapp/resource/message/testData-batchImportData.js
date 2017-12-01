@@ -1,10 +1,3 @@
-/**
- * ajax地址
- */
-
-var GET_SETTING_DATA_URL = "data-getSettingData"; //获取当前场景所属报文的所有可编辑入参节点 包含其他信息
-var IMPORT_DATA_VALUES_URL = "data-importDatas";
-
 var messageSceneId;
 var params;
 var dataMsg;

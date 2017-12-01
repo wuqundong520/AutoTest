@@ -116,5 +116,8 @@ public class SystemConsts {
 	public static final String REPORT_VIEW_HTML_FOLDER = "reportHtml";
 	public static final String REPORT_VIEW_HTML_FIXED_HTML = "viewTemplate.xml";
 	
+	//测试集测试请求地址
+	public static final String AUTO_TASK_TEST_RMI_URL = "test-scenesTest";
+	
 
 }

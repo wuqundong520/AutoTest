@@ -17,6 +17,7 @@ import com.dcits.business.message.dao.ComplexSetSceneDao;
 @Repository("complexSetScene")
 public class ComplexSetSceneDaoImpl extends BaseDaoImpl<ComplexSetScene> implements ComplexSetSceneDao {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ComplexSetScene> listComplexScenesBySetId(Integer setId) {
 		// TODO Auto-generated method stu

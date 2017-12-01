@@ -9,19 +9,6 @@ var currParams; //当前设置数据内容
 
 var setttingParameterTemplate; //数据设置模板
 
-/**
- * ajax地址
- */
-var DATA_LIST_URL = "data-list"; //获取数据列表
-var DATA_EDIT_URL = "data-edit";  //测试数据编辑
-var DATA_GET_URL = "data-get"; //获取指定测试数据信息
-var DATA_DEL_URL = "data-del"; //删除指定数据
-var DATA_CHECK_NAME_URL = "data-checkName"; //验证数据标记是否重复
-
-var GET_SETTING_DATA_URL = "data-getSettingData";
-
-var CREATE_NEW_DATA_MSG_URL = "data-createDataMsg";
-
 var templateParams = {
 		tableTheads:["标记", "状态", "操作"],
 		btnTools:[{
@@ -159,6 +146,7 @@ var eventList = {
 				type: 2,
 				maxmin: false,
 				shade:0.4,
+				anim:5,
 				title: sceneName + "-批量导入数据",
 				content: "testData-batchImportData.html?messageSceneId=" + messageSceneId
 			});
@@ -186,6 +174,7 @@ var eventList = {
 				if (json.returnCode == 0) {
 					layer.prompt({
 						  formType: 2,
+						  maxlength:99999,
 						  value: json.object.dataJson,
 						  title: json.object.dataDiscr,
 						  area: ['500px', '300px'] //自定义文本域宽高

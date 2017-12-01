@@ -55,7 +55,7 @@ public class Role implements Serializable {
 	/**
 	 * 拥有的权限个数
 	 */
-	@FieldNameMapper("size(ois)")
+	@FieldNameMapper(fieldPath="size(ois)",ifSearch=false)
 	private Integer oiNum;
 	
 	@JSON(serialize=false)

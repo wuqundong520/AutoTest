@@ -4,18 +4,6 @@ var $wrapper = $('#div-table-container');
 var messageSceneId; //当前正在操作的sceneId
 var currIndex;//当前正在操作的layer窗口的index
 
-/**
- * ajax地址
- */
-var VALIDATE_RULE_LIST_URL = "validate-getValidates"; //获取验证规则列表
-var VALIDATE_RULE_EDIT_URL = "validate-edit";//新增或者编辑验证规则
-var VALIDATE_RULE_GET_URL = "validate-get";//获取指定验证规则信息
-var VALIDATE_RULE_DEL_URL = "validate-del";//删除指定验证规则
-var VALIDATE_FULL_EDIT_URL = "validate-validateFullEdit"
-var VALIDATE_FULL_RULE_GET_URL = "validate-getValidate";
-
-var VALIDATE_RULE_UPDATE_STATUS = "validate-updateValidateStatus";//更新验证规则状态
-var DB_LIST_URL = "db-listAll";//获取所有当前可用的查询数据
 
 var selectGetValueMethodTig = {
 		"0":["字符串", "请输入用于比对该参数值的字符串,如18655036394", "可用字符串"],
@@ -270,7 +258,7 @@ var eventList = {
 				btn3:function(index) {
 					$.ajax({
 						type:"POST",
-						url:DB_LIST_URL,
+						url:QUERY_DB_LIST_ALL_URL,
 						success:function(data) {
 							if(data.returnCode == 0){
 								if(data.data.length < 1){
@@ -352,6 +340,7 @@ var mySetting = {
 		listPage:{
 			listUrl:VALIDATE_RULE_LIST_URL,
 			tableObj:".table-sort",
+			exportExcel:false,
 			columnsSetting:columnsSetting,
 			columnsJson:[0, 3, 4, 5, 7, 8],
 			dtOtherSetting:{
@@ -517,25 +506,3 @@ function saveValidateJson(){
 	});		
 }
 
-/**
- * 关联验证
- * 取值顺序页面按键  减一
- */
-function reduceSeq() {
-	var seq=$("#objectSeqText").text();
-	if(seq==1){
-		return;
-	}
-	$("#objectSeqText").text(seq-1);
-	$("#ORDER").val(seq-1);
-}
-
-/**
- * 关联验证
- * 取值顺序页面按键  加一
- */
-function addSeq() {
-	var seq=$("#objectSeqText").text();
-	$("#objectSeqText").text(parseInt(seq)+1);
-	$("#ORDER").val(parseInt(seq)+1);
-}

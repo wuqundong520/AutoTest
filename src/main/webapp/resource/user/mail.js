@@ -2,9 +2,7 @@ var table;
 //遮罩层覆盖区域
 var $wrapper = $('#div-table-container');
 
-var MAIL_LIST_URL = "mail-list";
-var MAIL_DEL_URL = "mail-del";
-var MAIL_CHANGE_STATUS = "mail-changeStatus";
+
 
 var templateParams = {
 		tableTheads:["发送用户","内容","发送时间","状态","操作"],
@@ -30,7 +28,7 @@ var columnsSetting = [
 	   "className":"ellipsis",
 	   "data":"mailInfo",
 	   "render":function(data){
-		   return '<a href="javascript:;" class="show-mail-info"><span title="' + data + '">' + data + '</span></a>';	   
+		   return '<a href="javascript:;" class="show-mail-info"><span title="自动化测试定时任务系统提醒">自动化测试定时任务系统提醒</span></a>';	   
 		   }
 	},
 	ellipsisData("sendTime"),
@@ -69,15 +67,15 @@ var columnsSetting = [
 var eventList = {
 		".batch-del-object":function(){
 			var checkboxList = $(".selectMail:checked");
-			batchDelObjs(checkboxList, "mail-del");
+			batchDelObjs(checkboxList, MAIL_DEL_URL);
 		},
 		".mail-del":function(){
 			var data = table.row( $(this).parents('tr') ).data();
-			delObj("确认要删除此条信息吗？", "mail-del", data.mailId, this);			
+			delObj("确认要删除此条信息吗？", MAIL_DEL_URL, data.mailId, this);			
 		},
 		".show-mail-info":function() {
 			var data = table.row( $(this).parents('tr') ).data();
-			var html = '<div style="margin:14px;" class="content"><p>' + (data.mailInfo).replaceAll('(\\r)+(\\n)+', '<br>') + '</p></div>';
+			var html = '<div style="margin:14px;"><p>' + (data.mailInfo).replaceAll('(\\r)+(\\n)+', '<br>') + '</p></div>';
 			layer_show("来自" + data.sendUserName + "信息  &nbsp;- &nbsp;"  + data.sendTime, html, '600', '460', 1
 					, function() {
 						if (data.readStatus == "1") {
@@ -99,7 +97,8 @@ var mySetting = {
 			listUrl:MAIL_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0, 3, 6]
+			columnsJson:[0, 3, 6],
+			exportExcel:false
 		},
 		templateParams:templateParams		
 	};

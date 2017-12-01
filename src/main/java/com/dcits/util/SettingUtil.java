@@ -48,7 +48,11 @@ public class SettingUtil {
 		statistics.put(STATISTICAL_QUANTITY_REPORT_NAME, new StatisticalQuantity(STATISTICAL_QUANTITY_REPORT_NAME));
 	}
 	
-	
+	/**
+	 * 统计测试接口、测试报文、测试场景、测试集、测试报告的报表数据<br>
+	 * 包含本日、昨日、本周、本月、总共
+	 * @return Map<String, StatisticalQuantity>
+	 */
 	@SuppressWarnings("rawtypes")
 	public static Map<String, StatisticalQuantity> countStatistics () {
 		for (StatisticalQuantity sl:statistics.values()) {
@@ -76,10 +80,25 @@ public class SettingUtil {
 	}
 	
 	/**
+	 * 根据dbId获取指定的查询数据库信息
+	 * @param dbId
+	 * @return
+	 */
+	public static DataDB getQueryDBById (String dbId) {
+		return queryDBMap.get(dbId);
+	}
+	/**
 	 * 有新增、删除、修改时更新此MAP
 	 */
-	public static void updateQueryDBMap() {
+	public static void updateQueryDBMap(DataDB db, Integer id) {
+		if (db == null) {
+			//删除
+			queryDBMap.remove(String.valueOf(id));			
+			return;
+		}
 		
+		//更新或者新增
+		queryDBMap.put(String.valueOf(db.getDbId()), db);
 	}
 	
 	/**

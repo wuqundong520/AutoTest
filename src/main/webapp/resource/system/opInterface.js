@@ -1,6 +1,9 @@
 var table;
 //遮罩层覆盖区域
 var $wrapper = $('#div-table-container');
+
+
+
 var templateParams = {
 		tableTheads:["接口名称","调用地址","所属节点","当前状态","备注"],
 		btnTools:[{
@@ -85,7 +88,7 @@ var eventList = {
 				opType=5;
 			}
 			
-			table.ajax.url('op-listOp?opType='+opType).load();
+			table.ajax.url(OP_INTERFACE_LIST_URL + '?opType=' + opType).load();
 			$(this).addClass("btn-primary").siblings("a").removeClass("btn-primary").addClass("btn-default");
 		}
 };
@@ -93,7 +96,7 @@ var eventList = {
 var mySetting = {
 		eventList:eventList,
 		listPage:{
-			listUrl:"op-listOp?opType=1",
+			listUrl:OP_INTERFACE_LIST_URL + "?opType=1",
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
 			columnsJson:[0]

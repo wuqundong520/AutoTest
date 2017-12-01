@@ -64,7 +64,7 @@ public class InterceptorAction extends ActionSupport{
 	public String error() {
 		
 		jsonMap.put("returnCode", ReturnCodeConsts.SYSTEM_ERROR_CODE);
-		jsonMap.put("msg", "系统内部错误,请稍后再试");
+		jsonMap.put("msg", "系统内部错误,请稍后再试:<br>" + ((Exception)ActionContext.getContext().getValueStack().findValue("exception")).getCause().getMessage());
 		
 		logger.error("系统内部错误,请求失败!");
 		logger.error(ActionContext.getContext().getValueStack().findValue("exception"), ((Exception)ActionContext.getContext().getValueStack().findValue("exception")));

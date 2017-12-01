@@ -219,7 +219,6 @@ public class MessageValidateResponse {
 	 * @param parseUtil
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	private Map<String, String> nodeParameterValidate(String responseMessage, String requestMessage, SceneValidateRule rule, MessageParse parseUtil) {
 		Map<String,String> map = new HashMap<String, String>();
 		map.put(VALIDATE_MAP_STATUS_KEY, "1");
@@ -259,9 +258,7 @@ public class MessageValidateResponse {
 		//数据库获取
 		if (rule.getGetValueMethod().startsWith("999999")) {
 			
-			Map<String, DataDB> dbs = SettingUtil.getQueryDBMap();
-			
-			DataDB db = dbs.get(rule.getGetValueMethod());
+			DataDB db = SettingUtil.getQueryDBById(rule.getGetValueMethod());
 			
 			if (db == null) {
 				map.put(VALIDATE_MAP_MSG_KEY, msg + "没有找到dbId为 " + rule.getGetValueMethod() + " 查询数据信息!");

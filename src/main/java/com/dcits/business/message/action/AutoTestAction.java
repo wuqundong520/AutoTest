@@ -71,6 +71,8 @@ public class AutoTestAction extends ActionSupport implements ModelDriven<TestCon
 	@Autowired
 	private MessageAutoTest autoTest;
 	
+	private Boolean autoTestFlag;
+	
 	
 	/**
 	 * 单场景测试
@@ -114,8 +116,11 @@ public class AutoTestAction extends ActionSupport implements ModelDriven<TestCon
 			user = userService.get(SystemConsts.ADMIN_USER_ID);
 		}
 		
+		if (autoTestFlag == null) {
+			autoTestFlag = false;
+		}
 		
-		int[] result = autoTest.batchTest(user, setId, false);
+		int[] result = autoTest.batchTest(user, setId, autoTestFlag);
 		
 		if (result == null) {
 			jsonMap.put("msg", "没有可用的测试场景");
@@ -229,6 +234,10 @@ public class AutoTestAction extends ActionSupport implements ModelDriven<TestCon
 	public TestConfig getModel() {
 		// TODO Auto-generated method stub
 		return this.config;
+	}
+	
+	public void setAutoTestFlag(Boolean autoTestFlag) {
+		this.autoTestFlag = autoTestFlag;
 	}
 
 }

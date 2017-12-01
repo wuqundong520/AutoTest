@@ -33,20 +33,6 @@ var cronExpressionData = [{"labelText":"小时","name":"hour","options":
 		:"星期日",}},{"labelText":"月份","name":"month","options":{"*":"每个月","1":"1","2":"2","3":"3","4":"4"
 		,"5":"5","6":"6","7":"7","8":"8","9":"9","10":"10","11":"11","12":"12"}}];
 
-/**
- * ajax地址
- */
-var TASK_CHECK_NAME_URL = "task-checkName";
-var TASK_EDIT_URL = "task-edit";
-var TASK_DEL_URL = "task-del";
-var TASK_LIST_URL = "task-list";
-var TASK_GET_URL = "task-get";
-var TASK_STOP_TASK_URL = "task-stopRunningTask";
-var TASK_ADD_RUNABLE_TASK_URL = "task-startRunableTask";
-var TASK_START_QUARTZ_URL = "task-startQuartz";
-var TASK_STOP_QUARTZ_URL = "task-stopQuartz";
-var TASK_GET_QUARTZ_STATUS_URL = "task-getQuartzStatus";
-var TASK_UPDATE_CRON_EXPRESSION_URL = "task-updateCronExpression";
 
 var templateParams = {
 		tableTheads:["名称", "类型", "测试集", "定时规则/CRON表达式", "已执行次数", "最后一次执行", "创建时间", "开启状态", "操作"],

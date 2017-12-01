@@ -27,19 +27,19 @@ var mySetting = {
 					var o=data.data;
 					var infoHtml = '';
 					$.each(o,function(i,n){								
-						infoHtml+='<div class="row cl">'+
-						'<label class="form-label col-xs-4 col-sm-3">'+
-						n.mark+'：</label>'+
-						'<div class="formControls col-xs-8 col-sm-9">'+
-						'<input type="text" class="input-text" id="'+n.settingName+'" name="'+n.settingName+'" value="'+n.settingValue+'" placeholder="'+n.defaultValue+'" /></div></div>';
-						beforeSettings[n.settingName]=n.settingValue;
+						infoHtml += '<div class="row cl">' +
+						'<label class="form-label col-xs-4 col-sm-3">' +
+						n.mark + '：</label>' +
+						'<div class="formControls col-xs-8 col-sm-9">' +
+						'<input type="text" class="input-text" id="' + n.settingName + '" name="' + n.settingName + '" value="' + n.settingValue + '" placeholder="' + n.defaultValue + '" /></div></div>';
+						beforeSettings[n.settingName] = n.settingValue;
 					});
 					$("#setting-info").html(infoHtml);
 					$("input").change(function(){
-						if(beforeSettings[$(this).attr("name")]==$(this).val()){
+						if (beforeSettings[$(this).attr("name")] == $(this).val()){
 							delete editInfo[$(this).attr("name")];
-						}else{
-							editInfo[$(this).attr("name")]=$(this).val();
+						} else {
+							editInfo[$(this).attr("name")] = $(this).val();
 						}
 						
 					});
@@ -49,8 +49,8 @@ var mySetting = {
 			});
    	 	},
 		editPage:{
-			editUrl:"global-edit",
-			getUrl:"global-listAll"
+			editUrl:GLOBAL_SETTING_EDIT_URL,
+			getUrl:GLOBAL_SETTING_LIST_ALL_URL
 		}	
 	};
 

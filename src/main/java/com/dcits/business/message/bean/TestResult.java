@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 
 import org.apache.struts2.json.annotations.JSON;
 
+import com.dcits.annotation.FieldNameMapper;
+
 /**
  * 测试详情结果
  * @author xuwangcheng
@@ -54,6 +56,7 @@ public class TestResult implements Serializable{
 	 * 1 - FAIL 失败，如返回验证不成功、没有返回等
 	 * 2 - STOP 异常停止或者未完成，请求地址不通、缺少测试数据等
 	 */
+	@FieldNameMapper(ifSearch=false)
 	private String runStatus;
 	
 	/**

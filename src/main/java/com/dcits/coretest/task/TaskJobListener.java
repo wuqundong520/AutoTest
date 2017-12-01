@@ -2,6 +2,7 @@ package com.dcits.coretest.task;
 
 import java.sql.Timestamp;
 
+import org.apache.commons.lang.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -37,10 +38,10 @@ public class TaskJobListener implements JobListener {
 	@Override
 	public void jobToBeExecuted(JobExecutionContext context) {
 		// TODO Auto-generated method stub
-		JobDataMap dataMap = context.getJobDetail().getJobDataMap();
+		/*JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 		AutoTask task = (AutoTask)dataMap.get(SystemConsts.QUARTZ_TASK_NAME_PREFIX_KEY + context.getJobDetail().getKey().getGroup());
 		String tip = "系统准备执行自动化测试任务:[任务Id]=" + task.getTaskId() + ",[任务名称]=" + task.getTaskName() + ",[任务类型]=" + getTaskType(task.getTaskType());
-		mailService.sendSystemMail(tip, SystemConsts.ADMIN_USER_ID);
+		mailService.sendSystemMail(tip, SystemConsts.ADMIN_USER_ID);*/
 	}	
 
 	/**
@@ -53,10 +54,10 @@ public class TaskJobListener implements JobListener {
 		JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 		AutoTask task = (AutoTask)dataMap.get(SystemConsts.QUARTZ_TASK_NAME_PREFIX_KEY + context.getJobDetail().getKey().getGroup());
 		
-		int[] result = (int[]) context.getResult();
+		String[] result = (String[]) context.getResult();
 		String tip = "";
-		if (result == null) {
-			tip = "系统执行自动化测试任务:[任务Id]=" + task.getTaskId() + ",[任务名称]=" + task.getTaskName() + ",[任务类型]=" + getTaskType(task.getTaskType()) + "  失败:没有可用的测试场景或者测试用例,请检查!";
+		if (StringUtils.isEmpty(result[0])) {
+			tip = "接口自动化测试定时任务<br><span class=\"label label-primary radius\">[任务Id]</span> = " + task.getTaskId() + "<br><span class=\"label label-primary radius\">[任务名称]</span> = " + task.getTaskName() + "<br><span class=\"label label-primary radius\">[任务类型]</span> = " + getTaskType(task.getTaskType()) + "<br><span class=\"label label-primary radius\">[任务状态]</span> = <span class=\"c-red\"><strong>失败</strong></span><br><pre class=\"prettyprint linenums\">" + result[1] + "</pre>";
 			mailService.sendSystemMail(tip, SystemConsts.ADMIN_USER_ID);
 			return;
 		}
@@ -65,7 +66,7 @@ public class TaskJobListener implements JobListener {
 			String finishFlag = "N";
 			
 			while ("N".equalsIgnoreCase(finishFlag)) {
-				finishFlag = reportService.isFinished(result[0]);				
+				finishFlag = reportService.isFinished(Integer.parseInt(result[0]));				
 				try {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {
@@ -74,7 +75,7 @@ public class TaskJobListener implements JobListener {
 				}
 			}
 			
-			tip = "系统成功执行了本次接口自动化测试,[任务Id]=" + task.getTaskId() + ",[任务名称]=" + task.getTaskName() + ",[任务类型]=" + getTaskType(task.getTaskType()) + ",[测试报告ID]=" + result[0] + ",详情请查看测试报告模块!";
+			tip = "接口自动化测试定时任务<br><span class=\"label label-primary radius\">[任务Id]</span> = " + task.getTaskId() + "<br><span class=\"label label-primary radius\">[任务名称]</span> = " + task.getTaskName() + "<br><span class=\"label label-primary radius\">[任务类型]</span> = " + getTaskType(task.getTaskType()) + "<br><span class=\"label label-primary radius\">[测试报告ID]</span> = " + result[0] + "<br>详情请至测试报告模块查看本次报告!";
 		}
 		
 		if ("1".equals(task.getTaskType())) {

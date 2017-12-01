@@ -4,9 +4,22 @@ import java.lang.reflect.Field;
 
 import com.dcits.annotation.FieldNameMapper;
 
-
+/**
+ * 前台DataTables中表格列与后端实体类的字段映射
+ * @author xuwangcheng
+ * @version 2017.1.1,1.0.0.0
+ *
+ */
 public class AnnotationUtil {
 	
+	/**
+	 * 获取当前字段的真实查询名称(HQL中对应的)
+	 * <br>查询该字段是否需要增加搜索条件
+	 * @param clazz
+	 * @param fieldName
+	 * @param getType  0-查询展示字段名  1-查询排列字段
+	 * @return
+	 */
 	@SuppressWarnings("rawtypes")
 	public static String getRealColumnName(Class clazz, String fieldName, int getType) {
 		
@@ -24,6 +37,7 @@ public class AnnotationUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//由于mysql中 Datetime字段不能通过like查询，目前暂时不对Datetime字段进行搜索
 		if ((field.getType().getCanonicalName().equals("java.sql.Timestamp") 
 				|| field.getType().getCanonicalName().equals("java.sql.Date")
 				|| field.getType().getCanonicalName().equals("java.util.Timestamp")) && getType == 0) {				
@@ -32,10 +46,15 @@ public class AnnotationUtil {
 		
 		if (field.isAnnotationPresent(FieldNameMapper.class)) {
 			FieldNameMapper fnp = field.getAnnotation(FieldNameMapper.class);
-			if (!fnp.value().isEmpty()) {
-				return fnp.value();
-			}
-			if (fnp.value().equals(FieldNameMapper.IGNORE_FLAG)) {
+			if (!fnp.fieldPath().isEmpty()) {
+				if (getType == 1 || (getType == 0 && fnp.ifSearch())) {
+					return fnp.fieldPath();
+				} else {
+					return "";
+				}
+	
+			}	
+			if (getType == 0 && !fnp.ifSearch()) {
 				return "";
 			}
 		}

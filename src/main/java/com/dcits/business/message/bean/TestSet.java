@@ -43,6 +43,7 @@ public class TestSet implements Serializable {
 	 * 0-可用   1-不可用<br>
 	 * 在执行定时任务测试时,将会忽略状态为1的测试集
 	 */
+	@FieldNameMapper(ifSearch=false)
 	private String status;
 	/**
 	 * 备注
@@ -57,7 +58,7 @@ public class TestSet implements Serializable {
 	/**
 	 * 包含场景数量
 	 */
-	@FieldNameMapper("size(ms)")
+	@FieldNameMapper(fieldPath="size(ms)",ifSearch=false)
 	private Integer sceneNum;
 	
 	
@@ -71,7 +72,7 @@ public class TestSet implements Serializable {
 	/**
 	 * 组合场景数量
 	 */
-	@FieldNameMapper("size(css)")
+	@FieldNameMapper(fieldPath="size(css)",ifSearch=false)
 	private Integer complexSetSceneNum;
 
 	public TestSet(Integer setId, String setName, User user,

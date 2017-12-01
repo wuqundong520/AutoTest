@@ -19,15 +19,13 @@ var formControlTemplate;
 var editHtml = "";
 var table;
 
-$(function() {
-	//加载对应的js文件	
-	var new_element = document.createElement("script");
-	new_element.setAttribute("type", "text/javascript");
-	var r = (window.location.pathname.split("."))[0].split("/");
-	r = r[r.length-1]+".js";
-	new_element.setAttribute("src", r);
-	document.body.appendChild(new_element);
+var renderShadeIndex;
 
+$(function() {
+	//加载对应的js文件		
+	var r = (window.location.pathname.split("."))[0].split("/");
+	r = r[r.length-1] + ".js";
+	dynamicLoadScript(r);
 });
 
 //设置jQuery Ajax全局的参数  
@@ -62,11 +60,12 @@ var CONSTANT = {
             "processing": false,   //显示处理状态
     		"serverSide": true,  //服务器处理
         	"autoWidth": false,   //自动宽度
+        	"scrollX": false,//水平滚动条
             "responsive": false,   //自动响应
             "language": {
                 "url": "../../js/zh_CN.txt"
             },
-            "lengthMenu": [[10, 20, 50, 100], ['10', '20', '50','100']],  //显示数量设置
+            "lengthMenu": [[10, 20, 50, 100, 99999], ['10', '20', '50','100', '全部数据']],  //显示数量设置
             //行回调
             "createdRow": function ( row, data, index ){
                 $(row).addClass('text-c');
@@ -138,6 +137,7 @@ var publish = {
       * columnsJson:不参与排序的列
       * dtOtherSetting:DT其他的自定义设置
       * dtAjaxCallback:DataTables在每次通过ajax.reload返回之后的回调
+      * exportExcel:是否在工具栏添加  导出到excel 的按钮工具  默认为true
       * 
       * edit页面
       * 必须：
@@ -217,7 +217,8 @@ var publish = {
         	 columnsSetting:{},
         	 columnsJson:[],
         	 dtOtherSetting:{},
-        	 dt:null
+        	 dt:null,
+        	 exportExcel:true
     	 },
     	 editPage:{
     		 beforeInit:function(df) {
@@ -246,9 +247,10 @@ var publish = {
       * 在进行数据渲染之前先进行静态的模板渲染
       * @param callback
       */
-     renderTemplate:function (df, callback) {
-    	 $("body").spinModal();
+     renderTemplate:function (df, callback) {    	 
     	 if(this.renderParams.userDefaultTemplate) {
+    		 //renderShadeIndex = layer.msg('正在努力加载中...', {icon:16, time:99999, shade:0.4});
+    		 $(".page-container").spinModal();
     		 var t = this.renderParams.templateParams;
         	 var html = "";
         	//预编译handlebars模板
@@ -281,7 +283,6 @@ var publish = {
     	 } else {
     		 callback(df);
     	 }   	 
-    	 $("body").spinModal(false);
      },
      /**
       * 内部所用的函数-渲染数据 不同的页面的渲染模式  通用为list(列表页) edit(编辑增加页) 其他类型自己扩展
@@ -293,8 +294,17 @@ var publish = {
     	 if (p.userDefaultRender == true) {
     		 if (p.renderType == "list") {
     			 var l = p.listPage;
-    			 table = initDT(l.tableObj, l.listUrl, l.columnsSetting, l.columnsJson, l.dtOtherSetting);
-    		 }    		 
+    			 table = initDT(l.tableObj, l.listUrl, l.columnsSetting, l.columnsJson, l.dtOtherSetting); 
+    			 if (l.exportExcel) {
+    				 new $.fn.dataTable.Buttons( table, {
+    	    			    buttons: [
+    	    			              { extend: 'excelHtml5', className: 'btn btn-primary radius', text:'导出到Excel', title:(new Date()).Format("yyyyMMddhhmmssS")}
+    	    			    ]
+    	    			} );  
+    	    		 table.buttons().container().appendTo( $('.cl', table.table().container() ) ); 
+    			 }
+    			 
+    		 }       		 
     		 if (p.renderType == "edit") {
     			 var e = p.editPage;
     			 var sUrl = e.editUrl;
@@ -356,7 +366,6 @@ $.fn.delegates = function(configs) {
  */
 function initDT (tableObj, ajaxUrl, columnsSetting, columnsJson, dtOtherSetting) {
 	var data = [];
-	$wrapper.spinModal();
 	var table = $(tableObj)
 	/*//发送ajax请求时
 	.on('perXhr.dt', function() {
@@ -377,7 +386,13 @@ function initDT (tableObj, ajaxUrl, columnsSetting, columnsJson, dtOtherSetting)
     })*/
     //初始化完毕
     .on( 'init.dt', function () {  //刷新表格不会触发此事件  只存在一次
-    	$wrapper.spinModal(false);      	
+    	$('.table').colResizable({
+    		partialRefresh:true,
+    		minWidth:35,
+    		liveDrag:true,
+    		disabledColumns:[0]
+    	});
+    	$(".page-container").spinModal(false); 	    	
     })
 	.DataTable($.extend(true, {}, CONSTANT.DATA_TABLES.DEFAULT_OPTION,{
 		"ajax":ajaxUrl,
@@ -409,14 +424,14 @@ function checkboxHmtl(name,val,className) {
  */
 function delObj(tip, url, id, obj) {
 	layer.confirm(tip, {icon:0, title:'警告'}, function(index) {
-		$wrapper.spinModal();
+		$(".table").spinModal();
 		$.post(url,{id:id},function(data) {
     		if (data.returnCode == 0) {
-    			$wrapper.spinModal(false);
+    			$(".table").spinModal(false);
     			table.row($(obj).parents('tr')).remove().draw();
                 layer.msg('已删除',{icon:1,time:1500});
     		} else {
-    			$wrapper.spinModal(false);
+    			$(".table").spinModal(false);
     			layer.alert(data.msg, {icon: 5});
     		}
     	});
@@ -439,45 +454,49 @@ function batchDelObjs(checkboxList, url, tableObj, opName) {
 	if (opName == null) {
 		opName = "删除";
 	}
-	
 	layer.confirm('确认' + opName + '选中的' + checkboxList.length + '条记录?', {icon:0, title:'警告'}, function(index) {
 		layer.close(index);
 		var loadindex = layer.msg('正在进行批量' + opName + "...", {icon:16, time:60000, shade:0.35});
 		var delCount = 0;
+		var totalCount = 0;
 		var errorTip = "";
 		$.each(checkboxList ,function(i, n) {
 			var objId = $(n).val();//获取id
 			var objName = $(n).attr("name");	//name属性为对象的名称	
 			//layer.msg("正在" + opName + objName + "...", {time: 999999});    
 				$.ajax({
-					type:"POST",
+					type:"post",
 					url:url,
 					data:{id:objId},
-					async:false,
+					//async:false,
 					success:function(data) {
+						totalCount++;
 						if(data.returnCode != 0) {	
-							//layer.msg(opName + objName + "失败!", {time:999999});
 							errorTip += "[" + objName + "]";
 						}else{
-							delCount = i + 1;
-							//layer.msg(opName + objName + "成功!", {time:999999});
+							delCount++;
 						}
 					}
 					});			
 		});
-		//layer.closeAll('dialog');
-		layer.close(loadindex);
-		refreshTable(null, function(json) {
-			if (errorTip != "") {
-				errorTip = "在" + opName + errorTip + "数据时发生了错误,请查看错误日志!";
-				layer.alert(errorTip, {icon:5}, function(index) {
-					layer.close(index);
-					layer.msg("共" + opName + delCount + "条数据!", {icon:1, time:2000});
-				});
-			} else {
-				layer.msg("共" + opName + delCount + "条数据!", {icon:1, time:2000});
+		
+		var intervalID = setInterval(function() {
+			if (totalCount == checkboxList.length) {
+				clearInterval(intervalID)
+				refreshTable(null, function(json) {
+					layer.close(loadindex);
+					if (errorTip != "") {
+						errorTip = "在" + opName + errorTip + "时发生了错误<br>请执行单笔删除操作!";
+						layer.alert(errorTip, {icon:5}, function(index) {
+							layer.close(index);							
+							layer.msg("共" + opName + delCount + "条数据!", {icon:1, time:2000});
+						});
+					} else {
+						layer.msg("共" + opName + delCount + "条数据!", {icon:1, time:2000});
+					}
+				});	
 			}
-		});					
+		}, 500);				
 	});
 		
 }
@@ -580,7 +599,7 @@ function formValidate(formObj, rules, messages, ajaxUrl, closeFlag, ajaxCallback
  * @param resetPaging 是否重置分页信息 false不重置  true 重置
  */
 function refreshTable(ajaxUrl2, callback, tableObject, resetPaging){
-	$wrapper.spinModal();
+	$(".table").spinModal();
 	
 	if (tableObject == null) {
 		tableObject = table;
@@ -599,13 +618,13 @@ function refreshTable(ajaxUrl2, callback, tableObject, resetPaging){
 		tableObject.ajax.url(ajaxUrl2).load(function(json) {
 			publish.renderParams.listPage.dtAjaxCallback();
 			callback(json);
-			$wrapper.spinModal(false);
+			$(".table").spinModal(false);
 		}, resetPaging);
 	} else {
 		tableObject.ajax.reload(function(json) {
 			publish.renderParams.listPage.dtAjaxCallback();
 			callback(json);
-			$wrapper.spinModal(false);
+			$(".table").spinModal(false);
 		}, resetPaging);
 	}
 }
@@ -738,13 +757,43 @@ function GetQueryString(name) {
 	if(r != null) return decodeURIComponent(r[2]); return null;
 }
 
-
+/**
+ * DataTable辅助，省略列内容
+ * @param dataName
+ * @returns {___anonymous19689_19800}
+ */
 function ellipsisData(dataName) {
 	return {
   		"className":"ellipsis",
 	    "data":dataName,
 	    "render":CONSTANT.DATA_TABLES.COLUMNFUN.ELLIPSIS
 	};
+}
+
+/**
+ * 原生js动态加载脚本或者css
+ * @param scriptPath 脚本css路径
+ * @param type  默认为javascript 可选css
+ */
+function dynamicLoadScript (scriptPath, type) {
+	var new_element;
+	if (type == null || type == "javascript") {
+		//加载对应的js文件	
+		new_element = document.createElement("script");
+		new_element.setAttribute("type", "text/javascript");	
+		new_element.setAttribute("src", scriptPath);
+		document.body.appendChild(new_element);
+	} 
+	
+	if (type == "css") {
+		//加载对应的css文件
+		new_element = document.createElement("link");
+		new_element.setAttribute("rel", "stylesheet");
+		new_element.setAttribute("type", "text/css");
+		new_element.setAttribute("href", scriptPath);
+		document.head.appendChild(new_element);
+	}
+	
 }
 
 
@@ -794,23 +843,51 @@ function layer_show (title, url, w, h, type, success, cancel, end) {
 
 
 /**
- * 显示备注
+ * 显示备注或者其他
  * @param itemName
  * @param markName
  * @param obj
+ * @param tipName 窗口上提示
  */
-function showMark(itemName, markName, obj) {
+function showMark(itemName, markName, obj, tipName) {
 	var data = table.row( $(obj).parents('tr') ).data();
+	if (tipName == null) {
+		tipName = "备注";
+	}
 	layer.prompt({
 		formType: 2,
 		maxlength:65535,
 		anim:5,
 		value: data[markName],
-		title: itemName + '-备注',
+		title: itemName + '-' + tipName,
 		area: ['500px', '300px']}, 
 		function(value, index, elem){
 			layer.close(index);
 		});
+}
+
+
+/**
+ * 关联验证
+ * 取值顺序页面按键  减一
+ */
+function reduceSeq() {
+	var seq=$("#objectSeqText").text();
+	if(seq==1){
+		return;
+	}
+	$("#objectSeqText").text(seq-1);
+	$("#ORDER").val(seq-1);
+}
+
+/**
+ * 关联验证
+ * 取值顺序页面按键  加一
+ */
+function addSeq() {
+	var seq=$("#objectSeqText").text();
+	$("#objectSeqText").text(parseInt(seq)+1);
+	$("#ORDER").val(parseInt(seq)+1);
 }
 
 //对Date的扩展，将 Date 转化为指定格式的String   
