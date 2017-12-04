@@ -78,7 +78,12 @@ var templateParams = {
 			button:[{
 				style:"primary",
 				value:"配置",
-				markClass:"setting-call-parameter"
+				name:"setting-call-parameter",
+				embellish:"&nbsp;&nbsp;"
+			},{
+				style:"secondary",
+				value:"模板",
+				name:"template-call-parameter"
 			}]
 		},
 		{
@@ -295,7 +300,35 @@ var eventList = {
 			layer.close($(this).attr("layer-index"));
 			layer.msg('保存成功!', {icon:1, time:1500});
 		},
-		'.setting-call-parameter':function() {	
+		'#template-call-parameter':function() {//选择配置模板
+			var variableType = "";
+			switch (protocolType) {
+			case "HTTP":
+				variableType = "httpCallParameter";
+				break;
+			case "Socket":
+				variableType = "socketCallParameter";
+				break;
+			case "WebService":
+				variableType = "webServiceCallParameter";
+				break;
+			default:
+				break;
+			}
+			$.post(GLOBAL_VARIABLE_LIST_URL, {variableType:variableType}, function(json) {
+				if (json.returnCode == 0) {
+					showSelectBox(json.data, "variableId", "variableName", function(variableId, globalVariable, index) {
+						$("#callParameter").val(globalVariable["value"]);
+						layer.msg('已确定选择！', {icon:1, time:1800});
+						layer.close(index);
+					})
+				} else {
+					layer.alert(json.msg, {icon:5});
+				}
+			});
+			
+		},
+		'#setting-call-parameter':function() {	//配置调用参数
 			
 			if ($("#callParameter").val() == null || $("#callParameter").val() == "") {
 				$("#callParameter").val(JSON.stringify(protocolJson[protocolType]));

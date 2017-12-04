@@ -211,7 +211,33 @@ var eventList = {
 				tip = "<strong><span class=\"c-primary\">【默认】</span></strong><br>点击<span class=\"c-warning\">'自定义'</span>将会创建自定义的配置信息<br>点击<span class=\"c-warning\">'默认'</span>返回!";
 				mode = 0;
 			}
-			layer.confirm('当前选择的运行时配置为：' + tip, {icon: 0,title:'提示', btn:['默认', '自定义']}
+			tip += "<br>点击<span class=\"c-warning\">'自定义模板'</span>选择一个模板并配置为该测试集的运行时设置!";
+			
+			layer.confirm('当前选择的运行时配置为：' + tip, {icon: 0,title:'提示', btn:['默认', '自定义', '自定义模板'],
+				btn3:function(index) {
+					//选择自定义模板
+					$.post(GLOBAL_VARIABLE_LIST_URL, {variableType:"setRuntimeSetting"}, function(json) {
+						if (json.returnCode == 0) {
+							showSelectBox(json.data, "variableId", "variableName", function(variableId, globalVariable, index1) {
+								$.post(SET_RUN_SETTING_CONFIG_URL, {setId:data.setId, variableId:variableId}, function(json) {
+									if (json.returnCode == 0) {
+										layer.msg('已确定选择！', {icon:1, time:1800});
+										layer.closeAll('page');
+									} else {
+										layer.alert(json.msg, {icon:5});
+									}
+								});
+								
+								/*data.config = json.config;
+								that.data(data);
+								viewRunSettingConfig(data, that);*/
+																
+							})
+						} else {
+							layer.alert(json.msg, {icon:5});
+						}
+					});
+				}}
 				, function(index) {
 					if (mode == 1) {
 						settingConfig(data.setId, mode, function (json) {
@@ -230,10 +256,10 @@ var eventList = {
 							data.config = json.config;
 							that.data(data);
 							layer.close(index);
-							viewRunSettingConfig(data,that);	
+							viewRunSettingConfig(data, that);	
 						});
 					} else {					
-						viewRunSettingConfig(data,that);	
+						viewRunSettingConfig(data, that);	
 					}
 									
 				});

@@ -17,6 +17,7 @@ import com.dcits.business.message.bean.MessageScene;
 import com.dcits.business.message.bean.SceneValidateRule;
 import com.dcits.business.message.service.SceneValidateRuleService;
 import com.dcits.business.system.bean.DataDB;
+import com.dcits.business.system.service.GlobalVariableService;
 import com.dcits.coretest.message.parse.MessageParse;
 import com.dcits.util.DBUtil;
 import com.dcits.util.PracticalUtils;
@@ -47,6 +48,8 @@ public class MessageValidateResponse {
 	
 	public static final String VALIDATE_MAP_STATUS_KEY = "status";
 	public static final String VALIDATE_MAP_MSG_KEY = "msg";
+	@Autowired
+	private GlobalVariableService globalVariableService;
 	
 	/**
 	 * 
@@ -174,9 +177,9 @@ public class MessageValidateResponse {
 		if (PracticalUtils.isNumeric(lenght)) {
 			getValue = getValue.substring(0, Integer.valueOf(lenght));
 		}
-				
-		String msg = "【关联验证】获取指定的测试结果为 [" + getValue + "] ,预期结果为 [" + rule.getValidateValue() + "] ";
-		if (getValue.equals(rule.getValidateValue())) {
+		String validateValue = PracticalUtils.replaceGlobalVariable(rule.getValidateValue(), globalVariableService);		
+		String msg = "【关联验证】获取指定的测试结果为 [" + getValue + "] ,预期结果为 [" + validateValue + "] ";
+		if (getValue.equals(validateValue)) {
 			map.put(VALIDATE_MAP_STATUS_KEY, "0");
 			map.put(VALIDATE_MAP_MSG_KEY, msg + ",结果一致,验证成功!");
 		} else {
@@ -198,7 +201,7 @@ public class MessageValidateResponse {
 	private Map<String, String> fullResponseValidate(String responseMessage, String requestMessage, SceneValidateRule rule, MessageParse parseUtil) {
 		Map<String,String> map = new HashMap<String, String>();
 		String validateValue = parseUtil.parameterReplaceByNodePath(requestMessage, rule.getValidateValue());
-
+		validateValue = PracticalUtils.replaceGlobalVariable(validateValue, globalVariableService);
 		if (parseUtil.messageFormatBeautify(validateValue).equals(responseMessage)) {
 			map.put(VALIDATE_MAP_STATUS_KEY, "0");
 			map.put(VALIDATE_MAP_MSG_KEY,"【全文验证】预期报文为与返回报文内容与预期报文内容一致,验证成功!");
@@ -242,7 +245,7 @@ public class MessageValidateResponse {
 		
 		//字符串
 		if (rule.getGetValueMethod().equals("0")) {
-			validateValue = rule.getValidateValue();
+			validateValue = PracticalUtils.replaceGlobalVariable(rule.getValidateValue(), globalVariableService);
 		}
 		
 		//入参节点获取
@@ -265,7 +268,8 @@ public class MessageValidateResponse {
 				return map;
 			}
 			
-			String querySql = parseUtil.parameterReplaceByNodePath(requestMessage, rule.getValidateValue());
+			String querySql = PracticalUtils.replaceGlobalVariable(
+					parseUtil.parameterReplaceByNodePath(requestMessage, rule.getValidateValue()), globalVariableService);
 			
 			validateValue = DBUtil.getDBData(db, querySql);
 			

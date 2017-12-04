@@ -9,12 +9,15 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.dcits.business.message.bean.TestReport;
 import com.dcits.business.message.bean.TestResult;
+import com.dcits.business.system.bean.GlobalVariable;
+import com.dcits.business.system.service.GlobalVariableService;
 import com.dcits.util.message.JsonUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -334,7 +337,79 @@ public class PracticalUtils {
 		 return cal.getTime();
 	 }
 	 
+	 /**
+	  * 生成随机字符串
+	  * @param mode 模式 0-只包含大写字母   1-只包含小写字母 2-包含大小写字母  3-包含字母数字
+	  * @param length 字符串长度
+	  * @return
+	  */
+	 public static String createRandomString (String mode, int length) {
+		 //小写字母0-25 大写字母26-51 数字52-61
+		 String str="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		 int count = 0;
+		 StringBuilder randomStr = new StringBuilder();
+		 while (count < length) {
+			 count ++;
+			 switch (mode) {
+				case "0":
+					randomStr.append(str.charAt(getRandomNum(51, 26)));
+					break;
+				case "1":
+					randomStr.append(str.charAt(getRandomNum(25, 0)));
+					break;
+				case "2":
+					randomStr.append(str.charAt(getRandomNum(51, 0)));
+					break;
+				case "3":
+					randomStr.append(str.charAt(getRandomNum(61, 0)));
+					break;
+				default:
+					break;
+			}
+		 }
+		 return randomStr.toString();
+		 
+	 }
+	 
+	 /**
+	  * 获取随机数
+	  * @param max 最大值
+	  * @param min 最小值
+	  * @return
+	  */
+	 public static int getRandomNum (int max, int min) {
+		 Random ran = new Random();
+		 return ran.nextInt(max) % (max - min + 1) + min;
+	 }
+	 
+	
+	 /**
+	  * 替换报文入参中的全局变量
+	  * @param msg
+	  * @param globalVariableService
+	  * @return
+	  */
+	 public static String replaceGlobalVariable (String msg, GlobalVariableService globalVariableService) {
+		 String regex = "\\$\\{__(.*?)\\}";
+		 Pattern pattern = Pattern.compile(regex);
+		 Matcher matcher = pattern.matcher(msg);
+		 GlobalVariable variable = null;
+		 String useVariable = null;
+		 while (matcher.find()) {
+			 useVariable = "\\$\\{__" + matcher.group(1) + "\\}";
+			 if (!msg.contains("${__" + matcher.group(1) + "}")) {
+				 continue;
+			 }
+			 variable = globalVariableService.findByKey(matcher.group(1));
+			 if (variable == null) {
+				 continue;
+			 }
+			 msg = msg.replaceAll(useVariable, String.valueOf(variable.createSettingValue()));
+		 }
+		 return msg;
+	 }
+	 
 	 public static void main(String[] args) {
-		System.out.println(getThisWeekFirstDayZeroTime().toString());
+		System.out.println(createRandomString("3", 20));
 	}
 }

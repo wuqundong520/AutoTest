@@ -1,5 +1,7 @@
 package com.dcits.business.system.service;
 
+import java.util.List;
+
 import com.dcits.business.base.service.BaseService;
 import com.dcits.business.system.bean.GlobalVariable;
 /**
@@ -24,4 +26,11 @@ public interface GlobalVariableService extends BaseService<GlobalVariable> {
 	 * @param value
 	 */
 	void updateValue(Integer variableId, String value);
+	
+	/**
+	 * 根据变量或者模板类型查找
+	 * @param variableType
+	 * @return
+	 */
+	List<GlobalVariable> findByVariableType(String variableType);
 }

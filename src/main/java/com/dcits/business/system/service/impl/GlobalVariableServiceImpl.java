@@ -1,5 +1,7 @@
 package com.dcits.business.system.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,5 +37,11 @@ public class GlobalVariableServiceImpl extends BaseServiceImpl<GlobalVariable> i
 		// TODO Auto-generated method stub
 		globalVariableDao.updateValue(variableId, value);
 		
+	}
+
+	@Override
+	public List<GlobalVariable> findByVariableType(String variableType) {
+		// TODO Auto-generated method stub
+		return globalVariableDao.findByVariableType(variableType);
 	}
 }

@@ -17,6 +17,8 @@ import com.dcits.business.message.service.ComplexSetSceneService;
 import com.dcits.business.message.service.MessageSceneService;
 import com.dcits.business.message.service.TestConfigService;
 import com.dcits.business.message.service.TestSetService;
+import com.dcits.business.system.bean.GlobalVariable;
+import com.dcits.business.system.service.GlobalVariableService;
 import com.dcits.business.user.bean.User;
 import com.dcits.constant.ReturnCodeConsts;
 import com.dcits.util.StrutsUtils;
@@ -45,6 +47,8 @@ public class TestSetAction extends BaseAction<TestSet> {
 	private TestConfigService testConfigService;
 	@Autowired
 	private ComplexSetSceneService complexSetSceneService;
+	@Autowired
+	private GlobalVariableService globalVariableService;
 	
 	/**
 	 * (1)、添加还是删除场景,0-增加 1-删除<br>
@@ -62,6 +66,8 @@ public class TestSetAction extends BaseAction<TestSet> {
 	private String useVariables;
 	
 	private String saveVariables;
+	
+	private Integer variableId;
 	
 	@Autowired
 	public void setTestSetService(TestSetService testSetService) {
@@ -228,7 +234,15 @@ public class TestSetAction extends BaseAction<TestSet> {
 				testConfigService.delete(configId);
 			}
 		}
-						
+			
+		if (variableId != null) {
+			//配置模板
+			GlobalVariable v = globalVariableService.get(variableId);
+			config = (TestConfig) v.createSettingValue();
+			testConfigService.save(config);
+			model.setConfig(config);
+		}
+		
 		testSetService.edit(model);
 		
 		jsonMap.put("config", config);
@@ -263,6 +277,10 @@ public class TestSetAction extends BaseAction<TestSet> {
 	
 	public void setScenes(String scenes) {
 		this.scenes = scenes;
+	}
+	
+	public void setVariableId(Integer variableId) {
+		this.variableId = variableId;
 	}
 	
 }

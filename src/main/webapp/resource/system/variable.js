@@ -15,8 +15,9 @@ var variableTypeInfo = {
 			    "RecEncType":"UTF-8",
 			    "EncType":"UTF-8" 
 			},
-			layerHeight:"450",
-			keyIsNull:true
+			layerHeight:"500",
+			keyIsNull:true,
+			ifCreate:false
 		},
 		socketCallParameter:{
 			text:"Socket调用参数",
@@ -24,8 +25,9 @@ var variableTypeInfo = {
 				"ConnectTimeOut":"",
 			    "ReadTimeOut":""
 			},
-			layerHeight:"230",
-			keyIsNull:true
+			layerHeight:"280",
+			keyIsNull:true,
+			ifCreate:false
 		},
 		webServiceCallParameter:{
 			text:"WebService调用参数",
@@ -36,8 +38,9 @@ var variableTypeInfo = {
 			    "Username":"",
 			    "Password":""
 			},
-			layerHeight:"400",
-			keyIsNull:true
+			layerHeight:"430",
+			keyIsNull:true,
+			ifCreate:false
 		},
 		relatedKeyWord:{
 			text:"验证关联规则",
@@ -49,8 +52,9 @@ var variableTypeInfo = {
 				LENGHT:"",
 				validateValue:""
 			},
-			layerHeight:"500",
-			keyIsNull:true
+			layerHeight:"530",
+			keyIsNull:true,
+			ifCreate:false
 		},
 		setRuntimeSetting:{
 			text:"测试集运行时配置",
@@ -63,22 +67,25 @@ var variableTypeInfo = {
 				checkDataFlag:"",
 				customRequestUrl:""
 			},
-			layerHeight:"550",
-			keyIsNull:true
+			layerHeight:"580",
+			keyIsNull:true,
+			ifCreate:false
 		},
 		constant:{
 			text:"常量",
 			settingValue:"",
 			layerHeight:"",
-			keyIsNull:false
+			keyIsNull:false,
+			ifCreate:true
 		},
 		datetime:{
 			text:"日期",
 			settingValue:{
 				datetimeFormat:""
 			},
-			layerHeight:"260",
-			keyIsNull:false
+			layerHeight:"310",
+			keyIsNull:false,
+			ifCreate:true
 		},
 		randomNum:{
 			text:"随机数",
@@ -86,14 +93,16 @@ var variableTypeInfo = {
 				randomMin:"",
 				randomNumMax:""
 			},
-			layerHeight:"230",
-			keyIsNull:false
+			layerHeight:"260",
+			keyIsNull:false,
+			ifCreate:true
 		},
 		currentTimestamp:{
 			text:"时间戳",
 			settingValue:"",
 			layerHeight:"",
-			keyIsNull:false
+			keyIsNull:false,
+			ifCreate:true
 		},
 		randomString:{
 			text:"随机字符串",
@@ -101,10 +110,19 @@ var variableTypeInfo = {
 				randomStringMode:"",
 				randomStringNum:""
 			},
-			layerHeight:"230",
-			keyIsNull:false
+			layerHeight:"260",
+			keyIsNull:false,
+			ifCreate:true
 		}
 };
+
+function variableTypeList () {
+	var types = [{value:"all", text:"全部类型", selected:"selected"}];
+	$.each(variableTypeInfo, function(i, n) {
+		types.push({value:i, text:n.text});
+	});
+	return types;
+}
 
 var templateParams = {
 		tableTheads:["名称","类型","key","value","创建时间","创建用户", "备注","操作"],
@@ -113,13 +131,17 @@ var templateParams = {
 			size:"M",
 			id:"add-object",
 			iconFont:"&#xe600;",
-			name:"添加全局变量"
+			name:"创建变量模板"
 		},{
 			type:"danger",
 			size:"M",
 			id:"batch-del-object",
 			iconFont:"&#xe6e2;",
 			name:"批量删除"
+		},{
+			select:true,
+			id:"list-by-variable-type",
+			option:variableTypeList()
 		}],
 		formControls:[
 		{
@@ -266,7 +288,17 @@ var columnsSetting = [
 		   	return labelCreate(data, context);
 		}
 	},
-	ellipsisData("key"),
+	{
+		"data":"key",
+		"className":"ellipsis",
+		"render":function(data, type, full, meta) {
+			if (data != "" && data != null && data != " ") {
+				return "${__" + data + "}";
+			}
+			return "";
+		}
+	
+	},
 	{
 	    "data":"value",
 	    "className":"ellipsis",
@@ -299,8 +331,16 @@ var columnsSetting = [
 	},
 	{
 		"data":null,
-	    "render":function(data, type, full, meta){	    	
-	    	var context = [{
+	    "render":function(data, type, full, meta){	    		    	
+	    	var context = [];
+	    	if (variableTypeInfo[data.variableType]["ifCreate"]) {
+	    		context.push({
+	    			title:"生成变量",
+		    		markClass:"variable-create",
+		    		iconFont:"&#xe725;"
+	    		});
+	    	}
+	    	return btnIconTemplate(context.concat([{
 	    		title:"编辑",
 	    		markClass:"object-edit",
 	    		iconFont:"&#xe6df;"
@@ -308,9 +348,7 @@ var columnsSetting = [
 	    		title:"删除",
 	    		markClass:"object-del",
 	    		iconFont:"&#xe6e2;"
-	    	}
-	    	];	    		
-	    	return btnIconTemplate(context);	    	
+	    	}]));	    	
 	    }}];
 
 var settingLayerIndex;//当前打开的变量配置的layer窗口
@@ -319,6 +357,11 @@ var settingType;
 var settingValue;
 var variableId;
 var eventList = {
+		"#list-by-variable-type":{
+			'change':function() {
+				table.ajax.url(GLOBAL_VARIABLE_LIST_URL + '?variableType=' + $(this).val()).load();
+			}
+		},
 		"#add-object":function(){
 			publish.renderParams.editPage.modeFlag = 0;					
 			layer_show("添加全局变量", editHtml, "650", "450", 1);
@@ -362,6 +405,21 @@ var eventList = {
 			}
 			showSettingPage(title);
 		},
+		".variable-create":function() {//生成变量
+			var data = table.row( $(this).parents('tr') ).data();
+			if (data.variableType == "constant") {
+				layer.alert('<span class="c-success">常量值：</span><br>' + data.value, {icon:1, anim:5, title:data.variableName});
+				return;
+			}
+			$.post(GLOBAL_VARIABLE_CREATE_VARIABLE_URL, {variableType:data.variableType, value:data.value}, function(json) {
+				if (json.returnCode == 0) {
+					layer.alert('<span class="c-success">生成变量成功：</span><br>' + json.msg, {icon:1, anim:5, title:data.variableName});
+				} else {
+					layer.alert('<span class="c-danger">生成变量失败：</span><br>' + json.msg, {icon:5, anim:5, title:data.variableName});
+				}
+			});
+			
+		},
 		"#save-setting-variable-value":function() {//保存
 			var value = $.extend({}, variableTypeInfo[settingType]["settingValue"]);
 			$.each(value, function(settingName, settingValue) {
@@ -369,6 +427,18 @@ var eventList = {
 					value[settingName] = $("#" + settingName).val();
 				}
 			});
+			
+			//HTTP调用参数单独处理
+			//Content-Type:application/xml;User-agent:chrome
+			if (settingType == "httpCallParameter") {
+				if (value["Authorization"] != null && value["Authorization"] != "") {
+					value["Authorization"] = parseHttpParameterToJson(value["Authorization"]);
+				}
+				if (value["Headers"] != null && value["Headers"] != "") {
+					value["Headers"] = parseHttpParameterToJson(value["Headers"]);
+				}
+			}
+			
 			value = JSON.stringify(value);
 			if (settingMode == 0) {								
 				$("#value").val(value);
@@ -394,7 +464,8 @@ var eventList = {
 				layer.close(settingLayerIndex);
 			}
 			
-		}		
+		}
+		
 };
 
 
@@ -416,10 +487,10 @@ var mySetting = {
 			rules:{
 				variableName:{
 					required:true,
-					minlength:1,
+					minlength:2,
 					maxlength:255
 				},
-				key:{
+				/*key:{
 					required:true,
 					remote:{
 						url:GLOBAL_VARIABLE_CHECK_NAME_URL,
@@ -436,7 +507,7 @@ var mySetting = {
 					        	return $("#variableType").val();
 					        }
 					}}
-				},
+				},*/
 				value:{
 					required:true
 				}
@@ -446,7 +517,10 @@ var mySetting = {
 			listUrl:GLOBAL_VARIABLE_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0, 8, 9]
+			columnsJson:[0, 8, 9],
+			dtOtherSetting:{
+				serverSide:false
+			}
 		},
 		templateParams:templateParams		
 	};
@@ -488,12 +562,24 @@ function changeFormByVariableType (variableType) {
 	}
 }
 
+/**
+ * 根据配置的类型不同改变editPage页面上的一些控件的显示
+ * @param key_type
+ * @param value_type
+ * @param settingButton_type
+ * @returns
+ */
 function showOrHideInput(key_type, value_type, settingButton_type) {
 	$("#key").attr('type', key_type);
 	$("#value").attr('type', value_type);
 	$("#setting-variable-value").attr('type', settingButton_type);
 }
 
+/**
+ * 打开模板或者参数配置编辑页
+ * @param title
+ * @returns
+ */
 function showSettingPage(title) {
 	if (title == null) {
 		title = variableTypeInfo[settingType]["text"];
@@ -501,9 +587,17 @@ function showSettingPage(title) {
 	layer_show( title + "-配置", settingVariableValueTemplate(), '680', variableTypeInfo[settingType]["layerHeight"], 1
 			, function(layero, index) {
 				settingLayerIndex = index;				
-				if (settingValue != null && settingValue != "") {
-					$.each(JSON.parse(settingValue), function(i, n) {
+				if (settingValue != null && settingValue != "" && settingValue != " ") {
+					$.each(JSON.parse(settingValue), function(i, n) {						
+						
 						if ($("#" + i)) {
+							
+							//HTTP调用参数单独处理
+							//Content-Type:application/xml;User-agent:chrome
+							if (i == "Authorization" || i == "Headers") {
+								n = parseHttpParameterJsonToString(n);								
+							}
+							
 							$("#" + i).val(n);
 							if (i == "ORDER") {
 								$("#objectSeqText").text(n);
@@ -513,4 +607,24 @@ function showSettingPage(title) {
 				}
 				$("div ." + settingType).removeClass('hide');						
 	});
+}
+
+function parseHttpParameterToJson(s) {
+	var returnObj = {};
+	var arr = s.split(";");
+	$.each(arr, function(i, n) {
+		if (n != null && n != "") {
+			var arr2 = n.split(":");
+			returnObj[arr2[0]] = arr2[1];
+		}				
+	});
+	return returnObj;
+}
+
+function parseHttpParameterJsonToString (obj) {
+	var s = "";
+	$.each(obj, function(name, value) {
+		s += name + ":" + value + ";"
+	});
+	return s;
 }

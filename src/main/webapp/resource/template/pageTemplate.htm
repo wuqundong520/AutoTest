@@ -18,8 +18,20 @@
 <!-- 文字图标按钮模板 -->
 <script id="btn-text-template" type="text/x-handlebars-template">
     {{#each this}}
+		{{#if select}}
+		<span class="select-box radius" style="width:40%;">
+  			<select class="select {{markClass}}" size="1" id="{{id}}">
+				{{#with option}}
+				{{#each this}}
+					<option value="{{value}}" {{selected}}>{{text}}</option>
+				{{/each}}
+				{{/with}}
+  		 	</select>
+        </span>{{#if embellish}}{{{embellish}}}{{/if}}		
+		{{else}}
 		<a href="javascript:;" class="btn btn-{{type}} radius size-{{size}} {{markClass}}" id="{{id}}"><i class="Hui-iconfont {{iMarkClass}}">{{{iconFont}}}</i> {{name}}</a>
-    {{/each}}
+    	{{/if}}
+	{{/each}}
 </script>
 
 
@@ -64,8 +76,8 @@
 								<option value="{{value}}" {{selected}}>{{text}}</option>
 							{{/each}}
 							{{/with}}
-			  			</select>
-             			</span>{{#if embellish}}{{{embellish}}}{{/if}}				
+			  		 	</select>
+             		 </span>{{#if embellish}}{{{embellish}}}{{/if}}				
 				{{/each}}
 				{{/if}}	
 				{{#if button}}						

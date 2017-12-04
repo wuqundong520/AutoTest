@@ -62,6 +62,7 @@ var CONSTANT = {
         	"autoWidth": false,   //自动宽度
         	"scrollX": false,//水平滚动条
             "responsive": false,   //自动响应
+            "searchDelay": 800, //搜索间隔,默认为400ms
             "language": {
                 "url": "../../js/zh_CN.txt"
             },
@@ -298,7 +299,7 @@ var publish = {
     			 if (l.exportExcel) {
     				 new $.fn.dataTable.Buttons( table, {
     	    			    buttons: [
-    	    			              { extend: 'excelHtml5', className: 'btn btn-primary radius', text:'导出到Excel', title:(new Date()).Format("yyyyMMddhhmmssS")}
+    	    			              { extend: 'excelHtml5', className: 'btn btn-primary radius', text:'导出到Excel', title:(new Date()).Format("yyyy-MM-dd-hhmmssS")}
     	    			    ]
     	    			} );  
     	    		 table.buttons().container().appendTo( $('.cl', table.table().container() ) ); 
@@ -436,6 +437,46 @@ function delObj(tip, url, id, obj) {
     		}
     	});
 	});
+}
+
+/**
+ * 按照设定显示浮动选择条
+ * @param data 展示的数据 数组
+ * @param idName option的value取值字段名
+ * @param titleNames option的text取值字段名 传入数组的话将会用'-'号连接起多个字段值
+ * @param chooseCallback 选择之后的回调，带三个参数：id - id值，obj - 选择的对应实体 ， index - 打开的layer窗体index
+ */
+function showSelectBox (data, idName, titleNames, chooseCallback) {
+	if (data.length < 1) {
+		layer.msg('无可用数据!', {icon:0, time:2000});
+		return;
+	}
+	var show_html = '<div class="row cl" style="width:340px;margin:15px;">'		 
+		+ '<div class="formControls col-xs-10"><span class="select-box radius mt-0">'
+		+ '<select class="select" size="1" name="select-object" id="select-object">';	
+	if (!(titleNames instanceof Array)) {
+		titleNames = [titleNames];
+	}
+	var count = titleNames.length;
+	$.each(data, function(i, n) {
+		show_html += '<option value="' + n[idName] + '" data-id="' + i + '">';
+		$.each(titleNames, function(i1, n1) {
+			show_html += n[n1];
+			if (count > i1 + 1) {
+				show_html += "-";
+			}
+		});		
+		show_html += '</option>';
+	});
+	show_html += '</select></span></div><div class="form-label col-xs-2">'
+		+ '<input type="button" class="btn btn-primary radius" onclick="" id="show-select-box-choose" value="选择"/></div></div>';
+	
+	var index = layer_show("请选择", show_html, '400', '120', 1, function() {
+		$("#show-select-box-choose").one('click', function() {
+			var data_id = $('#select-object option:selected').attr('data-id');
+			chooseCallback($('#select-object').val(), data[data_id], index);
+		});
+	})
 }
 
 /**
@@ -919,4 +960,13 @@ Date.prototype.Format = function(fmt)
 
 String.prototype.replaceAll = function(s1,s2){
 	　　return this.replace(new RegExp(s1,"gm"),s2);
+}
+
+/**
+ * 关于平台的一些说明文档
+ * globalVariable 全局变量参数说明
+ */
+function AtpReadme() {
+	var module = $(this).attr("data-module");
+	
 }

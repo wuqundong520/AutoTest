@@ -104,8 +104,10 @@ public class WebserviceTestClient extends TestClient {
 			}
 
 			/*
-			 * 设置要调用的方法 http://ws.apache.org/axis2 为默认的（无package的情况）命名空间，
-			 * 如果有包名，则为 http://axis2.webservice.elgin.com ,包名倒过来即可 method为方法名称
+			 * 设置要调用的方法 
+			 * http://ws.apache.org/axis2 为默认的（无package的情况）命名空间，
+			 * 如果有包名，则为 http://axis2.webservice.elgin.com ,包名倒过来即可 
+			 * method为方法名称
 			 */
 			QName qname = new QName(namespace, method);
 

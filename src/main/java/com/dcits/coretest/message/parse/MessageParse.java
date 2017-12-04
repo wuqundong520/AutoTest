@@ -304,6 +304,7 @@ public abstract class MessageParse {
 	}
 	
 	
+	
 	/**
 	 * 获取对应的解析实例
 	 * @param type

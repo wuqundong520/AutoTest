@@ -24,7 +24,7 @@
 </head>
 <body>
 <div id="list-page">
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 系统管理 <span class="c-gray en">&gt;</span> 全局变量 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:refreshTable();" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 系统管理 <span class="c-gray en">&gt;</span> 变量模板 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:refreshTable();" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
     <div class="cl pd-5 bg-1 bk-gray mt-0"> <span class="l" id="btn-tools"></span> </div>
     <div class="mt-20" id="div-table-container">
@@ -44,6 +44,11 @@
 <script id="setting-variable-value-template" type="text/x-handlebars-template">
 <article class="page-container">
 <form action="" method="post" class="form form-horizontal" id="form-variable-value">
+	<div class="row cl">
+		<div class="formControls col-xs-9 col-sm-10 col-xs-offset-3 col-sm-offset-2">
+			<span class="label label-danger radius"> 提示 </span> 如你不清楚以下参数的具体含义和规则，请仔细阅读 <span class="c-red"> 全局变量模板参数说明 </span>。
+		</div>
+	</div>
 	<div class="row cl setRuntimeSetting hide">
 		<label class="form-label col-xs-4 col-sm-3">接口地址选择：</label>
 		<div class="formControls col-xs-8 col-sm-9">
@@ -143,9 +148,9 @@
 	</div>
 	<div class="row cl datetime hide">
 		<div class="formControls col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">		
-			<span class="label label-danger radius">yyyy</span> - 年份&nbsp;&nbsp;<span class="label label-danger radius">MM</span> - 月份&nbsp;&nbsp;<span class="label label-danger radius">dd</span> - 日期<br>
-			<span class="label label-danger radius">HH</span> - 小时(24小时制)&nbsp;&nbsp;<span class="label label-danger radius">hh</span> - 小时(12小时制)&nbsp;&nbsp;<span class="label label-danger radius">mm</span> - 分钟<br>
-			<span class="label label-danger radius">ss</span> - 秒钟
+			<span class="label label-primary radius">yyyy</span> - 年份&nbsp;&nbsp;<span class="label label-primary radius">MM</span> - 月份&nbsp;&nbsp;<span class="label label-primary radius">dd</span> - 日期<br>
+			<span class="label label-primary radius">HH</span> - 小时(24小时制)&nbsp;&nbsp;<span class="label label-primary radius">hh</span> - 小时(12小时制)&nbsp;&nbsp;<span class="label label-primary radius">mm</span> - 分钟<br>
+			<span class="label label-primary radius">ss</span> - 秒钟
 		</div>
 	</div>
 	<div class="row cl datetime hide">
@@ -186,6 +191,76 @@
 		<label class="form-label col-xs-4 col-sm-3">字符串长度：</label>
 		<div class="formControls col-xs-8 col-sm-9">
 			<input type="text" class="input-text" id="randomStringNum">
+		</div>
+	</div>
+
+	<div class="row cl httpCallParameter hide">
+		<label class="form-label col-xs-4 col-sm-3">请求头：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="Headers" name="Headers"/>
+		</div>
+	</div>
+
+	<div class="row cl httpCallParameter hide">
+		<label class="form-label col-xs-4 col-sm-3">请求认证：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="Authorization" name="Authorization"/>
+		</div>
+	</div>
+
+	<div class="row cl httpCallParameter webServiceCallParameter hide">
+		<label class="form-label col-xs-4 col-sm-3">请求方式：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="Method">
+		</div>
+	</div>
+	
+	<div class="row cl httpCallParameter socketCallParameter webServiceCallParameter hide">
+		<label class="form-label col-xs-4 col-sm-3">连接超时：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="ConnectTimeOut">
+		</div>
+	</div>
+	
+	<div class="row cl httpCallParameter socketCallParameter hide">
+		<label class="form-label col-xs-4 col-sm-3">读取超时：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="ReadTimeOut">
+		</div>
+	</div>
+
+	<div class="row cl httpCallParameter hide">
+		<label class="form-label col-xs-4 col-sm-3">返回编码：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="RecEncType">
+		</div>
+	</div>
+
+	<div class="row cl httpCallParameter hide">
+		<label class="form-label col-xs-4 col-sm-3">请求编码：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="EncType">
+		</div>
+	</div>
+
+	<div class="row cl webServiceCallParameter hide">
+		<label class="form-label col-xs-4 col-sm-3">命名空间：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="Namespace">
+		</div>
+	</div>
+	
+	<div class="row cl webServiceCallParameter hide">
+		<label class="form-label col-xs-4 col-sm-3">用户名：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="Username">
+		</div>
+	</div>
+
+	<div class="row cl webServiceCallParameter hide">
+		<label class="form-label col-xs-4 col-sm-3">密码：</label>
+		<div class="formControls col-xs-8 col-sm-9">
+			<input type="text" class="input-text" id="Password">
 		</div>
 	</div>
 				

@@ -1,14 +1,34 @@
 package com.dcits.business.system.bean;
 
+import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Map;
+
+import net.sf.json.JSONObject;
 
 import org.apache.struts2.json.annotations.JSON;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
+import com.dcits.business.message.bean.SceneValidateRule;
+import com.dcits.business.message.bean.TestConfig;
 import com.dcits.business.user.bean.User;
+import com.dcits.constant.GlobalVariableConstant;
+import com.dcits.util.PracticalUtils;
 
 /**
  * 
- * 全局变量表
+ * 全局变量表<br>
+ * <strong>目前可使用的场景(有key值)：</strong><br>
+ * 	1、所有字段的测试数据<br>
+ * 	2、请求地址(报文中的mock/real/接口中定义的/测试集运行时配置中配置的自定义请求地址)<br>
+ * 	3、接口参数中的默认值<br>
+ * 	4、定时任务中的Cron表达式<br>
+ *  5、关联验证中验证值<br>
+ *  6、节点验证中验证值(取值方式为字符串、数据库时均有效)<br>
+ *  7、全文验证中验证报文
  * @author xuwangcheng
  * @version 2017.11.29,1.0.0.0
  *
@@ -25,6 +45,8 @@ public class GlobalVariable {
 	public static final String VARIABLE_TYPE_RANDOM_NUM = "randomNum";
 	public static final String VARIABLE_TYPE_CURRENT_TIMESTAMP = "currentTimestamp";
 	public static final String VARIABLE_TYPE_RANDOM_STRING = "randomString";
+	
+	private ObjectMapper mapper = new ObjectMapper();
 	
 	private Integer variableId;
 	/**
@@ -63,7 +85,7 @@ public class GlobalVariable {
 	 * <i>constant</i> 	任何常量内容<br>
 	 * <i>randomNum</i>  	两个数字，分别表示最小值，最大值，用逗号分隔<br>
 	 * <i>currentTimestamp</i> 	为空<br>
-	 * <i>randomString</i> 	两个数字，第一位表示字符串长度，第二位表示组成：0-只有大写字母 1-只有小写字母  3-大小写字母混合
+	 * <i>randomString</i> 	两个数字，第一位表示字符串长度，第二位表示组成：0-只有大写字母 1-只有小写字母  2-大小写字母混合 3-数字和字母
 	 * 
 	 */
 	private String value;
@@ -79,6 +101,13 @@ public class GlobalVariable {
 	 * 备注
 	 */
 	private String mark;
+	
+	@SuppressWarnings("unused")
+	private String variableUseName;
+	/**
+	 * 变量创建失败原因
+	 */
+	private String createErrorInfo;
 	
 	public GlobalVariable(String variableName, String variableType, String key,
 			String value, Timestamp createTime, User user, String mark) {
@@ -162,14 +191,105 @@ public class GlobalVariable {
 		this.mark = mark;
 	}
 	
+	public String getVariableUseName() {
+		return GlobalVariableConstant.USE_VARIABLE_LEFT_BOUNDARY
+				+ this.key + GlobalVariableConstant.USE_VARIABLE_RIGHT_BOUNDARY;
+	}
+	
+	
+	public void setCreateErrorInfo(String createErrorInfo) {
+		this.createErrorInfo = createErrorInfo;
+	}
+	
+	public String getCreateErrorInfo() {
+		return createErrorInfo;
+	}
+	
+	/**
+	 * 将value的JSON转换成Map
+	 * @return
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, String> parseJsonToMap() throws JsonParseException, JsonMappingException, IOException {
+		return mapper.readValue(this.value, Map.class);
+	}
 	/**
 	 * 根据类型与规则生成指定内容返回
 	 * @return
 	 */
-	public String createSettingValue () {
+	public Object createSettingValue () {
+		try {
+			switch (this.variableType) {
+			case VARIABLE_TYPE_SET_RUNTIME_SETTING: //生成一个测试集运行时设定
+				Map<String, String> maps = parseJsonToMap();
+				TestConfig config = new TestConfig();
+				config.setCheckDataFlag(maps.get(GlobalVariableConstant.SET_RUNTIME_SETTING_CHECK_DATA_FLAG));
+				config.setConnectTimeOut(Integer.parseInt(maps.get(GlobalVariableConstant.SET_RUNTIME_SETTING_CONNECT_TIMEOUT)));
+				config.setCustomRequestUrl(maps.get(GlobalVariableConstant.SET_RUNTIME_SETTING_CUSTOMR_EQUEST_URL));
+				config.setReadTimeOut(Integer.parseInt(maps.get(GlobalVariableConstant.SET_RUNTIME_SETTING_READ_TIMEOUT)));
+				config.setRequestUrlFlag(maps.get(GlobalVariableConstant.SET_RUNTIME_SETTING_REQUEST_URL_FLAG));
+				config.setRetryCount(Integer.parseInt(maps.get(GlobalVariableConstant.SET_RUNTIME_SETTING_RETRY_COUNT)));
+				config.setRunType(maps.get(GlobalVariableConstant.SET_RUNTIME_SETTING_RUN_TYPE));
+				
+				return config;
+			case VARIABLE_TYPE_VALIDATE_RELATED_KEY_WORD://生成一个关联规则
+				SceneValidateRule rule = new SceneValidateRule();
+				Map<String, String> maps1 = parseJsonToMap();
+				rule.setValidateValue(maps1.get(GlobalVariableConstant.RELATED_KEYWORD_VALIDATE_VALUE));
+				maps1.remove(GlobalVariableConstant.RELATED_KEYWORD_VALIDATE_VALUE);
+				rule.setParameterName(JSONObject.fromObject(maps1).toString());
+				rule.setValidateMethodFlag("0");
+				rule.setStatus("0");
+				rule.setMark("模板创建的关联验证");
+				return rule;
+			case VARIABLE_TYPE_CALL_PARAMETER_HTTP:
+			case VARIABLE_TYPE_CALL_PARAMETER_SOCKET:
+			case VARIABLE_TYPE_CALL_PARAMETER_WEBSERVICE:			
+			case VARIABLE_TYPE_CONSTANT:
+				return this.value;
+			case VARIABLE_TYPE_CURRENT_TIMESTAMP:
+				return String.valueOf(System.currentTimeMillis());
+			case VARIABLE_TYPE_DATETIME:
+				return PracticalUtils.formatDate(parseJsonToMap().get(GlobalVariableConstant.DATETIME_FORMAT_ATTRIBUTE_NAME), new Date());
+			case VARIABLE_TYPE_RANDOM_NUM:
+				Map<String, String> params = parseJsonToMap();
+				int min = Integer.parseInt(params.get(GlobalVariableConstant.RANDOM_MIN_NUM_ATTRIBUTE_NAME));
+				int max = Integer.parseInt(params.get(GlobalVariableConstant.RANDOM_MAX_NUM_ATTRIBUTE_NAME));
+
+				return String.valueOf(PracticalUtils.getRandomNum(max, min));
+			case VARIABLE_TYPE_RANDOM_STRING:
+				Map<String, String> params1 = parseJsonToMap();
+				return PracticalUtils.createRandomString(params1.get(GlobalVariableConstant.RANDOM_STRING_MODE_ATTRIBUTE_NAME)
+						, Integer.parseInt(params1.get(GlobalVariableConstant.RANDOM_STRING_NUM_ATTRIBUTE_NAME)));
+			default:
+				break;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			createErrorInfo = e.getMessage();
+		}
 		
 		
 		return null;
+	}
+	
+	/**
+	 * 判断指定类型是否需要唯一的key
+	 * @return
+	 */
+	public static boolean ifHasKey(String type) {
+		if (VARIABLE_TYPE_CALL_PARAMETER_HTTP.equals(type) ||
+				VARIABLE_TYPE_CALL_PARAMETER_SOCKET.equals(type) ||
+				VARIABLE_TYPE_CALL_PARAMETER_WEBSERVICE.equals(type) ||
+				VARIABLE_TYPE_SET_RUNTIME_SETTING.equals(type) ||
+				VARIABLE_TYPE_VALIDATE_RELATED_KEY_WORD.equals(type)) {						
+			return false;
+		}
+		return true;
 	}
 	
 }

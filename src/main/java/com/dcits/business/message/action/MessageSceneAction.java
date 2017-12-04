@@ -13,10 +13,14 @@ import com.dcits.business.base.action.BaseAction;
 import com.dcits.business.message.bean.InterfaceInfo;
 import com.dcits.business.message.bean.Message;
 import com.dcits.business.message.bean.MessageScene;
+import com.dcits.business.message.bean.SceneValidateRule;
 import com.dcits.business.message.bean.TestData;
 import com.dcits.business.message.service.MessageSceneService;
+import com.dcits.business.message.service.SceneValidateRuleService;
 import com.dcits.business.message.service.TestDataService;
 import com.dcits.business.message.service.TestSetService;
+import com.dcits.business.system.bean.GlobalVariable;
+import com.dcits.business.system.service.GlobalVariableService;
 import com.dcits.constant.ReturnCodeConsts;
 import com.dcits.coretest.message.parse.MessageParse;
 import com.dcits.util.PracticalUtils;
@@ -44,7 +48,13 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 	private TestSetService testSetService;
 	@Autowired
 	private TestDataService testDataService;
+	@Autowired
+	private GlobalVariableService globalVariableService;
+	@Autowired
+	private SceneValidateRuleService sceneValidateRuleService;
 	
+	
+	private Integer variableId;
 	private Integer setId;
 	
 	@SuppressWarnings("unused")
@@ -102,7 +112,7 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 	
 	@Override
 	public String edit() {
-		if (model.getMessageSceneId() == null) {
+		if (model.getMessageSceneId() == null) { //新增
 			model.setCreateTime(new Timestamp(System.currentTimeMillis()));
 			model.setMessageSceneId(messageSceneService.save(model));
 			//新增时默认该该场景添加一条默认数据		
@@ -112,6 +122,14 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 			defaultData.setMessageScene(model);
 			defaultData.setParamsData("");	
 			testDataService.edit(defaultData);
+			
+			//是否配置关联验证模板
+			if (variableId != null) {
+				GlobalVariable v = globalVariableService.get(variableId);
+				SceneValidateRule rule = (SceneValidateRule) v.createSettingValue();
+				rule.setMessageScene(model);
+				sceneValidateRuleService.save(rule);								
+			}			
 		} else {
 			messageSceneService.edit(model);
 		}
@@ -206,5 +224,9 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 	
 	public void setMode(String mode) {
 		this.mode = mode;
+	}
+	
+	public void setVariableId(Integer variableId) {
+		this.variableId = variableId;
 	}
 }

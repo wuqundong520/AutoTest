@@ -19,7 +19,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.dcits.business.system.bean.AutoTask;
 import com.dcits.business.system.service.AutoTaskService;
+import com.dcits.business.system.service.GlobalVariableService;
 import com.dcits.constant.SystemConsts;
+import com.dcits.util.PracticalUtils;
 
 public class JobManager {
 	
@@ -31,6 +33,8 @@ public class JobManager {
 	private TaskJobListener jobListener;
 	@Resource
 	private AutoTaskService taskService;
+	@Resource
+	private GlobalVariableService globalVariableService;
       
     public Scheduler getScheduler() {  
         return scheduler;  
@@ -51,7 +55,8 @@ public class JobManager {
     	//获取任务信息数据
     	TriggerKey triggerKey = TriggerKey.triggerKey(task.getTaskName(), String.valueOf(task.getTaskId()));
     	//表达式调度构建器  
-    	CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(task.getTaskCronExpression()); 
+    	CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(PracticalUtils
+    			.replaceGlobalVariable(task.getTaskCronExpression(), globalVariableService)); 
     	try {
     		CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
         	//判断添加的任务触发器是否已经存在？

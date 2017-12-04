@@ -291,6 +291,23 @@ var eventList = {
 					changeTigs("1");
 					layer.close(index);
 				});
+		},
+		'#choose-validate-template':function() {//选择关联验证模板
+			$.post(GLOBAL_VARIABLE_LIST_URL, {variableType:"relatedKeyWord"}, function(json) {
+				if (json.returnCode == 0) {
+					showSelectBox(json.data, "variableId", "variableName", function(variableId, globalVariable, index) {
+						$.each(JSON.parse(globalVariable["value"]), function(name, value) {
+							if ($("#" + name)) {
+								$("#" + name).val(value);
+							}
+						});
+						layer.msg('已加载配置!', {icon:1, time:1500});
+						layer.close(index);
+					});
+				} else {
+					layer.alert(json.msg, {icon:5});
+				}
+			});	
 		}
 		
 };

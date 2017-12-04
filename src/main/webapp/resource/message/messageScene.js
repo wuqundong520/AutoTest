@@ -69,6 +69,18 @@ var templateParams = {
 				}]
 		},
 		{
+			label:"默认关联验证",
+			input:[{
+				hidden:true,
+				name:"variableId"
+				}],
+			button:[{
+				style:"primary",
+				value:"模板",
+				name:"choose-validate-template",
+			}]
+		},
+		{
 			name:"message.messageId",
 		},
 		{
@@ -349,6 +361,21 @@ var eventList = {
 							layer.alert("保存信息时出现错误：" + json.msg, {icon:5});
 						}
 			});
+		},
+		'#choose-validate-template':function() { //创建测试场景时可以选择默认的关联模板
+			$.post(GLOBAL_VARIABLE_LIST_URL, {variableType:"relatedKeyWord"}, function(json) {
+				if (json.returnCode == 0) {
+					showSelectBox(json.data, "variableId", "variableName", function(variableId, globalVariable, index) {
+						$("#variableId").val(variableId);
+						$("#choose-validate-template").siblings("span").remove();
+						$("#choose-validate-template").before('<span>' + globalVariable.variableName + '&nbsp;</span>');	
+						layer.msg('已确定选择!', {icon:1, time:1800});
+						layer.close(index);
+					});
+				} else {
+					layer.alert(json.msg, {icon:5});
+				}
+			});			
 		}
 };
 
@@ -437,6 +464,9 @@ var mySetting = {
 			},
 			beforeInit:function(df){
 				$("#message\\.messageId").val(messageId);
+				if (publish.renderParams.editPage.modeFlag == 1) {//编辑页面的时候
+					$("#variableId").parents('.cl').remove();
+				}				
        		 	df.resolve();
        	 	},
 

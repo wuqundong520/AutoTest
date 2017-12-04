@@ -125,9 +125,10 @@ var USER_EDIT_URL = "user-edit";//编辑用户信息
 var USER_RESET_PASSWD_URL = "user-resetPwd";//重置指定用户的密码为111111
 
 
-var GLOBAL_VARIABLE_LIST_URL = "variable-list";
+var GLOBAL_VARIABLE_LIST_URL = "variable-listAll";
 var GLOBAL_VARIABLE_EDIT_URL = "variable-edit";
 var GLOBAL_VARIABLE_DEL_URL = "variable-del";
 var GLOBAL_VARIABLE_GET_URL = "variable-get";
 var GLOBAL_VARIABLE_CHECK_NAME_URL = "variable-checkName";
 var GLOBAL_VARIABLE_UPDATE_VALUE_URL = "variable-updateValue";
+var GLOBAL_VARIABLE_CREATE_VARIABLE_URL = "variable-createVariable";

@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FieldNameMapper {
 	String fieldPath() default ""; //对应的HQL中的查询名
-	boolean ifSearch() default true; //该字段要被模糊查询
+	boolean ifSearch() default true; //该字段是否需要被全局模糊查询
 }

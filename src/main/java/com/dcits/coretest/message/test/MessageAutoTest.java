@@ -26,6 +26,7 @@ import com.dcits.business.message.service.TestDataService;
 import com.dcits.business.message.service.TestReportService;
 import com.dcits.business.message.service.TestResultService;
 import com.dcits.business.message.service.TestSetService;
+import com.dcits.business.system.service.GlobalVariableService;
 import com.dcits.business.user.bean.User;
 import com.dcits.business.user.service.UserService;
 import com.dcits.constant.MessageKeys;
@@ -66,6 +67,8 @@ public class MessageAutoTest {
 	private MessageValidateResponse validateUtil;
 	@Autowired
 	private ComplexSetSceneService complexSetSceneService;
+	@Autowired
+	private GlobalVariableService globalVariableService;
 	
 	/**
 	 * 单场景测试
@@ -82,6 +85,9 @@ public class MessageAutoTest {
 		InterfaceInfo info = messageSceneService.getInterfaceOfScene(scene.getMessageSceneId());
 		
 		String messageInfo = info.getInterfaceName() + "," + msg.getMessageName() + "," + scene.getSceneName();
+		
+		requestMessage = PracticalUtils.replaceGlobalVariable(requestMessage, globalVariableService);
+		requestUrl = PracticalUtils.replaceGlobalVariable(requestUrl, globalVariableService);
 		
 		result.setMessageInfo(messageInfo);
 		result.setOpTime(new Timestamp(System.currentTimeMillis()));
