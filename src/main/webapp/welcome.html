@@ -116,9 +116,9 @@
                 parent.$("#real_name").text(userInfo.realName);
                 parent.$("#user_id").val(userInfo.userId);
                 
-                if (userInfo.role.roleName != "admin") {
+                /* if (userInfo.role.roleName != "admin") {
                 	parent.$(".adminPower").css("display","none");
-                }
+                } */
     		}
     	});
     	$.post("user-getLoginUserInfo", {tooken:parent.$("#tooken").val()}, function(data) {

@@ -13,16 +13,6 @@ var templateParams = {
 			name:"接口自动化"
 		},{
 			type:"default",
-			markClass:"show-web-ops",
-			iconFont:"&#xe6d2;",
-			name:"WEB自动化"
-		},{
-			type:"default",
-			markClass:"show-app-ops",
-			iconFont:"&#xe6a2;",
-			name:"APP自动化"
-		},{
-			type:"default",
 			markClass:"show-sys-ops",
 			iconFont:"&#xe62e;",
 			name:"系统管理"

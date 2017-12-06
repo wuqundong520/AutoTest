@@ -1,5 +1,7 @@
 package com.dcits.business.user.dao;
 
+import java.util.List;
+
 import com.dcits.business.base.dao.BaseDao;
 import com.dcits.business.user.bean.OperationInterface;
 
@@ -11,4 +13,10 @@ import com.dcits.business.user.bean.OperationInterface;
 
 public interface OperationInterfaceDao extends BaseDao<OperationInterface>{
 
+	/**
+	 * 获取指定role拥有的操作接口
+	 * @param roleId
+	 * @return
+	 */
+	List<OperationInterface> listByRoleId(Integer roleId);
 }

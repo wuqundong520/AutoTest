@@ -47,10 +47,10 @@ public class ReturnCodeConsts {
 	public static final Integer OP_NOTFOUND_CODE = 5;  
 	
 	/**
-	 * 文件上传成功<br>
+	 * 上传 文件时候未发现文件<br>
 	 * '6'
 	 */
-	public static final Integer FILE_UPLOAD_SUCCESS_CODE = 6; 
+	public static final Integer NO_FILE_UPLOAD_CODE = 6; 
 	
 	/**
 	 * 查询无结果<br>

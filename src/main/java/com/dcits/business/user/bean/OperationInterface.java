@@ -226,5 +226,28 @@ public class OperationInterface implements Serializable {
 				+ status + ", oi=" + oi + "]";
 	}
 
-	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((opId == null) ? 0 : opId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		OperationInterface other = (OperationInterface) obj;
+		if (opId == null) {
+			if (other.opId != null)
+				return false;
+		} else if (!opId.equals(other.opId))
+			return false;
+		return true;
+	}
 }

@@ -48,19 +48,19 @@ var templateParams = {
 			select:[{	
 				name:"messageType",
 				option:[{
-					value:"json",
+					value:"JSON",
 					text:"JSON"
 				},{
-					value:"xml",
+					value:"XML",
 					text:"XML"
 				},{
-					value:"url",
+					value:"URL",
 					text:"URL"
 				},{
-					value:"fixed",
+					value:"FIXED",
 					text:"固定报文"
 				},{
-					value:"opt",
+					value:"OPT",
 					text:"自定义格式"
 				}]
 				}]

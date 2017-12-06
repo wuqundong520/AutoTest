@@ -1,5 +1,7 @@
 package com.dcits.business.user.service;
 
+import java.util.List;
+
 import com.dcits.business.base.service.BaseService;
 import com.dcits.business.user.bean.OperationInterface;
 
@@ -10,5 +12,13 @@ import com.dcits.business.user.bean.OperationInterface;
  */
 
 public interface OperationInterfaceService extends BaseService<OperationInterface> {
+	
+	/**
+	 * 获取指定role拥有的操作接口
+	 * @param roleId
+	 * @return
+	 */
+	List<OperationInterface> listByRoleId(Integer roleId);
+	
 
 }

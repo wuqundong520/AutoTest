@@ -82,7 +82,7 @@ public class RoleAction extends BaseAction<Role> {
 	@Override
 	public void checkObjectName() {
 		Role role = roleService.get(model.getRoleName());
-		checkNameFlag = (role != null && role.getRoleId() != model.getRoleId()) ? "重复的角色名" : "true";
+		checkNameFlag = (role != null && !role.getRoleId().equals(model.getRoleId())) ? "重复的角色名" : "true";
 		
 		if (model.getRoleId() == null) {
 			checkNameFlag = (role == null) ? "true" : "重复的接口名";
@@ -171,7 +171,6 @@ public class RoleAction extends BaseAction<Role> {
 				ops.remove(o);
 			}
 		}
-		
 		role.setOis(ops);
 		roleService.edit(role);
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);

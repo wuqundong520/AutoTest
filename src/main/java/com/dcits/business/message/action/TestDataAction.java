@@ -74,7 +74,7 @@ public class TestDataAction extends BaseAction<TestData> {
 	@Override
 	public void checkObjectName() {
 		TestData data = testDataService.findByDisrc(model.getDataDiscr(), messageSceneId);
-		checkNameFlag = (data != null && data.getDataId() != model.getDataId()) ? "重复的标记名" : "true";
+		checkNameFlag = (data != null && !data.getDataId().equals(model.getDataId())) ? "重复的标记名" : "true";
 		
 		if (model.getDataId() == null) {
 			checkNameFlag = (data == null) ? "true" : "重复的标记名";

@@ -46,7 +46,7 @@ public class AutoTaskAction extends BaseAction<AutoTask> {
 	public void checkObjectName() {
 		AutoTask task = autoTaskService.findByName(model.getTaskName());
 		
-		checkNameFlag = (task != null && task.getTaskId() != model.getTaskId()) ? "重复的任务名称" : "true";
+		checkNameFlag = (task != null && !task.getTaskId().equals(model.getTaskId())) ? "重复的任务名称" : "true";
 		
 		if (model.getTaskId() == null) {
 			checkNameFlag = (task == null) ? "true" : "重复的任务名称";

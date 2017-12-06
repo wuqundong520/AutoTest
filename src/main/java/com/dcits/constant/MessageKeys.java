@@ -76,6 +76,7 @@ public class MessageKeys {
 	
 	public static final String PUBLIC_PARAMETER_METHOD = "Method";
 	
+	//HTTP默认调用参数
 	
 	
 	

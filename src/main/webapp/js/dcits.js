@@ -963,10 +963,12 @@ String.prototype.replaceAll = function(s1,s2){
 }
 
 /**
- * 关于平台的一些说明文档
- * globalVariable 全局变量参数说明
+ * 上传excel导入数据的说明页面
+ * @param title 窗口标题
+ * @param templatePath 模板文件路径
+ * @param uploadUrl 上传路径
+ * @param 
  */
-function AtpReadme() {
-	var module = $(this).attr("data-module");
+function createImportExcelMark(title, templatePath, uploadUrl, uploadSuccessCallback) {
 	
 }

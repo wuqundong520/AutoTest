@@ -20,7 +20,7 @@
         <property name="mark" type="java.lang.String">
             <column name="mark" />
         </property>
-        <set name="ois" table="at_role_power" lazy="false" cascade="save-update">
+        <set name="ois" table="at_role_power" cascade="save-update" lazy="true">
         	<cache usage="read-write"/>
             <key column="role_id"></key>
         	<many-to-many class="com.dcits.business.user.bean.OperationInterface" column="op_id"></many-to-many>

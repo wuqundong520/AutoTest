@@ -25,6 +25,13 @@ public class SystemConsts {
 	public static final Integer ADMIN_USER_ID = 1;
 	
 	
+	/**
+	 * 管理角色名
+	 * 
+	 */
+	public static final String SYSTEM_ADMINISTRATOR_ROLE_NAME = "admin";
+	
+	
 	 //操作接口类型ID
 
 	/**
@@ -35,12 +42,12 @@ public class SystemConsts {
 	/**
 	 * 系统设置操作接口类型id
 	 */
-	public static final Integer SYSTEM_OP_ID = 63;
+	public static final Integer SYSTEM_OP_ID = 13;
 	
 	/**
 	 * 用户角色操作接口id
 	 */
-	public static final Integer USER_OP_ID = 70;
+	public static final Integer USER_OP_ID = 19;
 	
 	/**
 	 * web自动化操作接口id
@@ -118,6 +125,9 @@ public class SystemConsts {
 	
 	//测试集测试请求地址
 	public static final String AUTO_TASK_TEST_RMI_URL = "test-scenesTest";
+	
+	//上传或者下载 excel保存的文件夹
+	public static final String EXCEL_FILE_FOLDER = "excel";
 	
 
 }

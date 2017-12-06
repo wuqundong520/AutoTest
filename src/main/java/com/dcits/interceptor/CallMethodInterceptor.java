@@ -1,13 +1,14 @@
 package com.dcits.interceptor;
 
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import com.dcits.business.user.bean.OperationInterface;
 import com.dcits.business.user.bean.User;
+import com.dcits.business.user.service.OperationInterfaceService;
 import com.dcits.constant.SystemConsts;
 import com.dcits.util.StrutsUtils;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -24,6 +25,8 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 public class CallMethodInterceptor extends AbstractInterceptor {
 	
 	private static Logger logger = Logger.getLogger(CallMethodInterceptor.class.getName());
+	@Autowired
+	private OperationInterfaceService operationInterfaceService;
 	
 	@Override
 	public void destroy() {
@@ -83,15 +86,21 @@ public class CallMethodInterceptor extends AbstractInterceptor {
 			
 			//判断当前用户是否拥有调用权限
 			//获取登录用户所属角色的权限信息
-			Set<OperationInterface> ops1 = user.getRole().getOis();
-			int isPrivilege = 1;
+			List<OperationInterface> ops1 = operationInterfaceService.listByRoleId(user.getRole().getRoleId());
 			
-			for (OperationInterface op:ops1) {
-				if(op.getCallName().equals(actionName)) {
-					isPrivilege = 0;
-					break;
+			int isPrivilege = 0;
+			
+			if (!SystemConsts.SYSTEM_ADMINISTRATOR_ROLE_NAME.equalsIgnoreCase(user.getRole().getRoleName())) {
+				isPrivilege = 1;
+				
+				for (OperationInterface op:ops1) {
+					if(op.getCallName().equals(actionName)) {
+						isPrivilege = 0;
+						break;
+					}
 				}
 			}
+			
 			
 			if (isPrivilege == 1) {
 				logger.info("[" + timeTag + "]" + userTag + "用户没有调用接口" + actionName + "的权限,调用失败!");

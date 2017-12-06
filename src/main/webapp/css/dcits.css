@@ -1,18 +1,18 @@
-/****************DataTableäÖÈ¾Ïà¹ØCSS***********************/
-/* µ¥Ôª¸ñÁ¬Ğø´¿×ÖÄ¸Êı×ÖÇ¿ÖÆ»»ĞĞÏÔÊ¾ */
+/****************DataTableæ¸²æŸ“ç›¸å…³CSS***********************/
+/* å•å…ƒæ ¼è¿ç»­çº¯å­—æ¯æ•°å­—å¼ºåˆ¶æ¢è¡Œæ˜¾ç¤º */
 .wordwrap{
 	word-wrap: break-word;
 	word-break: break-all;
 	overflow: hidden; 
 }
-/* ³¬³¤ÎÄ×Öµ¥Ôª¸ñÊ¡ÂÔºÅÏÔÊ¾ */
+/* è¶…é•¿æ–‡å­—å•å…ƒæ ¼çœç•¥å·æ˜¾ç¤º */
 .ellipsis{
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	-o-text-overflow: ellipsis;
 }
-/* spinÕÚÕÖ²ã */
+/* spiné®ç½©å±‚ */
 .overlay{
     width: 100%;
     height: 100%;
@@ -24,7 +24,7 @@
 	filter: alpha(opacity = 60);
 	opacity: .6;
 }
-/* fixedµÄ±í¸ñ²Å¿ÉÒÔÊ¹µ¥Ôª¸ñÏÔÊ¾Ê¡ÂÔºÅ*/
+/* fixedçš„è¡¨æ ¼æ‰å¯ä»¥ä½¿å•å…ƒæ ¼æ˜¾ç¤ºçœç•¥å·*/
 .table{ 
 	table-layout:fixed; 
 } 
@@ -37,7 +37,7 @@
 	cursor:pointer;
 }
 
-/****************ÉÏ´«ÎÄ¼şÏà¹ØCSS***********************/
+/****************ä¸Šä¼ æ–‡ä»¶ç›¸å…³CSS***********************/
 .b14b {font-size:14px; color:#333; font-weight:bolder; text-decoration:none;}
 .b14 {font-size:14px; color:#333; text-decoration:none;}
 .b14:hover {color:#F00;}
@@ -164,4 +164,6 @@
 	float: right;
 }
 
-
+.layui-upload-file {
+	display: none;
+}

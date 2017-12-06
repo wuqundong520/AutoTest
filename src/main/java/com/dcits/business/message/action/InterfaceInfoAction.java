@@ -1,6 +1,7 @@
 package com.dcits.business.message.action;
 
 import java.sql.Timestamp;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -12,6 +13,7 @@ import com.dcits.business.message.service.InterfaceInfoService;
 import com.dcits.business.user.bean.User;
 import com.dcits.constant.ReturnCodeConsts;
 import com.dcits.util.StrutsUtils;
+import com.dcits.util.excel.ImportInterfaceInfo;
 
 /**
  * 接口自动化
@@ -28,11 +30,27 @@ public class InterfaceInfoAction extends BaseAction<InterfaceInfo> {
 	
 	private InterfaceInfoService interfaceInfoService;
 	
+	private String path;
+	
 	@Autowired
 	public void setInterfaceInfoService(InterfaceInfoService interfaceInfoService) {
 		super.setBaseService(interfaceInfoService);
 		this.interfaceInfoService = interfaceInfoService;
 	}
+	
+	/**
+	 * 从指定excel中导入数据
+	 * @return
+	 */
+	public String importFromExcel () {
+		Map<String, Object> result = ImportInterfaceInfo.importToDB(path);
+		
+		jsonMap.put("result", result);
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		
+		return SUCCESS;
+	}
+	
 	
 	/**
 	 * 更新接口
@@ -71,11 +89,16 @@ public class InterfaceInfoAction extends BaseAction<InterfaceInfo> {
 	@Override
 	public void checkObjectName() {
 		InterfaceInfo info = interfaceInfoService.findInterfaceByName(model.getInterfaceName());
-		checkNameFlag = (info != null && info.getInterfaceId() != model.getInterfaceId()) ? "重复的接口名" : "true";
+		checkNameFlag = (info != null && !info.getInterfaceId().equals(model.getInterfaceId())) ? "重复的接口名" : "true";
 		
 		if (model.getInterfaceId() == null) {
 			checkNameFlag = (info == null) ? "true" : "重复的接口名";
 		}
+	}
+	
+	
+	public void setPath(String path) {
+		this.path = path;
 	}
 	
 }

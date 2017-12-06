@@ -1,5 +1,7 @@
 package com.dcits.business.user.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +19,18 @@ import com.dcits.business.user.service.OperationInterfaceService;
 @Service("operationInterfaceService")
 public class OperationInterfaceServiceImpl extends BaseServiceImpl<OperationInterface> implements OperationInterfaceService {
 	
-	@SuppressWarnings("unused")
 	private OperationInterfaceDao operationInterfaceDao;
 	
 	@Autowired
 	public void setOperationInterfaceDao(OperationInterfaceDao operationInterfaceDao) {
 		super.setBaseDao(operationInterfaceDao);
 		this.operationInterfaceDao = operationInterfaceDao;
+	}
+
+	@Override
+	public List<OperationInterface> listByRoleId(Integer roleId) {
+		// TODO Auto-generated method stub
+		return operationInterfaceDao.listByRoleId(roleId);
 	}
 
 }

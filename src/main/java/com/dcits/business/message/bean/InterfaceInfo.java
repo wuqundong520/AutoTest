@@ -105,6 +105,14 @@ public class InterfaceInfo implements Serializable {
 	@FieldNameMapper(fieldPath="size(messages)",ifSearch=false)
 	private Integer messagesNum;
 	
+	
+	/******特殊成员变量，某些情况下使用*********/
+	private String requestMsg; //入参报文
+	private String createMessage;//是否创建默认报文
+	private String createScene;//是否创建默认场景
+	private String MessageType;//报文格式类型	
+	/**************************/
+	
     /** default constructor */
     public InterfaceInfo() {
     }
@@ -251,4 +259,55 @@ public class InterfaceInfo implements Serializable {
         this.lastModifyUser = lastModifyUser;
     }
 
+    @JSON(serialize=false)
+	public String getRequestMsg() {
+		return requestMsg;
+	}
+
+	public void setRequestMsg(String requestMsg) {
+		this.requestMsg = requestMsg;
+	}
+	
+	
+	@JSON(serialize=false)
+	public String getCreateMessage() {
+		return createMessage;
+	}
+
+	public void setCreateMessage(String createMessage) {
+		this.createMessage = createMessage;
+	}
+	
+	@JSON(serialize=false)
+	public String getCreateScene() {
+		return createScene;
+	}
+
+	public void setCreateScene(String createScene) {
+		this.createScene = createScene;
+	}
+
+	@JSON(serialize=false)
+	public String getMessageType() {
+		return MessageType;
+	}
+
+	public void setMessageType(String messageType) {
+		MessageType = messageType;
+	}
+
+	@Override
+	public String toString() {
+		return "InterfaceInfo [interfaceName=" + interfaceName
+				+ ", interfaceCnName=" + interfaceCnName + ", requestUrlMock="
+				+ requestUrlMock + ", requestUrlReal=" + requestUrlReal
+				+ ", interfaceType=" + interfaceType + ", status=" + status
+				+ ", interfaceProtocol=" + interfaceProtocol + ", requestMsg="
+				+ requestMsg + ", createMessage=" + createMessage
+				+ ", createScene=" + createScene + ", MessageType="
+				+ MessageType + "]";
+	}
+	
+	
+	
 }

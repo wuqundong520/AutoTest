@@ -126,7 +126,7 @@ public class GlobalVariableAction extends BaseAction<GlobalVariable> {
 	@Override
 	public void checkObjectName() {
 		GlobalVariable info = globalVariableService.findByKey(model.getKey());
-		checkNameFlag = (info != null && info.getVariableId() != model.getVariableId()) ? "重复的key" : "true";
+		checkNameFlag = (info != null && !info.getVariableId().equals(model.getVariableId())) ? "重复的key" : "true";
 		
 		if (model.getVariableId() == null) {
 			checkNameFlag = (info == null) ? "true" : "重复的key";

@@ -1,5 +1,7 @@
 package com.dcits.business.user.dao.impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Repository;
 
 import com.dcits.business.base.dao.impl.BaseDaoImpl;
@@ -14,5 +16,13 @@ import com.dcits.business.user.dao.OperationInterfaceDao;
 
 @Repository("operationInterfaceDao")
 public class OperationInterfaceDaoImpl extends BaseDaoImpl<OperationInterface> implements OperationInterfaceDao {
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<OperationInterface> listByRoleId(Integer roleId) {
+		// TODO Auto-generated method stub
+		String hql = "select o from OperationInterface o join o.roles r where r.roleId=:roleId";
+		return getSession().createQuery(hql).setInteger("roleId", roleId).list();
+	}
 
 }

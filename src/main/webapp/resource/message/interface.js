@@ -16,15 +16,21 @@ var templateParams = {
 		btnTools:[{
 			type:"primary",
 			size:"M",
-			markClass:"add-object",
+			id:"add-object",
 			iconFont:"&#xe600;",
 			name:"添加接口"
 		},{
 			type:"danger",
 			size:"M",
-			markClass:"batch-del-object",
+			id:"batch-del-object",
 			iconFont:"&#xe6e2;",
 			name:"批量删除"
+		},{
+			type:"success",
+			size:"M",
+			id:"import-data-from-excel",
+			iconFont:"&#xe642;",
+			name:"Excel导入"
 		}],
 		formControls:[
 		{
@@ -234,13 +240,13 @@ var eventList = {
 			$(this).attr("_href", "resource/message/message.html?interfaceId=" + data.interfaceId + "&protocol=" + data.interfaceProtocol);
 			Hui_admin_tab(this);			
 		},
-		".add-object":function(){
+		"#add-object":function(){
 			publish.renderParams.editPage.modeFlag = 0;					
 			layer_show("增加接口", editHtml, "850", "480",1);
 			publish.init();
 			
 		},
-		".batch-del-object":function(){
+		"#batch-del-object":function(){
 			var checkboxList = $(".selectInterface:checked");
 			batchDelObjs(checkboxList,INTERFACE_DEL_URL);
 		},
@@ -310,11 +316,11 @@ var eventList = {
 				'<a href="javascript:;" onclick="batchImportParams();" class="btn btn-danger radius">解析报文</a>'+
 				'</span><span class="r">'+
 				'<span class="select-box radius"><select class="select" size="1" id="messageType">'+
-				'<option value="json" selected>JSON格式</option>'+
-				'<option value="xml">XML格式</option>'+
-				'<option value="url">URL格式</option>'+
-				'<option value="fixed">固定报文</option>'+
-				'<option value="opt">自定义报文</option>'+
+				'<option value="JSON" selected>JSON格式</option>'+
+				'<option value="XML">XML格式</option>'+
+				'<option value="URL">URL格式</option>'+
+				'<option value="FIXED">固定报文</option>'+
+				'<option value="OPT">自定义报文</option>'+
 				'</select></span>'+
 				'</span></div><br><textarea style="height: 240px;" class="textarea radius" '+
 				'id="jsonParams" placeholder="输入接口报文"></textarea></div>';
@@ -338,6 +344,42 @@ var eventList = {
 		    		}
 		    	});		    		        
 		    });
+		},
+		"#import-data-from-excel":function() {
+			var html = '<div style="margin:18px;" id="show-import-from-excel-content"><p>请在导入之前下载Excel模板，并在模板第二页阅读相关字段说明.</p><p><a class="btn radius btn-primary size-M" '
+					+ 'href="../../excel/upload_interface_template.xlsx"><i class="Hui-iconfont">&#xe640;</i> Excel导入模板'
+					+ '</a></p><p><span class="label label-warning radius">注意：</span>请务必按照模板样式进行排版,最后两列如果留空,则表示不会在创建<strong>接口</strong>的同时也创建<strong>报文</strong>或者<strong>测试场景</strong>。</p>'
+					+ '<br><p>请点击<a href="javascript:;" class="btn btn-success radius size-M " id="upload-interface-excel"><i class="Hui-iconfont ">&#xe642;</i> 导入Excel</a>开始上传文档</p></div>';
+			layer_show("Excel导入接口信息", html, "710", "270", 1, function() {
+				//excel上传数据
+				var loadIndex;
+				layui.use('upload', function(){
+					  var upload = layui.upload;				   
+					  //执行实例
+					  var uploadInst = upload.render({
+					    elem: '#upload-interface-excel' //绑定元素
+					    ,url: UPLOAD_FILE_URL //上传接口
+					    ,accept:"file"
+					    ,exts:"xlsx|xls"
+					    ,size:"102400"
+					    ,drag:false
+					    ,before:function(obj) {
+					    	loadIndex = layer.msg('正在上传文件中...', {icon:16, time:99999, shade:0.4});
+					    }
+					    ,done: function(res){
+					      //上传完毕回调
+					    	if (res.returnCode == 0) {//上传成功
+					    		 layer.close(loadIndex);
+					    		 loadIndex = layer.msg('正在导入接口数据...', {icon:16, time:99999, shade:0.4});
+					    		 importInterfacesFromExcel(res.path, loadIndex);
+					    	} else {
+					    		layer.close(loadIndex);
+					    		layer.alert(res.msg, {icon:5});
+					    	}
+					    }
+					  });
+					});
+			});
 		}
 		
 };
@@ -587,6 +629,29 @@ function batchImportParams(i){
 			layer.msg('无法解析报文或者解析失败,请检查!',{icon:2,time:1500});
 		}else{
 			layer.alert(data.msg, {icon: 5});
+		}
+	});
+}
+
+
+/**
+ * 发送分析excel数据请求,分析完成之后再开始导入到数据库中
+ * @param filePath 已经上传完成的excel文件
+ * @param loadIndex load窗口index,完成之后关闭
+ */
+function importInterfacesFromExcel (filePath, loadIndex) {
+	$.post(INTERFACE_IMPORT_FROM_EXCEL, {path:filePath}, function(json) {
+		if (json.returnCode == 0) {
+			$("#show-import-from-excel-content").html("");
+			var showResultHtml = '<p><span class="label label-primary radius">导入总数 :</span>&nbsp;&nbsp;' + json.result.totalCount + '</p>'
+				+ '<p><span class="label label-success radius">导入成功数 :</span>&nbsp;&nbsp;' + json.result.successCount + '</p>'
+				+ '<p><span class="label label-danger radius">导入失败数:</span>&nbsp;&nbsp;' + json.result.failCount + '</p>'
+				+ '<p><span class="label label-secondary radius">导入详情信息:</span><br>' + json.result.msg + '</p>';
+			$("#show-import-from-excel-content").html(showResultHtml);
+			layer.close(loadIndex);
+			refreshTable();
+		} else {
+			layer.alert(json.msg, {icon:5});
 		}
 	});
 }

@@ -45,6 +45,7 @@ public class MessageScene implements Serializable {
 	 * 1  使用自定义的验证配置,需要验证多个参数具体的值
 	 * 2  使用自定义的验证规则,直接验证整个返回串
 	 */
+	@Deprecated
 	private String validateRuleFlag;
 	/**
 	 * 备注
