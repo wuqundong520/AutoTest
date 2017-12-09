@@ -59,6 +59,8 @@ public class Parameter implements Serializable {
 	 */
 	private InterfaceInfo interfaceInfo;
 	
+	private String mark;
+	
 	private Set<ComplexParameter> complexParameters = new HashSet<ComplexParameter>();
 
      
@@ -163,6 +165,14 @@ public class Parameter implements Serializable {
 		return interfaceInfo;
 	}
 
+    public void setMark(String mark) {
+		this.mark = mark;
+	}
+    
+    public String getMark() {
+		return mark;
+	}
+    
 	@Override
 	public String toString() {
 		return "Parameter [parameterId=" + parameterId + ", parameterIdentify="
@@ -180,7 +190,6 @@ public class Parameter implements Serializable {
 				+ ((parameterIdentify == null) ? 0 : parameterIdentify
 						.hashCode());
 		result = prime * result + ((path == null) ? 0 : path.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
 
@@ -203,15 +212,7 @@ public class Parameter implements Serializable {
 				return false;
 		} else if (!path.equals(other.path))
 			return false;
-		if (type == null) {
-			if (other.type != null)
-				return false;
-		} else if (!type.equals(other.type))
-			return false;
 		return true;
 	}
-    
-	
-    
 
 }

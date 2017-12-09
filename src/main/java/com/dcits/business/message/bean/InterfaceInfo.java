@@ -99,6 +99,12 @@ public class InterfaceInfo implements Serializable {
 	 */
 	private String interfaceProtocol;
 	
+	private String mark;
+	
+	private String createTimeText;
+	
+	private String createUserName;
+	
 	@FieldNameMapper(fieldPath="size(parameters)",ifSearch=false)
 	private Integer parametersNum;
 	
@@ -142,6 +148,21 @@ public class InterfaceInfo implements Serializable {
    
     // Property accessors
     
+    public void setCreateUserName(String createUserName) {
+		this.createUserName = createUserName;
+	}
+    
+    public String getCreateUserName() {
+		return createUserName;
+	}
+    
+    public void setCreateTimeText(String createTimeText) {
+		this.createTimeText = createTimeText;
+	}
+    
+    public String getCreateTimeText() {
+		return createTimeText;
+	}
     
     public Integer getMessagesNum() {
 		return this.messages.size();
@@ -294,6 +315,14 @@ public class InterfaceInfo implements Serializable {
 
 	public void setMessageType(String messageType) {
 		MessageType = messageType;
+	}
+	
+	public void setMark(String mark) {
+		this.mark = mark;
+	}
+	
+	public String getMark() {
+		return mark;
 	}
 
 	@Override

@@ -33,6 +33,7 @@ public class DataDBAction extends BaseAction<DataDB> {
 	
 	private DataDBService dataDBService;
 	
+	
 	@Autowired
 	public void setDataDBService(DataDBService dataDBService) {
 		super.setBaseService(dataDBService);
@@ -103,5 +104,9 @@ public class DataDBAction extends BaseAction<DataDB> {
 		
 		return SUCCESS;
 	}
-
+	
+	
+	/***************************************************************************************/
+	
+	
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -27,6 +28,9 @@ public class StrutsUtils {
 	private StrutsUtils() {
 		throw new Error("Please don't instantiate me！");
 	}
+	
+	private static String projectPath;
+	
 	
 	@SuppressWarnings("unchecked")
 	/**
@@ -152,9 +156,13 @@ public class StrutsUtils {
 	 * @return
 	 */
 	public static String getProjectPath() {
+		if (StringUtils.isNotEmpty(projectPath)) {
+			return projectPath;
+		}
 		ActionContext ac = ActionContext.getContext();
         ServletContext sc = (ServletContext) ac.get(ServletActionContext.SERVLET_CONTEXT);
-        return sc.getRealPath("");
+        projectPath = sc.getRealPath("");
+        return projectPath;
 	}
 	
 	/**

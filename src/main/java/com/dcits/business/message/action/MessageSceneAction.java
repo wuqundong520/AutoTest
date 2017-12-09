@@ -3,6 +3,7 @@ package com.dcits.business.message.action;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import com.dcits.business.message.bean.MessageScene;
 import com.dcits.business.message.bean.SceneValidateRule;
 import com.dcits.business.message.bean.TestData;
 import com.dcits.business.message.service.MessageSceneService;
+import com.dcits.business.message.service.MessageService;
 import com.dcits.business.message.service.SceneValidateRuleService;
 import com.dcits.business.message.service.TestDataService;
 import com.dcits.business.message.service.TestSetService;
@@ -24,6 +26,7 @@ import com.dcits.business.system.service.GlobalVariableService;
 import com.dcits.constant.ReturnCodeConsts;
 import com.dcits.coretest.message.parse.MessageParse;
 import com.dcits.util.PracticalUtils;
+import com.dcits.util.excel.ImportMessageScene;
 
 /**
  * 报文场景Action
@@ -52,8 +55,10 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 	private GlobalVariableService globalVariableService;
 	@Autowired
 	private SceneValidateRuleService sceneValidateRuleService;
+	@Autowired
+	private MessageService messageService;
 	
-	
+	private String path;
 	private Integer variableId;
 	private Integer setId;
 	
@@ -75,6 +80,27 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 		}
 		return this.filterCondition;
 	}	
+	
+	/**
+	 * 从上传的Excel导入场景信息到数据库
+	 * @return
+	 */
+	public String importFromExcel () {
+		
+		Message message = messageService.get(messageId);
+		
+		if (message == null) {
+			jsonMap.put("msg", "报文信息不存在!");
+			jsonMap.put("returnCode", ReturnCodeConsts.SYSTEM_ERROR_CODE);
+			return SUCCESS;
+		}
+		
+		Map<String, Object> result = ImportMessageScene.importToDB(path, message);
+		
+		jsonMap.put("result", result);
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		return SUCCESS;
+	}
 	
 	/**
 	 * 获取测试集场景
@@ -228,5 +254,9 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 	
 	public void setVariableId(Integer variableId) {
 		this.variableId = variableId;
+	}
+	
+	public void setPath(String path) {
+		this.path = path;
 	}
 }

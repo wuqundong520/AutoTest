@@ -28,6 +28,9 @@ public class GlobalSettingAction extends BaseAction<GlobalSetting>{
 	
 	private GlobalSettingService globalSettingService;
 	
+	/*@Autowired
+	private TestRedisService testRedisService;*/
+	
 	@Autowired
 	public void setGlobalSettingService(GlobalSettingService globalSettingService) {
 		super.setBaseService(globalSettingService);
@@ -98,5 +101,36 @@ public class GlobalSettingAction extends BaseAction<GlobalSetting>{
 		
 		return SUCCESS;
 	}
+	
+	/*****************************************************************************************************/
+/*	public String setRedis () {
+		List<GlobalSetting> settings = globalSettingService.findAll();
+		Map<String, String> map = null;
+		for (GlobalSetting s:settings) {
+			map = new HashMap<String, String>();
+			map.put("settingId", String.valueOf(s.getSettingId()));
+			map.put("settingName", s.getSettingName());
+			map.put("settingValue", s.getSettingValue());
+			map.put("defaultValue", s.getDefaultValue());
+			map.put("mark", s.getMark());
+			testRedisService.set("setting" + s.getSettingId(), map, -1);
+		}
+		
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		return SUCCESS;
+		
+	}
+	
+	public String listRedis () {
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		return SUCCESS;
+	}
+
+	
+	public String getRedis () {
+		jsonMap.put("object", testRedisService.get("setting" + model.getSettingId()));
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		return SUCCESS;
+	}*/
 
 }

@@ -28,7 +28,9 @@
         <property name="interfaceProtocol" type="java.lang.String">
             <column name="interface_protocol" length="100" />
         </property>
-        
+        <property name="mark" type="java.lang.String">
+            <column name="mark" length="65535" />
+        </property>
         <property name="interfaceType" type="java.lang.String">
             <column name="interface_type" length="2" />
         </property>

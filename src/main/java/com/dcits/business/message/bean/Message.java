@@ -73,6 +73,8 @@ public class Message implements Serializable{
 	 */
 	private String callParameter;
 	
+	private String createMessageScene;
+	
 	/**所有的场景*/
 	private Set<MessageScene> scenes = new HashSet<MessageScene>();
      
@@ -180,6 +182,17 @@ public class Message implements Serializable{
         this.interfaceInfo = interfaceInfo;
     }
     
+    public void setCreateMessageScene(String createMessageScene) {
+		this.createMessageScene = createMessageScene;
+	}
+    
+    @JSON(serialize=false)
+    public String getCreateMessageScene() {
+		return createMessageScene;
+	}
+    
+    
+    
     public ComplexParameter getComplexParameter() {
 		return complexParameter;
 	}
@@ -270,4 +283,17 @@ public class Message implements Serializable{
     public void setLastModifyUser(String lastModifyUser) {
         this.lastModifyUser = lastModifyUser;
     }
+
+
+	@Override
+	public String toString() {
+		return "Message [messageType=" + messageType + ", messageName="
+				+ messageName + ", requestUrl=" + requestUrl + ", createTime="
+				+ createTime + ", status=" + status + ", lastModifyUser="
+				+ lastModifyUser + ", parameterJson=" + parameterJson
+				+ ", callParameter=" + callParameter + ", createMessageScene="
+				+ createMessageScene + "]";
+	}
+    
+    
 }

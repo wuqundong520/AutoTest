@@ -1,11 +1,7 @@
 package com.dcits.coretest.task;
 
-import java.io.InputStream;
 import java.util.Map;
-import java.util.Scanner;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.quartz.Job;
@@ -16,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.dcits.business.system.bean.AutoTask;
 import com.dcits.business.user.service.UserService;
 import com.dcits.constant.SystemConsts;
-import com.dcits.coretest.message.protocol.HTTPTestClient;
 import com.dcits.coretest.message.test.MessageAutoTest;
+import com.dcits.util.PracticalUtils;
 import com.dcits.util.SettingUtil;
 
 public class JobAction implements Job {
@@ -29,7 +25,7 @@ public class JobAction implements Job {
 	
 	private Logger LOGGER = Logger.getLogger(JobAction.class);
 	
-	@SuppressWarnings({ "resource", "rawtypes" })
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void execute(JobExecutionContext context) {
 		// TODO Auto-generated method stub
@@ -40,39 +36,26 @@ public class JobAction implements Job {
 		String[] result = new String[2];
 		//获取请求地址
 		String testUrl = SettingUtil.getSettingValue(SystemConsts.GLOBAL_SETTING_HOME) + "/" + SystemConsts.AUTO_TASK_TEST_RMI_URL
-				+ "?setId=" + task.getRelatedId() + "&autoTestFlag=true";
+				+ "?setId=" + task.getRelatedId() + "&autoTestFlag=true" + "&tooken=" + SystemConsts.REQUEST_ALLOW_TOOKEN;
 		LOGGER.info("[自动化定时任务]执行自动化测试任务:url=" + testUrl);
-		HTTPTestClient client = new HTTPTestClient();
-		HttpRequestBase request = null;
+		
+		String returnJson = PracticalUtils.doGetHttpRequest(testUrl);
+		
+		LOGGER.info("[自动化定时任务]请求返回内容：" + returnJson);
 		try {
-			Object[] responseContext = client.doGet(testUrl, null, null);
-			HttpResponse response = (HttpResponse) responseContext[0];
-			request = (HttpRequestBase) responseContext[2];
-			
-			StringBuilder returnMsg = new StringBuilder();
-			InputStream is = response.getEntity().getContent();
-			Scanner scan = new Scanner(is, "UTF-8");
-			while (scan.hasNext()) {
-				returnMsg.append(scan.nextLine());
-			}
-			
-			LOGGER.info("[自动化定时任务]请求返回内容：" + returnMsg.toString());
-			
-			Map maps = new ObjectMapper().readValue(returnMsg.toString(), Map.class);
-			
+			Map maps = new ObjectMapper().readValue(returnJson, Map.class);
 			if ("0".equals(maps.get("returnCode").toString())) {
 				result[0] = maps.get("reportId").toString();
+			} else {
+				result[1] = returnJson;
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			// TODO: handle exception
 			e.printStackTrace();
-			LOGGER.error("[自动化定时任务]自动化测试出错:" + e.getMessage(), e);
-			result[1] = e.getMessage();
-		} finally {
-			if (request != null) {
-				request.releaseConnection();
-			}
+			LOGGER.error("[自动化定时任务]自动化测试出错:" + returnJson, e);
+			result[1] = returnJson;
 		}
+				
 		context.setResult(result);				
 	}
 

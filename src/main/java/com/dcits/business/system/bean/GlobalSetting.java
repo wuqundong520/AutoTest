@@ -2,6 +2,8 @@ package com.dcits.business.system.bean;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * 全局设置项
  * @author xuwangcheng
@@ -71,6 +73,9 @@ public class GlobalSetting implements Serializable {
 	}
 
 	public String getDefaultValue() {
+		if (StringUtils.isBlank(defaultValue)) {
+			return "";
+		}
 		return defaultValue;
 	}
 
@@ -79,6 +84,9 @@ public class GlobalSetting implements Serializable {
 	}
 
 	public String getSettingValue() {
+		if (StringUtils.isBlank(settingValue)) {
+			return "";
+		}
 		return settingValue;
 	}
 

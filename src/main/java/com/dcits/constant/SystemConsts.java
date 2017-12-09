@@ -1,5 +1,7 @@
 package com.dcits.constant;
 
+import com.dcits.util.MD5Util;
+
 
 
 /**
@@ -23,6 +25,8 @@ public class SystemConsts {
 	 * 默认ADMIN账户的用户ID
 	 */
 	public static final Integer ADMIN_USER_ID = 1;
+	
+	public static final String REQUEST_ALLOW_TOOKEN = "ec189a1731d73dfe16d8f9df16d67187";
 	
 	
 	/**
@@ -118,6 +122,14 @@ public class SystemConsts {
 	
 	public static final String GLOBAL_SETTING_MESSAGE_ENCODING = "messageEncoding";
 	
+	public static final String GLOBAL_SETTING_IF_SEND_REPORT_MAIL = "sendReportMail";
+	public static final String GLOBAL_SETTING_MAIL_SERVER_HOST = "mailHost";
+	public static final String GLOBAL_SETTING_MAIL_SERVER_PORT = "mailPort";
+	public static final String GLOBAL_SETTING_MAIL_AUTH_USERNAME = "mailUsername";
+	public static final String GLOBAL_SETTING_MAIL_AUTH_PASSWORD = "mailPassword";
+	public static final String GLOBAL_SETTING_MAIL_RECEIVE_ADDRESS = "mailReceiveAddress";
+	public static final String GLOBAL_SETTING_MAIL_COPY_ADDRESS = "mailCopyAddress";
+	public static final String GLOBAL_SETTING_MAIL_SSL_FLAG = "mailSSL";
 	
 	//测试报告静态html存储文件夹
 	public static final String REPORT_VIEW_HTML_FOLDER = "reportHtml";
@@ -125,6 +137,9 @@ public class SystemConsts {
 	
 	//测试集测试请求地址
 	public static final String AUTO_TASK_TEST_RMI_URL = "test-scenesTest";
+	
+	//生成静态报告请求地址
+	public static final String CREATE_STATIC_REPORT_HTML_RMI_URL = "report-generateStaticReportHtml";
 	
 	//上传或者下载 excel保存的文件夹
 	public static final String EXCEL_FILE_FOLDER = "excel";

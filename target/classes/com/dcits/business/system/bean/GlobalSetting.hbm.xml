@@ -15,10 +15,10 @@
             <column name="setting_name" />
         </property>
         <property name="defaultValue" type="java.lang.String">
-            <column name="default_value" />
+            <column name="default_value" length="65535"/>
         </property>
         <property name="settingValue" type="java.lang.String">
-            <column name="setting_value" />
+            <column name="setting_value" length="65535"/>
         </property>
         <property name="mark" type="java.lang.String">
             <column name="mark" length="65535" />

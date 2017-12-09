@@ -105,7 +105,13 @@ public class HTTPTestClient extends TestClient {
 		}
 		
 		if (callParameterMap != null) {
-			headers = (Map<String, String>) callParameterMap.get(MessageKeys.HTTP_PARAMETER_HEADER);
+			try {
+				headers = (Map<String, String>) callParameterMap.get(MessageKeys.HTTP_PARAMETER_HEADER);
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+			
 			method = (String) callParameterMap.get(MessageKeys.PUBLIC_PARAMETER_METHOD);
 			encType = (String) callParameterMap.get(MessageKeys.HTTP_PARAMETER_ENC_TYPE);
 			recEncType = (String) callParameterMap.get(MessageKeys.HTTP_PARAMETER_REC_ENC_TYPE);

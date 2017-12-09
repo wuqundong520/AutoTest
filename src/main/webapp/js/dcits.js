@@ -66,7 +66,7 @@ var CONSTANT = {
             "language": {
                 "url": "../../js/zh_CN.txt"
             },
-            "lengthMenu": [[10, 20, 50, 100, 99999], ['10', '20', '50','100', '全部数据']],  //显示数量设置
+            "lengthMenu": [[10, 20, 50, 100, 999999], ['10', '20', '50','100', '全部数据']],  //显示数量设置
             //行回调
             "createdRow": function ( row, data, index ){
                 $(row).addClass('text-c');
@@ -152,6 +152,7 @@ var publish = {
       * getUrl:获取实体对象时的请求地址
       * rules:rules规则 定义验证规则
       * messages 提示 定义验证时展示的提示信息
+      * beforeSubmitCallback 提交表单数据之前的回调，带一个参数modeFlag表示当前是新增(0)还是编辑数据(1)
       * closeFlag:成功提交并返回之后是否关闭当前编辑窗口  默认为true  可选false
       * ajaxCallbackFun: ajax提交中的回调函数  如传入null,则使用默认
       * renderCallback:function(obj){}  如果默认的渲染结果不是完整或者正确的,可以传入该回调重新或者附加渲染  obj=通过get方法获取的对应实体对象
@@ -234,6 +235,7 @@ var publish = {
         	 getUrl:"",
         	 rules:{},
         	 messages:{},
+        	 beforeSubmitCallback:function(modeFlag) {},
         	 closeFlag:true,
         	 ajaxCallbackFun:null,
         	 renderCallback:function(obj) {} 
@@ -314,7 +316,7 @@ var publish = {
     			 } else {
     				 (e.saveUrl != null && e.saveUrl != "") && (sUrl = e.saveUrl);
     			 }    			 
-    			 e.ifUseValidate && formValidate(e.formObj, e.rules, e.messages, sUrl, e.closeFlag, e.ajaxCallbackFun);
+    			 e.ifUseValidate && formValidate(e.formObj, e.rules, e.messages, sUrl, e.closeFlag, e.ajaxCallbackFun, e.beforeSubmitCallback);
     		 }    		 
     	 } 
     	callback(p); 
@@ -602,7 +604,7 @@ function iterObj(jsonObj, parentName) {
  * @param closeFlag  成功提交并返回之后是否关闭当前窗口  true  false
  * @param ajaxCallbackFun  ajax提交中的回调函数  如传入null,则使用默认
  */
-function formValidate(formObj, rules, messages, ajaxUrl, closeFlag, ajaxCallbackFun) {
+function formValidate(formObj, rules, messages, ajaxUrl, closeFlag, ajaxCallbackFun, beforeSubmitCallback) {
 	var callbackFun = function(data) {
 		if (data.returnCode==0) {	
 			refreshTable();
@@ -625,6 +627,9 @@ function formValidate(formObj, rules, messages, ajaxUrl, closeFlag, ajaxCallback
 		focusCleanup:true,
 		success:"valid",
 		submitHandler:function(form) {
+			if (beforeSubmitCallback != null) {
+				beforeSubmitCallback(publish.renderParams.editPage.modeFlag);
+			}
 			var formData = $(form).serialize();
 			$.post(ajaxUrl, formData, callbackFun);			
 		}
@@ -634,9 +639,9 @@ function formValidate(formObj, rules, messages, ajaxUrl, closeFlag, ajaxCallback
 /**
  * 刷新表格
  * 所有表格页面都是的DT对象名称都要命名为table
- * @param tableObject 传入指定的DT对象，刷新指定的表格
  * @param ajaxUrl2 传入指定的ajax数据地址,刷新将会使用这个地址获取表格数据
  * @param callback 刷新完表格后的回调函数
+ * @param tableObject 当前页面的DT对象
  * @param resetPaging 是否重置分页信息 false不重置  true 重置
  */
 function refreshTable(ajaxUrl2, callback, tableObject, resetPaging){
@@ -758,15 +763,15 @@ function labelCreate(data, option){
         if (option && option[n]) {
             html += '<span class="label label-'+option[n]["btnStyle"]+' radius">'+option[n]["status"]+'</span>';
         } else {
-            if (n=="0") {
+            if (n == "0") {
             	html += '<span class="label label-success radius">正常</span>';
             }
-            if (n=="1") {
+            if (n == "1") {
             	html += '<span class="label label-danger radius">禁用</span>';
             } 
             
             if (n != "0" && n != "1") {
-            	html += '<span class="label label-'+option["default"]["btnStyle"]+' radius">' + option["default"]["status"] + '</span>';
+            	html += '<span class="label label-' + option["default"]["btnStyle"] + ' radius">' + option["default"]["status"] + '</span>';
             }                       
         }
         if (datas.length > (i+1) ) {
@@ -877,7 +882,8 @@ function layer_show (title, url, w, h, type, success, cancel, end) {
 		title: title,
 		content: url,
 		success:success,
-		cancel:cancel
+		cancel:cancel,
+		end:end
 	});
 	return index;
 }
@@ -966,9 +972,67 @@ String.prototype.replaceAll = function(s1,s2){
  * 上传excel导入数据的说明页面
  * @param title 窗口标题
  * @param templatePath 模板文件路径
- * @param uploadUrl 上传路径
- * @param 
+ * @param uploadUrl 上传接口
+ * @param importUrl 导入接口
  */
-function createImportExcelMark(title, templatePath, uploadUrl, uploadSuccessCallback) {
-	
+function createImportExcelMark(title, templatePath, uploadUrl, importUrl) {
+	var html = '<div style="margin:18px;" id="show-import-from-excel-content"><p>请在导入之前下载Excel模板，并在模板第二页阅读相关字段说明.</p><p><a class="btn radius btn-primary size-M" '
+		+ 'href="' + templatePath + '"><i class="Hui-iconfont">&#xe640;</i> 下载Excel模板'
+		+ '</a></p><p><span class="label label-warning radius">注意：</span>请务必按照模板样式进行排版填写,导入完成之后根据提示检查失败的数据的有效性。<span class="c-red">名称(一般为第一列)为空的将不会添加到数据库。</span></p>'
+		+ '<br><p>请点击&nbsp;<a href="javascript:;" class="btn btn-success radius size-S " id="upload-data-excel"><i class="Hui-iconfont ">&#xe642;</i> 导入Excel</a>&nbsp;开始上传文档</p></div>';
+	layer_show(title, html, "710", "270", 1, function() {
+		//excel上传数据
+		var loadIndex;
+		layui.use('upload', function(){
+			  var upload = layui.upload;				   
+			  //执行实例
+			  var uploadInst = upload.render({
+			    elem: '#upload-data-excel' //绑定元素
+			    ,url: uploadUrl //上传接口
+			    ,accept:"file"
+			    ,exts:"xlsx|xls"
+			    ,size:"102400"
+			    ,drag:false
+			    ,before:function(obj) {
+			    	loadIndex = layer.msg('正在上传文件中...', {icon:16, time:99999, shade:0.4});
+			    }
+			    ,done: function(res){
+			      //上传完毕回调
+			    	if (res.returnCode == 0) {//上传成功
+			    		 layer.close(loadIndex);
+			    		 loadIndex = layer.msg('正在导入数据...', {icon:16, time:99999, shade:0.4});
+			    		 $.post(importUrl, {path:res.path}, function(json) {
+			    				if (json.returnCode == 0) {
+			    					$("#show-import-from-excel-content").html("");
+			    					var showResultHtml = '<p><span class="label label-primary radius">导入总数 :</span>&nbsp;&nbsp;' + json.result.totalCount + '</p>'
+			    						+ '<p><span class="label label-success radius">导入成功数 :</span>&nbsp;&nbsp;' + json.result.successCount + '</p>'
+			    						+ '<p><span class="label label-danger radius">导入失败数:</span>&nbsp;&nbsp;' + json.result.failCount + '</p>'
+			    						+ '<p><span class="label label-secondary radius">导入详情信息:</span><br>' + json.result.msg + '</p>';
+			    					$("#show-import-from-excel-content").html(showResultHtml);
+			    					layer.close(loadIndex);
+			    					refreshTable();
+			    				} else {
+			    					layer.alert(json.msg, {icon:5});
+			    				}
+			    			});
+			    	} else {
+			    		layer.close(loadIndex);
+			    		layer.alert(res.msg, {icon:5});
+			    	}
+			    }
+			  });
+			});
+	});
+}
+
+/**
+ * 判断字符串是否为空 为null undefined 或者 只有空字符/制表符等均为空
+ * @param str
+ * @returns {Boolean}
+ */
+function strIsNotEmpty (str) {
+	if (str == null || str == undefined || str.replace(/(^s*)|(s*$)/g, "").length ==0) {
+		return false;
+	}
+	return true;
 }

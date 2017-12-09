@@ -182,7 +182,7 @@ public class MessageAutoTest {
 		report.setReportId(ret);
 		
 		if (autoTestFlag) {
-			report.setMark("自动化定时任务");
+			report.setMark(MessageKeys.QUARTZ_AUTO_TEST_REPORT_MARK);
 		}
 		
 		//测试完成的数量

@@ -35,4 +35,15 @@ public interface ParameterService extends BaseService<Parameter> {
 	 * @param attrValue 值
 	 */
 	void editProperty(int parameterId,String attrName,String attrValue);
+	
+	/**
+	 * 查找是否已有重复的参数
+	 * @param parameterId
+	 * @param parameterIdentify
+	 * @param path
+	 * @param type
+	 * @param interfaceId
+	 * @return
+	 */
+	Parameter checkRepeatParameter (Integer parameterId, String parameterIdentify, String path, String type, Integer interfaceId);
 }

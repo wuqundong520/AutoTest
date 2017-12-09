@@ -53,4 +53,13 @@ public class ParameterServiceImpl extends BaseServiceImpl<Parameter> implements 
 		}
 	}
 
+
+	@Override
+	public Parameter checkRepeatParameter(Integer parameterId,
+			String parameterIdentify, String path, String type,
+			Integer interfaceId) {
+		// TODO Auto-generated method stub
+		return parameterDao.checkRepeatParameter(parameterId, parameterIdentify, path, type, interfaceId);
+	}
+
 }

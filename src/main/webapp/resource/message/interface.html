@@ -11,6 +11,7 @@
     <script type="text/javascript" src="../../libs/respond.min.js"></script>
     <script type="text/javascript" src="../../libs/PIE_IE678.js"></script>
     <![endif]-->
+    <link rel="stylesheet" type="text/css" href="../../libs/layui/css/layui.css" />
     <link rel="stylesheet" type="text/css" href="../../libs/h-ui/css/H-ui.min.css" />
     <link rel="stylesheet" type="text/css" href="../../libs/h-ui.admin/css/H-ui.admin.css" />
     <link rel="stylesheet" type="text/css" href="../../libs/Hui-iconfont/1.0.7/iconfont.css" />
@@ -46,6 +47,71 @@
 <div id="edit-page"  style="display: none;"></div>
 <div id="parameters-page" style="display: none;"></div>
 <div id="template-page" style="display: none;"></div>
+
+<script id="advanced-query-form-template" type="text/x-handlebars-template">
+<article class="page-container">
+<form action="" method="post" class="form form-horizontal" id="advanced-query-form">
+	<div class="row cl">
+		<div class="formControls col-xs-6 col-sm-6"><strong>接口名:</strong>
+			<input type="text" class="input-text" id="interfaceName" name="interfaceName" value={{interfaceName}}>
+		</div>
+		<div class="formControls col-xs-6 col-sm-6"><strong>中文名:</strong>
+			<input type="text" class="input-text" id="interfaceCnName" name="interfaceCnName" value={{interfaceCnName}}>
+		</div>
+	</div>
+	<div class="row cl">
+		<div class="formControls col-xs-6 col-sm-6"><strong>类型:</strong>
+			<span class="select-box radius">
+			  <select class="select" size="1" id="interfaceType" name="interfaceType" value={{interfaceType}}>
+			  	<option value="">全部</option>
+			    <option value="CX">查询类</option>
+			    <option value="SL">办理类</option>
+			  </select>
+			</span>
+		</div>
+		<div class="formControls col-xs-6 col-sm-6"><strong>协议:</strong>
+			<span class="select-box radius">
+			  <select class="select" size="1" id="interfaceProtocol" name="interfaceProtocol" value={{interfaceProtocol}}>
+			  	<option value="">全部</option>
+			    <option value="HTTP">HTTP</option>
+			    <option value="WebService">WebService</option>
+			    <option value="Socket">Socket</option>
+			  </select>
+			</span>
+		</div>
+	</div>
+	<div class="row cl">
+		<div class="formControls col-xs-6 col-sm-6"><strong>状态:</strong>
+			<span class="select-box radius">
+			  <select class="select" size="1" id="status" name="status" value={{status}}>
+			  	<option value="">全部</option>
+			    <option value="0">正常</option>
+			    <option value="1">禁用</option>
+			  </select>
+			</span>
+		</div>
+		<div class="formControls col-xs-6 col-sm-6"><strong>创建时间:</strong>
+			<input type="text" class="input-text" id="createTimeText" name="createTimeText" value={{createTime}}>
+		</div>
+	</div>
+	<div class="row cl">
+		<div class="formControls col-xs-6 col-sm-6"><strong>创建用户:</strong>
+			<input type="text" class="input-text" id="createUserName" name="createUserName" value={{createUserName}}>
+		</div>
+		<div class="formControls col-xs-6 col-sm-6"><strong>备注:</strong>
+			<input type="text" class="input-text" id="mark" name="mark" value={{mark}}>
+		</div>
+	</div>
+	<div class="row cl">
+		<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+			<button class="btn btn-primary radius" type="button" id="submit-advanced-query"><i class="Hui-iconfont">&#xe665;</i>查询</button>
+			<button class="btn btn-warning radius" type="button" id="submit-advanced-query-reset">&nbsp;&nbsp;显示全部&nbsp;&nbsp;</button>
+			<button class="btn btn-default radius" type="button" onclick="layer.close(currIndex);">&nbsp;&nbsp;关闭&nbsp;&nbsp;</button>
+		</div>
+	</div>
+</form>	
+</article>
+</script>
 <script type="text/javascript" src="../../libs/jquery/1.9.1/jquery.js"></script>
 <script type="text/javascript" src="../../libs/layer/2.1/layer.js"></script>
 <script type="text/javascript" src="../../libs/jquery.validation/1.14.0/jquery.validate.min.js"></script> 

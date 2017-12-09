@@ -28,12 +28,133 @@
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 系统管理 <span class="c-gray en">&gt;</span> 全局配置 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <article class="page-container">
 	<form method="post" class="form form-horizontal" id="form-setting-edit">	
-		<div id="setting-info">		
-		</div>								
-		<div class="row cl">
-			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
-				<input class="btn btn-primary radius save-setting" type="button" onclick="javascript:;" value="&nbsp;&nbsp;保存修改&nbsp;&nbsp;">
+		<div id="tab-system" class="HuiTab">
+			<div class="tabBar cl"><span>网站设置</span><span>邮件设置</span><span>自动化测试</span></div>
+			<!-- START -->
+			<div class="tabCon">			
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">首页地址：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" id="home" class="input-text radius" name="home">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">网站公告：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<textarea class="textarea radius" id="notice" name="notice"></textarea>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">版本号：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" id="version" class="input-text radius" name="version">
+					</div>
+				</div>
+							
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">开启状态：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<span class="select-box radius">
+						  <select class="select" size="1" id="status" name="status">
+						    <option value="0">开启</option>
+						    <option value="1">关闭</option>
+						  </select>
+						</span>
+					</div>
+				</div>
+				
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">日志开关：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<span class="select-box radius">
+						  <select class="select" size="1" id="logSwitch" name="logSwitch">
+						    <option value="0">开启</option>
+						    <option value="1">关闭</option>
+						  </select>
+						</span>
+					</div>
+				</div>	
 			</div>
+			<!-- END -->
+			
+			<!-- STRAT -->
+			<div class="tabCon">
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">开启邮件推送：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<span class="select-box radius">
+						  <select class="select" size="1" id="sendReportMail" name="sendReportMail">
+						    <option value="0">开启</option>
+						    <option value="1">关闭</option>
+						  </select>
+						</span>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">启用SSL连接：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<span class="select-box radius">
+						  <select class="select" size="1" id="mailSSL" name="mailSSL">
+						    <option value="0">启用</option>
+						    <option value="1" selected>不启用</option>
+						  </select>
+						</span>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">SMTP邮件服务器：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" id="mailHost" class="input-text radius" name="mailHost">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">SMTP邮件服务器端口：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" id="mailPort" class="input-text radius" name="mailPort">
+					</div>
+				</div>				
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">登录用户名：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" id="mailUsername" class="input-text radius" name="mailUsername">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">登录密码：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="password" id="mailPassword" class="input-text radius" name="mailPassword">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">收件人列表(逗号分隔)：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" id="mailReceiveAddress" class="input-text radius" name="mailReceiveAddress">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">抄送人列表(逗号分隔)：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" id="mailCopyAddress" class="input-text radius" name="mailCopyAddress">
+					</div>
+				</div>
+			</div>
+			<!-- END -->
+			
+			<!-- STRAT -->
+			<div class="tabCon">
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">XML默认头编码设置：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" id="messageEncoding" class="input-text radius" name="messageEncoding">
+					</div>
+				</div>			
+			</div>
+			<!-- END -->	
+			<div class="row cl">
+					<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+						<input class="btn btn-primary radius save-setting" type="button" onclick="javascript:;" value="&nbsp;&nbsp;保存修改&nbsp;&nbsp;">						
+					</div>
+				</div>		
 		</div>
 	</form>
 </article>

@@ -45,12 +45,7 @@ import com.dcits.util.StrutsUtils;
  */
 public class ImportInterfaceInfo {
 	
-	private static final Logger LOGGER = Logger.getLogger(ImportInterfaceInfo.class);
-	
-	public static final String RESULT_MAP_TOTAL_COUNT = "totalCount";
-	public static final String RESULT_MAP_SUCCESS_COUNT = "successCount";
-	public static final String RESULT_MAP_FAIL_COUNT = "failCount";
-	public static final String RESULT_MAP_MSG = "msg";
+	private static final Logger LOGGER = Logger.getLogger(ImportInterfaceInfo.class);	
 	
 	/**
 	 * 从excel导入interfaceInfo到数据库
@@ -160,10 +155,10 @@ public class ImportInterfaceInfo {
 			}
 		}
 			
-		result.put(RESULT_MAP_TOTAL_COUNT, totalCount);
-		result.put(RESULT_MAP_SUCCESS_COUNT, successCount);
-		result.put(RESULT_MAP_FAIL_COUNT, failCount);
-		result.put(RESULT_MAP_MSG, msg.toString());
+		result.put(PublicExcelImportUtil.RESULT_MAP_TOTAL_COUNT, totalCount);
+		result.put(PublicExcelImportUtil.RESULT_MAP_SUCCESS_COUNT, successCount);
+		result.put(PublicExcelImportUtil.RESULT_MAP_FAIL_COUNT, failCount);
+		result.put(PublicExcelImportUtil.RESULT_MAP_MSG, msg.toString());
 		return result;
 	}
 	
@@ -279,8 +274,9 @@ public class ImportInterfaceInfo {
                      HSSFCell status = hssfRow.getCell(6);
                      HSSFCell requestMsg = hssfRow.getCell(7);
                      HSSFCell messageType = hssfRow.getCell(8);
-                     HSSFCell createMessage = hssfRow.getCell(9);
-                     HSSFCell createScene = hssfRow.getCell(10);
+                     HSSFCell mark = hssfRow.getCell(9);
+                     HSSFCell createMessage = hssfRow.getCell(10);
+                     HSSFCell createScene = hssfRow.getCell(11);
                      
                      info.setInterfaceName(PublicExcelImportUtil.getValue(interfaceName));
                      info.setInterfaceType(PublicExcelImportUtil.getValue(interfaceType).toUpperCase());
@@ -291,6 +287,7 @@ public class ImportInterfaceInfo {
                      info.setStatus(PublicExcelImportUtil.getValue(status));
                      info.setRequestMsg(PublicExcelImportUtil.getValue(requestMsg));
                      info.setMessageType(PublicExcelImportUtil.getValue(messageType).toUpperCase());
+                     info.setMark(PublicExcelImportUtil.getValue(mark));
                      info.setCreateMessage(PublicExcelImportUtil.getValue(createMessage));
                      info.setCreateScene(PublicExcelImportUtil.getValue(createScene));
                      
@@ -336,8 +333,9 @@ public class ImportInterfaceInfo {
                      XSSFCell status = xssfRow.getCell(6);
                      XSSFCell requestMsg = xssfRow.getCell(7);
                      XSSFCell messageType = xssfRow.getCell(8);
-                     XSSFCell createMessage = xssfRow.getCell(9);
-                     XSSFCell createScene = xssfRow.getCell(10);
+                     XSSFCell mark = xssfRow.getCell(9);
+                     XSSFCell createMessage = xssfRow.getCell(10);
+                     XSSFCell createScene = xssfRow.getCell(11);
                      
                      info.setInterfaceName(PublicExcelImportUtil.getValue(interfaceName));
                      info.setInterfaceType(PublicExcelImportUtil.getValue(interfaceType).toUpperCase());
@@ -348,6 +346,7 @@ public class ImportInterfaceInfo {
                      info.setStatus(PublicExcelImportUtil.getValue(status));
                      info.setRequestMsg(PublicExcelImportUtil.getValue(requestMsg));
                      info.setMessageType(PublicExcelImportUtil.getValue(messageType).toUpperCase());
+                     info.setMark(PublicExcelImportUtil.getValue(mark));
                      info.setCreateMessage(PublicExcelImportUtil.getValue(createMessage));
                      info.setCreateScene(PublicExcelImportUtil.getValue(createScene));
                      

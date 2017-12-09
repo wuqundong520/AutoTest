@@ -95,17 +95,25 @@ public class MessageKeys {
 	
 	public static final String RESPONSE_MAP_PARAMETER_TEST_MARK = "mark";
 	
-	
-	public static final String TEST_RUN_STATUS_STOP = "2";
-	
-	public static final String TEST_RUN_STATUS_FAIL = "1";
-	
+	/**
+	 * 执行结果中对应的状态<br>
+	 * 2 -异常结束   1 - 执行失败或者验证不通过  0 - 正常
+	 */
+	public static final String TEST_RUN_STATUS_STOP = "2";	
+	public static final String TEST_RUN_STATUS_FAIL = "1";	
 	public static final String TEST_RUN_STATUS_SUCCESS = "0";
 	
-	
+	/**
+	 * 适用节点参数时需要再参数路径左右加上以下左右边界
+	 */
 	public static final String CUSTOM_PARAMETER_BOUNDARY_SYMBOL_LEFT = "#";
 	public static final String CUSTOM_PARAMETER_BOUNDARY_SYMBOL_RIGHT = "#";
 	
 	public static final String CUSTOM_REQUEST_URL_REPLACE_PARAMETER = "\\$\\{interfaceName\\}";
+	
+	/**
+	 * quartz定时任务执行的测试将会在对应的测试报告添加下面的备注
+	 */
+	public static final String QUARTZ_AUTO_TEST_REPORT_MARK = "自动化定时任务";
 	
 }

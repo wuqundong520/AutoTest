@@ -157,19 +157,9 @@ public class MessageScene implements Serializable {
 	}
 
 
-	public void setValidateMethodStr() {
-		switch (this.getValidateRuleFlag()) {
-		case "0":
-			this.validateMethodStr = "全局默认";
-			break;
-		case "1":
-			this.validateMethodStr = "入参验证";
-			break;
-		case "2":
-			this.validateMethodStr = "全文验证";
-			break;
-		}
-	}
+	public void setValidateMethodStr(String validateMethodStr) {
+		this.validateMethodStr = validateMethodStr;
+	}	
 
 
 	@JSON(serialize=false)

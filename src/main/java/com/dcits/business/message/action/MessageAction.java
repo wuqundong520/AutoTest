@@ -3,6 +3,7 @@ package com.dcits.business.message.action;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.dcits.business.base.action.BaseAction;
+import com.dcits.business.message.bean.InterfaceInfo;
 import com.dcits.business.message.bean.Message;
 import com.dcits.business.message.bean.Parameter;
 import com.dcits.business.message.service.ComplexParameterService;
@@ -20,6 +22,7 @@ import com.dcits.business.user.bean.User;
 import com.dcits.constant.ReturnCodeConsts;
 import com.dcits.coretest.message.parse.MessageParse;
 import com.dcits.util.StrutsUtils;
+import com.dcits.util.excel.ImportMessage;
 
 /**
  * 接口报文Action
@@ -36,6 +39,8 @@ public class MessageAction extends BaseAction<Message>{
 	
 	/**报文对应的接口id*/
 	private Integer interfaceId;
+	
+	private String path;
 	
 	private MessageService messageService;
 	
@@ -63,8 +68,26 @@ public class MessageAction extends BaseAction<Message>{
 		return this.filterCondition;
 	}
 
-
-
+	
+	/**
+	 * 从指定Excel中导入报文信息
+	 * @return
+	 */
+	public String importFromExcel () {
+		InterfaceInfo info = interfaceInfoService.get(interfaceId);
+		
+		if (info == null) {
+			jsonMap.put("msg", "接口信息不存在!");
+			jsonMap.put("returnCode", ReturnCodeConsts.SYSTEM_ERROR_CODE);
+			return SUCCESS;
+		}
+		
+		Map<String, Object> result = ImportMessage.importToDB(path, info);
+		
+		jsonMap.put("result", result);
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		return SUCCESS;
+	}
 
 	/**
 	 * 格式化报文的入参
@@ -175,5 +198,7 @@ public class MessageAction extends BaseAction<Message>{
 		this.interfaceId = interfaceId;
 	}
 	
-	
+	public void setPath(String path) {
+		this.path = path;
+	}
 }

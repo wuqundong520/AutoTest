@@ -40,6 +40,6 @@ public class MD5Util {
 	
 	
 	public static void main(String[] args) throws Exception {
-		System.out.print(MD5Util.code("111111"));
+		System.out.print(MD5Util.code("iloveyouandbaikapal"));
 	}
 }

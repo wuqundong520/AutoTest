@@ -24,6 +24,12 @@ var templateParams = {
 			markClass:"batch-del-object",
 			iconFont:"&#xe6e2;",
 			name:"批量删除"
+		},{
+			type:"success",
+			size:"M",
+			id:"import-data-from-excel",
+			iconFont:"&#xe642;",
+			name:"Excel导入"
 		}],
 		formControls:[
 		{
@@ -330,7 +336,7 @@ var eventList = {
 		},
 		'#setting-call-parameter':function() {	//配置调用参数
 			
-			if ($("#callParameter").val() == null || $("#callParameter").val() == "") {
+			if (!strIsNotEmpty($("#callParameter").val())) {
 				$("#callParameter").val(JSON.stringify(protocolJson[protocolType]));
 			}
 			
@@ -462,6 +468,11 @@ var eventList = {
 					layer.alert(data.msg,{icon:5});
 				}
 			});
+		},
+		"#import-data-from-excel":function() {
+			createImportExcelMark("Excel导入报文信息", "../../excel/upload_message_template.xlsx"
+					, UPLOAD_FILE_URL, MESSAGE_IMPORT_FROM_EXCEL + "?interfaceId=" + interfaceId 
+					+ "&protocolType=" + protocolType);
 		}
 };
 
@@ -479,6 +490,7 @@ var mySetting = {
 			} else {
 				publish.renderParams.listPage.listUrl = MESSAGE_LIST_URL;
 				$(".add-object").hide();
+				$("#import-data-from-excel").hide();
 			}		
 			
 			addParameterTemplate = Handlebars.compile($("#add-parameter-template").html());

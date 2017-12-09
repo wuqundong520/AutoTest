@@ -4,7 +4,12 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 
 public class PublicExcelImportUtil {
-
+	
+	
+	public static final String RESULT_MAP_TOTAL_COUNT = "totalCount";
+	public static final String RESULT_MAP_SUCCESS_COUNT = "successCount";
+	public static final String RESULT_MAP_FAIL_COUNT = "failCount";
+	public static final String RESULT_MAP_MSG = "msg";
 	 /**
     * 获取文件扩展名
     * @param path
@@ -25,7 +30,8 @@ public class PublicExcelImportUtil {
     * @return String
     * @author zhang 2015-08-18 00:12
     */
-   public static String getValue(XSSFCell xssfRow) {
+   @SuppressWarnings("static-access")
+public static String getValue(XSSFCell xssfRow) {
 	   if (xssfRow == null) {
 		   return "";
 	   }
@@ -44,7 +50,8 @@ public class PublicExcelImportUtil {
     * @return String
     * @author zhang 2015-08-18 00:12
     */
-   public static String getValue(HSSFCell hssfCell) {
+   @SuppressWarnings("static-access")
+public static String getValue(HSSFCell hssfCell) {
 	   if (hssfCell == null) {
 		   return "";
 	   }

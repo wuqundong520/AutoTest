@@ -38,6 +38,25 @@ public class AutoTaskAction extends BaseAction<AutoTask> {
 		this.autoTaskService = autoTaskService;
 	}
 
+	
+	
+	
+	@Override
+	public String edit() {
+		// TODO Auto-generated method stub
+		checkObjectName();
+		if (!checkNameFlag.equals("true")) {
+			jsonMap.put("returnCode", ReturnCodeConsts.NAME_EXIST_CODE);
+			jsonMap.put("msg", "重复的任务名称!");
+			
+			return SUCCESS;
+		}
+		return super.edit();
+	}
+
+
+
+
 	/**
 	 * 判断标任务名重复性
 	 * 新增或者修改状态下均可用

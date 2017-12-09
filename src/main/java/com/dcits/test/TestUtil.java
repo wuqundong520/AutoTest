@@ -1,5 +1,6 @@
 package com.dcits.test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -178,8 +179,9 @@ public class TestUtil {
 	}
 	
 	@Test
-	public void test4() {
-		System.out.println(String.format("%.2f", Double.valueOf(String.valueOf(((double)39 / 128 * 100)))));
+	public void test4() throws IOException {
+		System.out.println(new File("").getCanonicalPath());
+		/*System.out.println(String.format("%.2f", Double.valueOf(String.valueOf(((double)39 / 128 * 100)))));*/
 	}	
 	
 	@Test

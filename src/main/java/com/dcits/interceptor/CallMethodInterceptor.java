@@ -1,6 +1,7 @@
 package com.dcits.interceptor;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,15 @@ public class CallMethodInterceptor extends AbstractInterceptor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public String intercept(ActionInvocation arg0) throws Exception {
+		
+		/**
+		 * 内部调用带上指定的tooken直接通过
+		 */
+		Map paramMap = arg0.getInvocationContext().getParameters();		
+		String[] tookens = (String[]) paramMap.get("tooken");
+		if (tookens != null && SystemConsts.REQUEST_ALLOW_TOOKEN.equals(tookens[0])) {		
+			return arg0.invoke();
+		}		
 		try {
 			String timeTag = String.valueOf(System.currentTimeMillis());
 			//请求接口路径

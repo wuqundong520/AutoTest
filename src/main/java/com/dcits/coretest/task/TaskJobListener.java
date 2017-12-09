@@ -1,19 +1,29 @@
 package com.dcits.coretest.task;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dcits.business.message.bean.TestReport;
+import com.dcits.business.message.bean.TestResult;
 import com.dcits.business.message.service.TestReportService;
+import com.dcits.business.message.service.TestResultService;
 import com.dcits.business.system.bean.AutoTask;
 import com.dcits.business.system.service.AutoTaskService;
 import com.dcits.business.user.service.MailService;
 import com.dcits.constant.SystemConsts;
+import com.dcits.util.PracticalUtils;
+import com.dcits.util.SettingUtil;
+import com.dcits.util.mail.Mail;
 
 public class TaskJobListener implements JobListener {
 
@@ -25,6 +35,10 @@ public class TaskJobListener implements JobListener {
 	private AutoTaskService taskService;
 	@Autowired
 	private TestReportService reportService;
+	@Autowired
+	private TestResultService resultService;
+	
+	private static final Logger LOGGER = Logger.getLogger(TaskJobListener.class);
 	
 	@Override
 	public String getName() {
@@ -75,18 +89,51 @@ public class TaskJobListener implements JobListener {
 				}
 			}
 			
-			tip = "接口自动化测试定时任务<br><span class=\"label label-primary radius\">[任务Id]</span> = " + task.getTaskId() + "<br><span class=\"label label-primary radius\">[任务名称]</span> = " + task.getTaskName() + "<br><span class=\"label label-primary radius\">[任务类型]</span> = " + getTaskType(task.getTaskType()) + "<br><span class=\"label label-primary radius\">[测试报告ID]</span> = " + result[0] + "<br>详情请至测试报告模块查看本次报告!";
-		}
-		
-		if ("1".equals(task.getTaskType())) {
-			
-		}
+			tip = "接口自动化测试定时任务<br><span class=\"label label-primary radius\">[任务Id]</span> = " 
+					+ task.getTaskId() + "<br><span class=\"label label-primary radius\">[任务名称]</span> = " 
+					+ task.getTaskName() + "<br><span class=\"label label-primary radius\">[任务类型]</span> = " 
+					+ getTaskType(task.getTaskType()) + "<br><span class=\"label label-primary radius\">[测试报告ID]</span> = " 
+					+ result[0] + "<br>详情请至测试报告模块查看本次报告!";
+		}		
 		
 		task.setRunCount(task.getRunCount() + 1);
 		task.setLastFinishTime(new Timestamp(System.currentTimeMillis()));
 		taskService.edit(task);
 		
+		//发送推送邮件
+		if ("0".equals(SettingUtil.getSettingValue(SystemConsts.GLOBAL_SETTING_IF_SEND_REPORT_MAIL))) {
+			String createReportUrl = SettingUtil.getSettingValue(SystemConsts.GLOBAL_SETTING_HOME) + "/" 
+					+ SystemConsts.CREATE_STATIC_REPORT_HTML_RMI_URL + "?reportId=" + result[0] 
+					+ "&tooken=" + SystemConsts.REQUEST_ALLOW_TOOKEN;
+			String returnJson = PracticalUtils.doGetHttpRequest(createReportUrl);
+			try {
+				Map maps = new ObjectMapper().readValue(returnJson, Map.class);
+				if (!"0".equals(maps.get("returnCode").toString())) {
+					throw new Exception(returnJson);
+				}
+				
+				TestReport report = reportService.get(Integer.valueOf(result[0]));
+				report.setTrs(new HashSet<TestResult>(resultService.listByReportId(Integer.valueOf(result[0]))));
+				
+				String sendMailSuccessFlag = Mail.sendReportEmail(report);
+				
+				if ("true".equalsIgnoreCase(sendMailSuccessFlag)) {
+					tip += "<p class=\"c-green\">本次测试结果及报告已通过邮件推送!</p>";
+				} else {
+					tip += "<p class=\"c-red\">发送推送邮件失败,原因：</p><p>" + sendMailSuccessFlag + "</p>";
+				}
+				
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+				tip += "<p class=\"c-red\">发送推送邮件失败，原因：无法生成当前测试报告的静态html文件！调用接口" + SystemConsts.CREATE_STATIC_REPORT_HTML_RMI_URL 
+						+ "失败。ReportId=" + result[0] + "</p>";
+			}
+		}
+		
 		mailService.sendSystemMail(tip, SystemConsts.ADMIN_USER_ID);
+		
 		
 	}
 	

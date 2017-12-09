@@ -24,7 +24,7 @@ var thisMark = "";
 var table;
 
 var templateParams = {
-		tableTheads:["接口", "报文", "场景名", "测试数据", "验证规则", "备注", "操作"],
+		tableTheads:["接口", "报文", "场景名", "测试数据", "验证规则", "创建时间","备注", "操作"],
 		btnTools:[{
 			type:"primary",
 			size:"M",
@@ -37,6 +37,12 @@ var templateParams = {
 			id:"batch-del-object",
 			iconFont:"&#xe6e2;",
 			name:"批量删除"
+		},{
+			type:"success",
+			size:"M",
+			id:"import-data-from-excel",
+			iconFont:"&#xe642;",
+			name:"Excel导入"
 		},{
 			type:"primary",
 			size:"M",
@@ -89,7 +95,7 @@ var templateParams = {
 				name:"mark",
 				placeholder:"输入场景备注或者备忘的查询数据用的SQL语句"
 				}]
-		},
+		}
 		]		
 	};
 
@@ -129,6 +135,16 @@ var columnsSetting = [
 	                            return btnTextTemplate(context);
 	                            }
               		    },
+              		  {
+              		    	"data":"createTime",
+              		    	"className":"ellipsis",
+              		    	"render":function(data) {
+              		    		if (strIsNotEmpty(data)) {
+              		    			return '<span title="' + data + '">' + data + '</span>';
+              		    		}
+              		    		return "";
+              		    	}
+              		  },
                       {
             		    "data":"mark",
             		    "className":"ellipsis",
@@ -376,6 +392,10 @@ var eventList = {
 					layer.alert(json.msg, {icon:5});
 				}
 			});			
+		},
+		"#import-data-from-excel":function() {//Excel导入数据
+			createImportExcelMark("Excel导入场景信息", "../../excel/upload_scene_template.xlsx"
+					, UPLOAD_FILE_URL, SCENE_IMPORT_FROM_EXCEL + "?messageId=" + messageId);
 		}
 };
 
@@ -386,7 +406,8 @@ var mySetting = {
 			if (GetQueryString("complexSceneFlag") != null) {
 				table.column(5).visible(false);
 				$("#add-object").attr("style", "display:none;");
-				$("#batch-del-object").attr("style", "display:none;");
+				$("#batch-del-object").attr("style", "display:none;");				
+				$("#import-data-from-excel").attr("style", "display:none;");
 				return false;
 			} 
 			table.column(5).visible(true);
@@ -475,7 +496,7 @@ var mySetting = {
 			listUrl:SCENE_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0, 7, 8],
+			columnsJson:[0, 8, 9],
 			dtOtherSetting:{
 				"bStateSave": false
 			}

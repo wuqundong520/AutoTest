@@ -7,6 +7,7 @@ var TEST_SCENE_URL = "test-sceneTest";//单场景测试
 var PARAMS_GET_URL = "param-getParams"; //根据interfaceId来 获取parameters
 var PARAM_SAVE_URL = "param-save";   //保存新增的接口参数
 var PARAM_DEL_URL = "param-del";   //删除指定参数
+var PARAM_GET_URL = "param-get";
 var PARAM_EDIT_URL = "param-edit";  //编辑参数的指定属性
 var PARAM_JSON_IMPORT_URL = "param-batchImportParams"; //导入json串
 var PARAM_DEL_ALL_URL = "param-delInterfaceParams";//删除指定接口下的所有参数
@@ -25,6 +26,7 @@ var MESSAGE_GET_URL = "message-get"; //获取指定报文信息
 var MESSAGE_DEL_URL = "message-del"; //删除指定报文
 var MESSAGE_FORMAT_URL = "message-format";//格式化报文串
 var MESSAGE_VALIDATE_JSON_URL = "message-validateJson";//报文串验证
+var MESSAGE_IMPORT_FROM_EXCEL = "message-importFromExcel";//从已经上传完成的excel中导入接口数据
 
 
 var SCENE_LIST_URL = "scene-list"; //获取场景列表
@@ -33,6 +35,7 @@ var SCENE_GET_URL = "scene-get"; //获取指定场景信息
 var SCENE_DEL_URL = "scene-del"; //删除指定场景
 var SCENE_GET_TEST_OBJECT_URL = "scene-getTestObject"; //获取场景的测试数据和测试地址
 var SCENE_LIST_NO_DATA_SCENES_URL = "scene-listNoDataScenes"; //获取指定测试集中没有测试数据的测试场景列表
+var SCENE_IMPORT_FROM_EXCEL = "scene-importFromExcel";//从已经上传完成的excel中导入场景数据
 
 
 var GET_SETTING_DATA_URL = "data-getSettingData"; //获取当前场景所属报文的所有可编辑入参节点 包含其他信息

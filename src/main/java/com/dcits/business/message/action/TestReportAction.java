@@ -22,6 +22,7 @@ import com.dcits.constant.ReturnCodeConsts;
 import com.dcits.constant.SystemConsts;
 import com.dcits.util.PracticalUtils;
 import com.dcits.util.StrutsUtils;
+import com.dcits.util.mail.Mail;
 
 /**
  * 接口自动化<br>
@@ -223,5 +224,13 @@ public class TestReportAction extends BaseAction<TestReport> {
 		
 		return SUCCESS;
 	}
+	
+/*	public String sendMail() {		
+		TestReport report = testReportService.get(model.getReportId());
+		Mail.sendReportEmail(report);
+		
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		return SUCCESS;
+	}*/
 	
 }

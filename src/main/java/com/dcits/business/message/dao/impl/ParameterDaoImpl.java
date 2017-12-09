@@ -46,5 +46,20 @@ public class ParameterDaoImpl extends BaseDaoImpl<Parameter> implements Paramete
 			.setInteger("interfaceId", interfaceId)
 			.executeUpdate();
 	}
+
+	@Override
+	public Parameter checkRepeatParameter(Integer parameterId,
+			String parameterIdentify, String path, String type,
+			Integer interfaceId) {
+		// TODO Auto-generated method stub
+		String hql = "From Parameter p where p.interfaceInfo.interfaceId=:interfaceId and p.parameterIdentify=:parameterIdentify"
+				+ " and p.path=:path";
+		Parameter p = (Parameter) getSession().createQuery(hql).setString("parameterIdentify", parameterIdentify).setString("path", path)
+				.setInteger("interfaceId", interfaceId).setCacheable(true).uniqueResult();
+		if (p != null && parameterId != null) {
+			return parameterId.equals(p.getParameterId()) ? null : p;
+		}
+		return p;
+	}
 	
 }

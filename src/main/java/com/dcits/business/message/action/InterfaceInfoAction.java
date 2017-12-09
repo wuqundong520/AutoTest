@@ -1,8 +1,11 @@
 package com.dcits.business.message.action;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -32,6 +35,8 @@ public class InterfaceInfoAction extends BaseAction<InterfaceInfo> {
 	
 	private String path;
 	
+	private String queryMode;
+	
 	@Autowired
 	public void setInterfaceInfoService(InterfaceInfoService interfaceInfoService) {
 		super.setBaseService(interfaceInfoService);
@@ -52,6 +57,47 @@ public class InterfaceInfoAction extends BaseAction<InterfaceInfo> {
 	}
 	
 	
+	
+	/**
+	 * 高级查询<br>目前只针对接口信息有高级查询，后期将高级查询做成公共方法适用于大部分查询
+	 */
+	@Override
+	public String[] prepareList() {
+		// TODO Auto-generated method stub
+		if ("advanced".equals(queryMode)) {//高级查询
+			List<String> querys = new ArrayList<String>();
+			if (StringUtils.isNotBlank(model.getInterfaceName())) {
+				querys.add("interfaceName like '%" + model.getInterfaceName() + "%'");
+			}
+			if (StringUtils.isNotBlank(model.getInterfaceCnName())) {
+				querys.add("interfaceCnName like '%" + model.getInterfaceCnName() + "%'");
+			}
+			if (StringUtils.isNotBlank(model.getInterfaceType())) {
+				querys.add("interfaceType='" + model.getInterfaceType() + "'");
+			}
+			if (StringUtils.isNotBlank(model.getInterfaceProtocol())) {
+				querys.add("interfaceProtocol='" + model.getInterfaceProtocol() + "'");
+			}
+			if (StringUtils.isNotBlank(model.getStatus())) {
+				querys.add("status='" + model.getStatus() + "'");
+			}
+			if (StringUtils.isNotBlank(model.getCreateTimeText())) {
+				String[] dates = model.getCreateTimeText().split("~");
+				querys.add("createTime>'" + dates[0].trim() + " 00:00:00" +"'");
+				querys.add("createTime<'" + dates[1].trim() + " 23:59:59" +"'");
+			}
+			if (StringUtils.isNotBlank(model.getCreateUserName())) {
+				querys.add("user.realName like '%" + model.getCreateUserName() + "%'");
+			}
+			if (StringUtils.isNotBlank(model.getMark())) {
+				querys.add("mark like '%" + model.getMark() + "%'");
+			}
+			filterCondition = (String[]) querys.toArray(new String[0]);
+		}
+		
+		return filterCondition;
+	}
+
 	/**
 	 * 更新接口
 	 * 根据传入的interfaceId判断修改还是新增
@@ -101,4 +147,7 @@ public class InterfaceInfoAction extends BaseAction<InterfaceInfo> {
 		this.path = path;
 	}
 	
+	public void setQueryMode(String queryMode) {
+		this.queryMode = queryMode;
+	}
 }

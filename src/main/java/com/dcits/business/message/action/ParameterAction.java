@@ -1,9 +1,9 @@
 package com.dcits.business.message.action;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -13,6 +13,7 @@ import com.dcits.business.message.bean.InterfaceInfo;
 import com.dcits.business.message.bean.Parameter;
 import com.dcits.business.message.service.InterfaceInfoService;
 import com.dcits.business.message.service.ParameterService;
+import com.dcits.constant.MessageKeys;
 import com.dcits.constant.ReturnCodeConsts;
 import com.dcits.coretest.message.parse.MessageParse;
 
@@ -46,18 +47,6 @@ public class ParameterAction extends BaseAction<Parameter> {
 	private String paramsJson;
 	
 	/**
-	 * 编辑参数属性
-	 * 指定属性名
-	 */
-	private String attrName; 
-	
-	/**
-	 * 编辑参数属性
-	 * 指定要更新的属性值
-	 */
-	private String attrValue;
-	
-	/**
 	 * 参数对应的接口id
 	 */
 	private Integer interfaceId;
@@ -72,14 +61,10 @@ public class ParameterAction extends BaseAction<Parameter> {
 	 * @return
 	 */
 	public String getParams() {
-		List<Parameter> ps = new ArrayList<Parameter>();
-		ps = parameterService.findByInterfaceId(interfaceId);		
-		jsonMap.put("returnCode",ReturnCodeConsts.NO_RESULT_CODE);
+		List<Parameter> ps = parameterService.findByInterfaceId(interfaceId);		
 		
-		if (ps.size() > 0) {
-			jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
-			jsonMap.put("data", ps);
-		}
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		jsonMap.put("data", ps);
 		
 		return SUCCESS;
 	}
@@ -95,16 +80,17 @@ public class ParameterAction extends BaseAction<Parameter> {
 		return SUCCESS;
 	}
 	
-	/**
+/*	*//**
 	 * 根据传入的参数属性名称和属性值来更新指定参数的指定属性
-	 */
+	 *//*
 	@Override
 	public String edit() {
 		parameterService.editProperty(id, attrName, attrValue);
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
 		
 		return SUCCESS;
-	}
+	}*/
+	
 	
 	
 	
@@ -147,7 +133,24 @@ public class ParameterAction extends BaseAction<Parameter> {
 		return SUCCESS;
 	}
 	
-	
+	/**
+	 * 添加或者修改之前，检查是否已存在
+	 */
+	@Override
+	public String edit() {
+		// TODO Auto-generated method stub
+		model.setPath(StringUtils.isEmpty(model.getPath()) ? MessageKeys.MESSAGE_PARAMETER_DEFAULT_ROOT_PATH 
+				: MessageKeys.MESSAGE_PARAMETER_DEFAULT_ROOT_PATH + "." + model.getPath());
+		if (parameterService.checkRepeatParameter(model.getParameterId(), model.getParameterIdentify(), model.getPath(), 
+				model.getType(), model.getInterfaceInfo().getInterfaceId()) != null) {
+			jsonMap.put("msg", "该参数已存在!");
+			jsonMap.put("returnCode", ReturnCodeConsts.NAME_EXIST_CODE);
+			return SUCCESS;
+		}
+		
+		return super.edit();
+	}
+
 	/***************************************GET-SET****************************************************/
 	
 	public void setMessageType(String messageType) {
@@ -156,14 +159,6 @@ public class ParameterAction extends BaseAction<Parameter> {
 	
 	public void setParamsJson(String paramsJson) {
 		this.paramsJson = paramsJson;
-	}
-	
-	public void setAttrName(String attrName) {
-		this.attrName = attrName;
-	}
-	
-	public void setAttrValue(String attrValue) {
-		this.attrValue = attrValue;
 	}
 
 	public void setInterfaceId(Integer interfaceId) {

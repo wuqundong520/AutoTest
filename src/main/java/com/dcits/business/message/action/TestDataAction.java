@@ -80,7 +80,9 @@ public class TestDataAction extends BaseAction<TestData> {
 			checkNameFlag = (data == null) ? "true" : "重复的标记名";
 		}
 	}
-		
+
+	
+	
 	@Override
 	public String get() {
 		// TODO Auto-generated method stub

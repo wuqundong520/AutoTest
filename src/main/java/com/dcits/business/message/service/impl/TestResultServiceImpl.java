@@ -1,5 +1,7 @@
 package com.dcits.business.message.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,5 +20,11 @@ public class TestResultServiceImpl extends BaseServiceImpl<TestResult> implement
 	public void setTestResultDao(TestResultDao testResultDao) {
 		super.setBaseDao(testResultDao);
 		this.testResultDao = testResultDao;
+	}
+
+	@Override
+	public List<TestResult> listByReportId(Integer reportId) {
+		// TODO Auto-generated method stub
+		return testResultDao.listByReportId(reportId);
 	}
 }

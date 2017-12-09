@@ -35,42 +35,10 @@ var templateParams = {
 			edit:false,
 			required:true,
 			label:"角色组",  			
-			select:[{
+			input:[{	
+				hidden:false,
 				name:"roleGroup",
-				option: [
-				         {
-				        	 value:"性能测试组",
-				        	 text:"性能测试组",				        	  
-				         },
-				         {
-				        	 value:"CRM测试组",
-				        	 text:"CRM测试组", 
-				         },
-				         {
-				        	 value:"BOSS测试组",
-				        	 text:"BOSS测试组", 
-				         },
-				         {
-				        	 value:"电渠测试组",
-				        	 text:"电渠测试组", 
-				         },
-				         {
-				        	 value:"自动化测试组",
-				        	 text:"自动化测试组", 
-				        	 selected:true
-				         },
-				         {
-				        	 value:"测试开发组",
-				        	 text:"测试开发组", 
-				         },
-				         {
-				        	 value:"思特奇开发",
-				        	 text:"思特奇开发", 
-				         },
-				         {
-				        	 value:"安徽移动",
-				        	 text:"安徽移动", 
-				         }]
+				placeholder:"输入一个组别名称"
 				}]
 		},
 		{
@@ -150,7 +118,7 @@ var eventList = {
 		},
 		".add-object":function(){
 			publish.renderParams.editPage.modeFlag = 0;					
-			layer_show("增加角色", editHtml, "600", "400",1);
+			layer_show("增加角色", editHtml, "600", "340",1);
 			publish.init();			
 		},	
 		".show-role-power":function(){
@@ -192,7 +160,7 @@ var eventList = {
 	  		}else{
 	  			publish.renderParams.editPage.modeFlag = 1;	
 	  			publish.renderParams.editPage.objId = data.roleId;
-				layer_show("编辑用户信息", editHtml, "600", "430",1);
+				layer_show("编辑用户信息", editHtml, "600", "380",1);
 				publish.init();	
 	  		}
 		},

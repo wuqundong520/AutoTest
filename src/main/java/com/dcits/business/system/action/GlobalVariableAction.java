@@ -44,6 +44,7 @@ public class GlobalVariableAction extends BaseAction<GlobalVariable> {
 	@Override
 	public String edit() {
 		// TODO Auto-generated method stub
+		
 		User user = (User)StrutsUtils.getSessionMap().get("user");
 		if (model.getVariableId() == null) {
 			//新增

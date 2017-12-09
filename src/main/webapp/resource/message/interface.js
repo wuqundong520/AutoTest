@@ -4,16 +4,28 @@ var $wrapper = $('#div-table-container');
 
 var interfaceId; //当前正在编辑的interface的id
 var currIndex;//当前正在操作的layer窗口的index
-
-var parametersEditHmtl;
-
-var paramsCount = 0;
-
-
+var advancedQueryFormTemplate;//高级查询页面模板
+var advancedQueryParameters = {
+		interfaceName:"",
+		interfaceCnName:"",
+		interfaceType:"",
+		interfaceProtocol:"",
+		status:"",
+		createTimeText:"",
+		createUserName:"",
+		mark:""
+		
+}; //高级查询的相关参数
 
 var templateParams = {
-		tableTheads:["名称","报文", "中文名","类型","协议","创建时间","状态","创建用户","最后修改","参数","操作"],
+		tableTheads:["名称","报文", "中文名","类型","协议","创建时间","状态","创建用户","最后修改","参数", "备注","操作"],
 		btnTools:[{
+			type:"primary",
+			size:"M",
+			id:"advanced-query",
+			iconFont:"&#xe665;",
+			name:"高级查询"
+		},{
 			type:"primary",
 			size:"M",
 			id:"add-object",
@@ -144,6 +156,11 @@ var templateParams = {
 				hidden:true,
 				name:"lastModifyUser"
 				}]
+		},{
+			label:"备注",  
+			textarea:[{	
+				name:"mark"
+				}]
 		}
 		]		
 	};
@@ -205,6 +222,7 @@ var columnsSetting = [
                   return labelCreate(data);
               }},
           {"data":"user.realName"},{"data":"lastModifyUser"},
+          
           {
               "data":"parametersNum",
               "render":function(data, type, full, meta){
@@ -217,6 +235,16 @@ var columnsSetting = [
             		}];
                   return btnTextTemplate(context);
               }},
+          {
+  		    "data":"mark",
+  		    "className":"ellipsis",
+  		    "render":function(data, type, full, meta) { 
+  		    	if (data != "" && data != null) {
+      		    	return '<a href="javascript:;" onclick="showMark(\'' + full.interfaceName + '\', \'mark\', this);"><span title="' + data + '">' + data + '</span></a>';
+  		    	}
+  		    	return "";
+  		    }
+            },
           {
               "data":null,
               "render":function(data, type, full, meta){
@@ -242,7 +270,7 @@ var eventList = {
 		},
 		"#add-object":function(){
 			publish.renderParams.editPage.modeFlag = 0;					
-			layer_show("增加接口", editHtml, "850", "480",1);
+			layer_show("增加接口", editHtml, "800", "560", 1);
 			publish.init();
 			
 		},
@@ -252,147 +280,65 @@ var eventList = {
 		},
 		".edit-params":function(){
 			var data = table.row( $(this).parents('tr') ).data();
-			interfaceId = data.interfaceId;
-			layer_show(data.interfaceName + "-接口参数管理", parametersEditHmtl, "1000", "500", 1, function(){
-				initParameters();
-			},function() {
-				if (paramsCount != data.parametersNum) {
+			layer_show(data.interfaceName + "-" + data.interfaceCnName +" 接口参数管理", "interfaceParameter.html?interfaceId=" + data.interfaceId
+					, "900", "635", 2, null, function() {
 					refreshTable();
-				}
 			});	
 		},
 		".interface-edit":function(){
 			var data = table.row( $(this).parents('tr') ).data();
 			publish.renderParams.editPage.modeFlag = 1;
 			publish.renderParams.editPage.objId = data.interfaceId;
-			layer_show("编辑接口信息", editHtml, "850", "630",1);
+			layer_show("编辑接口信息", editHtml, "800", "600",1);
 			publish.init();	
 		},
 		".interface-del":function(){
 			var data = table.row( $(this).parents('tr') ).data();
 			delObj("确定删除此接口？此操作同时会删除该接口下所有的报文以及场景相关数据,请谨慎操作!",INTERFACE_DEL_URL,data.interfaceId,this);
 		},
-		"#add-parameter":function(){
-			if($("#parameters-tbody").has('input').length>0 || $("#parameters-tbody").has('select').length>0){
-				layer.msg('请先保存或者取消已修改的内容!', {icon: 2,time:1000});
-				return false;
-			};
-			var html='';
-			var btnS='<a href="javascript:;" onclick="saveParameter(this)" class="btn btn-success size-S radius">保存</a>&nbsp;<a href="javascript:;" onclick="cancelAddParameter(this)" class="btn btn-danger size-S radius">取消</a>';
-			var selectS='<select><option value="Array">Array</option><option value="Map">Map</option><option value="String">String</option><option value="Number">Number</option><option value="List">List</option></select>';
-			html+='<tr class="text-c">'+
-				  '<td style="display: none;"></td>'+
-				  '<td><input type="text"/>'+'</td>'+
-				  '<td><input type="text"/>'+'</td>'+
-				  '<td><input type="text"/>'+'</td>'+
-				  '<td>' + selectS + '</td>'+
-				  '<td><input type="text" value="TopRoot."/>'+'</td>'+
-				  '<td>' + btnS + '</td></tr>';
-			$("#parameters-tbody").prepend(html);			
-		},
-		"#del-all-parameter":function() {
-			layer.confirm('确认要删除该接口的全部入参信息？该操作可能导致接口下的报文和场景在测试时出现异常，请同时更新关联的报文场景！', 
-					{title:'警告', icon:0}, function(index) {
-						layer.close(index);
-						$("#parameters-table").spinModal();
-						$.post(PARAM_DEL_ALL_URL, {interfaceId:interfaceId}, function(json) {
-							$("#parameters-table").spinModal(false);
-							if (json.returnCode == 0) {
-								initParameters();
-								layer.msg('删除成功!', {icon:6, time:1500});
-							} else {
-								layer.alert(json.msg, {icon:5});
-							}								
-						});
-						
-					});
-		},
-		".param-edit-value":function(){
-			editParameter($(this));
-		},
-		"#load-json-parameter":function(){			
-			var showHtml = '<div class="page-container">'+
-				'<div class="cl pd-5 bg-1 bk-gray mt-0"> <span class="l">'+
-				'<a href="javascript:;" onclick="batchImportParams();" class="btn btn-danger radius">解析报文</a>'+
-				'</span><span class="r">'+
-				'<span class="select-box radius"><select class="select" size="1" id="messageType">'+
-				'<option value="JSON" selected>JSON格式</option>'+
-				'<option value="XML">XML格式</option>'+
-				'<option value="URL">URL格式</option>'+
-				'<option value="FIXED">固定报文</option>'+
-				'<option value="OPT">自定义报文</option>'+
-				'</select></span>'+
-				'</span></div><br><textarea style="height: 240px;" class="textarea radius" '+
-				'id="jsonParams" placeholder="输入接口报文"></textarea></div>';
-			currIndex = layer_show("导入报文", showHtml, "780", "400",1);
-		},
-		".parameter-del":function(){
-			var that = $(this);
-			var id = $(that.parent('td').siblings('td')[0]).attr("id");
-			layer.confirm('确认要删除此参数吗？此操作将会导致该接口下的报文发生变化,请在删除之后同时更新报文!', {icon:0, title:'警告'}, function(index){		
-				layer.close(index);	
-		    	$.post(PARAM_DEL_URL,{"id":id},function(data){
-		    		if(data.returnCode==0){		
-		    			paramsCount --;
-		    			if(that.parents('tr').siblings('tr').length<2){
-		    				$("#no-parameter-tip").text('没有参数,你可以手动增加或者通过JSON报文导入');
-		    			}
-		    			that.parents("tr").remove();
-		                layer.msg('已删除',{icon:1,time:1500});
-		    		}else{
-		    			layer.alert(data.msg, {icon: 5});
-		    		}
-		    	});		    		        
-		    });
-		},
 		"#import-data-from-excel":function() {
-			var html = '<div style="margin:18px;" id="show-import-from-excel-content"><p>请在导入之前下载Excel模板，并在模板第二页阅读相关字段说明.</p><p><a class="btn radius btn-primary size-M" '
-					+ 'href="../../excel/upload_interface_template.xlsx"><i class="Hui-iconfont">&#xe640;</i> Excel导入模板'
-					+ '</a></p><p><span class="label label-warning radius">注意：</span>请务必按照模板样式进行排版,最后两列如果留空,则表示不会在创建<strong>接口</strong>的同时也创建<strong>报文</strong>或者<strong>测试场景</strong>。</p>'
-					+ '<br><p>请点击<a href="javascript:;" class="btn btn-success radius size-M " id="upload-interface-excel"><i class="Hui-iconfont ">&#xe642;</i> 导入Excel</a>开始上传文档</p></div>';
-			layer_show("Excel导入接口信息", html, "710", "270", 1, function() {
-				//excel上传数据
-				var loadIndex;
-				layui.use('upload', function(){
-					  var upload = layui.upload;				   
-					  //执行实例
-					  var uploadInst = upload.render({
-					    elem: '#upload-interface-excel' //绑定元素
-					    ,url: UPLOAD_FILE_URL //上传接口
-					    ,accept:"file"
-					    ,exts:"xlsx|xls"
-					    ,size:"102400"
-					    ,drag:false
-					    ,before:function(obj) {
-					    	loadIndex = layer.msg('正在上传文件中...', {icon:16, time:99999, shade:0.4});
-					    }
-					    ,done: function(res){
-					      //上传完毕回调
-					    	if (res.returnCode == 0) {//上传成功
-					    		 layer.close(loadIndex);
-					    		 loadIndex = layer.msg('正在导入接口数据...', {icon:16, time:99999, shade:0.4});
-					    		 importInterfacesFromExcel(res.path, loadIndex);
-					    	} else {
-					    		layer.close(loadIndex);
-					    		layer.alert(res.msg, {icon:5});
-					    	}
-					    }
-					  });
+			createImportExcelMark("Excel导入接口信息", "../../excel/upload_interface_template.xlsx"
+					, UPLOAD_FILE_URL, INTERFACE_IMPORT_FROM_EXCEL);
+		},
+		"#advanced-query":function() {//打开高级查询页面
+			currIndex = layer_show("接口-高级查询", advancedQueryFormTemplate(advancedQueryParameters), '600', '410', 1
+					, function(layero, index) {
+						$.each(advancedQueryParameters, function(name, value) {
+							if ($("#" + name)) {
+								 $("#" + name).val(advancedQueryParameters[name]);
+							}
+						});			
+						layui.use('laydate', function(){
+							  var laydate = layui.laydate;							  
+							  //执行一个laydate实例
+							  laydate.render({
+							    elem: '#createTimeText' //指定元素
+							    ,value: advancedQueryParameters["createTime"]
+							    ,range: '~'
+							  });
+							});
+					}, function() {
+						saveQueryParameters();
 					});
-			});
+		},
+		"#submit-advanced-query":function() {//提交高级查询数据			
+			saveQueryParameters();
+			layer.close(currIndex);
+			refreshTable(INTERFACE_LIST_URL + "?queryMode=advanced&" + $("#advanced-query-form").serialize());			
+		},
+		"#submit-advanced-query-reset":function() {
+			saveQueryParameters();
+			layer.close(currIndex);
+			refreshTable(INTERFACE_LIST_URL);			
 		}
 		
 };
 
 var mySetting = {
 		eventList:eventList,
-		templateCallBack:function(df){
-			$("#parameters-page").load("interface-parameters.htm",function(){
-				parametersEditHmtl = $("#parameters-page").html();
-				$("#parameters-page").html('');
-				
-				df.resolve();
-			});
+		templateCallBack:function(df) {
+			advancedQueryFormTemplate = Handlebars.compile($("#advanced-query-form-template").html())
+			df.resolve();
 		},
 		editPage:{
 			editUrl:INTERFACE_EDIT_URL,
@@ -434,7 +380,7 @@ var mySetting = {
 			listUrl:INTERFACE_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0, 12]
+			columnsJson:[0, 12, 13]
 		},
 		templateParams:templateParams		
 	};
@@ -445,213 +391,10 @@ $(function(){
 });
 
 /******************************************************************************************************/
-/**初始化接口参数数据*/
-function initParameters(){
-	$("#parameters-table").spinModal();
-	$.get(PARAMS_GET_URL + "?interfaceId=" + interfaceId, function(data) {
-		if(data.returnCode == 0){
-			var html = '';
-			paramsCount = data.data.length;
-			$.each(data.data,function(i,n) {
-				var btnS = '<a href="javascript:;" class="btn btn-danger size-S radius parameter-del">删除</a>';							
-				html += '<tr class="text-c">'+
-						'<td class="param-id" id="'+n.parameterId+'" style="display: none;">'+n.parameterId+'</td>'+
-						'<td class="param-edit-value" name="parameterIdentify">'+n.parameterIdentify+'</td>'+
-						'<td class="ellipsis param-edit-value" name="parameterName">'+ n.parameterName +'</td>'+
-						'<td class="ellipsis param-edit-value" name="defaultValue">' + n.defaultValue +'</td>'+
-						'<td class="param-edit-value" name="type">'+n.type+'</td>'+
-						'<td class="param-edit-value" name="path">'+n.path+'</td>'+
-						'<td class="param-btns">'+btnS+'</td></tr>';
-			});
-			$("#parameters-tbody").html(html);	
-			$("#editTag").text("单击已修改参数属性");
-			$("#no-parameter-tip").text('');
-			$("#parameters-table").spinModal(false);
-		}else if(data.returnCode == 3){
-			$("#parameters-tbody").html('');
-			$("#no-parameter-tip").text("没有参数,你可以手动增加或者通过JSON报文导入");
-			$("#parameters-table").spinModal(false);
-		} else {
-			$("#parameters-table").spinModal(false);
-			layer.alert(data.msg, {icon: 5});
-		}
-	});	
-}
-
-/**编辑参数*/
-function editParameter(tdObj){
-	var tbobyP = $("#parameters-tbody");
-	if(tbobyP.has('input').length>0 || tbobyP.has('select').length>0){
-		//layer.msg('请先保存或者取消已修改的内容!', {icon: 2,time:1000});
-		return false;
-	};
-	$("#editTag").text("Enter键提交更改,Esc取消更改");
-	if (tdObj.children("input").length>0 || tdObj.children("select").length>0) {
-        return false;
-    }
-	var text = tdObj.text();
-	var currBtn = tdObj.siblings(".param-btns");
-	var btnHtml = $(currBtn).html();
-	var btnS='<a id="saveBtn" href="javascript:;" onclick="" class="btn btn-success size-S radius">保存</a>&nbsp;<a id="cancelBtn" href="javascript:;" onclick="" class="btn btn-danger size-S radius">取消</a>';
-	$(currBtn).html(btnS);
-	
-	tdObj.html("");
-	var inputObj;
-	if(tdObj.attr("name")=="type"){
-		var selectType = $("<select></select>").append("<option value='Array'>Array</option>")
-						.append("<option value='Map'>Map</option>")
-						.append("<option value='String'>String</option>")
-						.append("<option value='Number'>Number</option>")
-						.append("<option value='List'>List</option>");
-		
-		inputObj = selectType.css("font-size", tdObj.css("font-size"))
-							 .css("background-color", tdObj.css("background-color"))
-							 .width(tdObj.width()).val(text).appendTo(tdObj);
-	}else{
-		inputObj = $("<input type='text'>").css("font-size", tdObj.css("font-size"))
-										   .css("background-color", tdObj.css("background-color"))
-										   .width(tdObj.width()).val(text).appendTo(tdObj);       
-        inputObj.trigger("focus").trigger("select");
-	}
-	
-      inputObj.click(function () {
-          return false;
-      });
-      
-      
-      var saveFn = function(){
-	      var inputtext = inputObj.val();
-	          //获取parameterId
-	      var parameterId = tdObj.siblings(".param-id").attr("id");
-	      var attrName = tdObj.attr("name");
-	      
-	      $.post(PARAM_EDIT_URL,{
-		      id:parameterId,
-		      attrName:attrName,
-		      attrValue:inputtext
-	      },
-	      function(data){
-	    	  if(data.returnCode==0){
-	    		  layer.msg('更新成功',{icon:1,time:1500});
-	    	  tdObj.html(inputtext); 
-	      }else{
-	    	  layer.alert(data.msg, {icon: 5});
-	    	  tdObj.html(text);       			  
-	      }
-	      $(currBtn).html(btnHtml);
-	      $("#editTag").text("单击以修改参数属性");
-	        	  	
-	          }); 
-      };
-      
-      $("#saveBtn").click(saveFn);
-      
-      $("#cancelBtn").click(function(){
-	      tdObj.html(text);
-	      $(currBtn).html(btnHtml);
-	      $("#editTag").text("单击以修改参数属性");
-      });
-      
-	  $(document).keyup(function (event) {
-	      var keycode = event.which;
-	      //回车情况
-	      if (keycode==13) {
-	    	  saveFn();                                     
-	      }
-	      //ESC情况
-	      if (keycode==27) {
-	          tdObj.html(text);
-	          $(currBtn).html(btnHtml);
-	          $("#editTag").text("单击以修改参数属性");
-	      }
-	      
-	  });       
-}
-
-/**取消增加参数*/
-function cancelAddParameter(obj){
-	$(obj).parents("tr").remove();
-}
-
-
-/**保存新增参数*/
-function saveParameter(obj){
-	var tdList = $(obj).parent('td').siblings();
-	var parameterIdentify = $(tdList[1]).children().val();
-	var parameterName = $(tdList[2]).children().val();
-	var defaultValue = $(tdList[3]).children().val();
-	var type = $(tdList[4]).children().val();
-	var path = $(tdList[5]).children().val();
-	$.post(PARAM_SAVE_URL,{
-		parameterIdentify: parameterIdentify,
-		parameterName: parameterName,
-		defaultValue: defaultValue,
-		type: type,
-		"interfaceInfo.interfaceId": interfaceId
-		}, function(data) {
-			if(data.returnCode == 0){
-				paramsCount ++;
-				var btnS='<a href="javascript:;" class="btn btn-danger size-S radius parameter-del">删除</a>';
-				
-				var  html = '<tr class="text-c">'+
-					  '<td class="param-id" id="' + data.id + '" style="display: none;">' + data.id + '</td>' +
-					  '<td class="param-edit-value" name="parameterIdentify">' + parameterIdentify + '</td>'+
-					  '<td class="param-edit-value" name="parameterName">' + parameterName + '</td>' +
-					  '<td class="param-edit-value" name="defaultValue">' + defaultValue + '</td>'+
-					  '<td class="param-edit-value" name="type">' + type + '</td>' +
-					  '<td class="param-edit-value" name="path">' + path + '</td>' +
-					  '<td class="param-btns">' + btnS + '</td></tr>';
-				$(obj).parents("tr").remove();
-				$("#parameters-tbody").prepend(html);
-				layer.msg('增加成功',{icon:1,time:1500});	
-				$("#editTag").text("单击已修改参数属性");
-				$("#no-parameter-tip").text("");
-			} else {
-				layer.alert(data.msg, {icon: 5});
-			}
-	});
-}
-
-/**导入json*/
-function batchImportParams(i){
-	var paramsJson=$("#jsonParams").val();	
-	if(paramsJson == '' || paramsJson == null){
-		layer.msg('你还没有输入任何内容',{icon:2,time:1500});
-		return false;
-	}
-	var messageType = $("#messageType").val();
-	$.post(PARAM_JSON_IMPORT_URL, {interfaceId:interfaceId, paramsJson:paramsJson, messageType:messageType}, function(data){
-		if(data.returnCode==0){
-			initParameters();
-			layer.close(currIndex);
-			layer.msg('导入成功',{icon:1,time:1500});
-		}else if(data.returnCode == 912){
-			layer.msg('无法解析报文或者解析失败,请检查!',{icon:2,time:1500});
-		}else{
-			layer.alert(data.msg, {icon: 5});
-		}
-	});
-}
-
-
-/**
- * 发送分析excel数据请求,分析完成之后再开始导入到数据库中
- * @param filePath 已经上传完成的excel文件
- * @param loadIndex load窗口index,完成之后关闭
- */
-function importInterfacesFromExcel (filePath, loadIndex) {
-	$.post(INTERFACE_IMPORT_FROM_EXCEL, {path:filePath}, function(json) {
-		if (json.returnCode == 0) {
-			$("#show-import-from-excel-content").html("");
-			var showResultHtml = '<p><span class="label label-primary radius">导入总数 :</span>&nbsp;&nbsp;' + json.result.totalCount + '</p>'
-				+ '<p><span class="label label-success radius">导入成功数 :</span>&nbsp;&nbsp;' + json.result.successCount + '</p>'
-				+ '<p><span class="label label-danger radius">导入失败数:</span>&nbsp;&nbsp;' + json.result.failCount + '</p>'
-				+ '<p><span class="label label-secondary radius">导入详情信息:</span><br>' + json.result.msg + '</p>';
-			$("#show-import-from-excel-content").html(showResultHtml);
-			layer.close(loadIndex);
-			refreshTable();
-		} else {
-			layer.alert(json.msg, {icon:5});
+function saveQueryParameters () {
+	$.each(advancedQueryParameters, function(name, value) {
+		if ($("#" + name)) {
+			advancedQueryParameters[name] = $("#" + name).val();
 		}
 	});
 }

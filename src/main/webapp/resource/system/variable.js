@@ -16,7 +16,7 @@ var variableTypeInfo = {
 			    "EncType":"UTF-8" 
 			},
 			layerHeight:"500",
-			keyIsNull:true,
+			keyIsNull:false,
 			ifCreate:false
 		},
 		socketCallParameter:{
@@ -26,7 +26,7 @@ var variableTypeInfo = {
 			    "ReadTimeOut":""
 			},
 			layerHeight:"280",
-			keyIsNull:true,
+			keyIsNull:false,
 			ifCreate:false
 		},
 		webServiceCallParameter:{
@@ -39,7 +39,7 @@ var variableTypeInfo = {
 			    "Password":""
 			},
 			layerHeight:"430",
-			keyIsNull:true,
+			keyIsNull:false,
 			ifCreate:false
 		},
 		relatedKeyWord:{
@@ -53,7 +53,7 @@ var variableTypeInfo = {
 				validateValue:""
 			},
 			layerHeight:"530",
-			keyIsNull:true,
+			keyIsNull:false,
 			ifCreate:false
 		},
 		setRuntimeSetting:{
@@ -68,7 +68,7 @@ var variableTypeInfo = {
 				customRequestUrl:""
 			},
 			layerHeight:"580",
-			keyIsNull:true,
+			keyIsNull:false,
 			ifCreate:false
 		},
 		constant:{
@@ -431,12 +431,8 @@ var eventList = {
 			//HTTP调用参数单独处理
 			//Content-Type:application/xml;User-agent:chrome
 			if (settingType == "httpCallParameter") {
-				if (value["Authorization"] != null && value["Authorization"] != "") {
-					value["Authorization"] = parseHttpParameterToJson(value["Authorization"]);
-				}
-				if (value["Headers"] != null && value["Headers"] != "") {
-					value["Headers"] = parseHttpParameterToJson(value["Headers"]);
-				}
+				value["Authorization"] = parseHttpParameterToJson(value["Authorization"]);
+				value["Headers"] = parseHttpParameterToJson(value["Headers"]);
 			}
 			
 			value = JSON.stringify(value);
@@ -484,14 +480,18 @@ var mySetting = {
 			renderCallback:function(obj){
 				$("#variableType").trigger('change');				
 			},
+			messages:{
+				variableName:"请输入变量或者模板的名称",
+				key:"请设定一个唯一的Key值"
+			},
 			rules:{
 				variableName:{
 					required:true,
 					minlength:2,
 					maxlength:255
 				},
-				/*key:{
-					required:true,
+				key:{
+					required:true,					
 					remote:{
 						url:GLOBAL_VARIABLE_CHECK_NAME_URL,
 						type:"post",
@@ -507,7 +507,7 @@ var mySetting = {
 					        	return $("#variableType").val();
 					        }
 					}}
-				},*/
+				},
 				value:{
 					required:true
 				}
@@ -543,19 +543,19 @@ function changeFormByVariableType (variableType) {
 		case "webServiceCallParameter":
 		case "relatedKeyWord":
 		case "setRuntimeSetting":
-			showOrHideInput('hidden', 'hidden', 'button');
+			showOrHideInput('hidden', 'button');
 			break;
 		case "datetime":
 		case "randomNum":
 		case "randomString":
-			showOrHideInput('text', 'hidden', 'button');
+			showOrHideInput('hidden', 'button');
 			break;
 		case "currentTimestamp":
-			showOrHideInput('text', 'hidden', 'hidden');
+			showOrHideInput('hidden', 'hidden');
 			$("#value").val(" ");
 			break;	
 		case "constant":
-			showOrHideInput('text', 'text', 'hidden');
+			showOrHideInput('text', 'hidden');
 			break;
 		default:
 			break;
@@ -569,8 +569,7 @@ function changeFormByVariableType (variableType) {
  * @param settingButton_type
  * @returns
  */
-function showOrHideInput(key_type, value_type, settingButton_type) {
-	$("#key").attr('type', key_type);
+function showOrHideInput(value_type, settingButton_type) {
 	$("#value").attr('type', value_type);
 	$("#setting-variable-value").attr('type', settingButton_type);
 }
@@ -587,7 +586,7 @@ function showSettingPage(title) {
 	layer_show( title + "-配置", settingVariableValueTemplate(), '680', variableTypeInfo[settingType]["layerHeight"], 1
 			, function(layero, index) {
 				settingLayerIndex = index;				
-				if (settingValue != null && settingValue != "" && settingValue != " ") {
+				if (strIsNotEmpty(settingValue)) {
 					$.each(JSON.parse(settingValue), function(i, n) {						
 						
 						if ($("#" + i)) {
