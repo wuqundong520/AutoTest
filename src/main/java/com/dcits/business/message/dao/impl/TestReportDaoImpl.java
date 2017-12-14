@@ -13,7 +13,7 @@ public class TestReportDaoImpl extends BaseDaoImpl<TestReport> implements TestRe
 	public String isFinished(Integer reportId) {
 		// TODO Auto-generated method stub
 		String hql = "select t.finishFlag from TestReport t where t.reportId=:reportId";
-		return getSession().createQuery(hql).setInteger("reportId", reportId).getQueryString();
+		return getSession().createQuery(hql).setInteger("reportId", reportId).uniqueResult().toString();
 	}
 
 }

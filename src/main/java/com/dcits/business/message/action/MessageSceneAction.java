@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -186,14 +187,16 @@ public class MessageSceneAction extends BaseAction<MessageScene>{
 		InterfaceInfo info = msg.getInterfaceInfo();
 		List<String> urls = new ArrayList<String>();
 		
-		urls.add(info.getRequestUrlReal());
-		
-		if (PracticalUtils.isNormalString(info.getRequestUrlMock())) {
+		if (StringUtils.isNotBlank(info.getRequestUrlReal())) {
+			urls.add(info.getRequestUrlReal());
+		}
+				
+		if (StringUtils.isNotBlank(info.getRequestUrlMock())) {
 			urls.add(info.getRequestUrlMock());
 		}
 
-		if (PracticalUtils.isNormalString(msg.getRequestUrl())) {
-			urls.add(info.getRequestUrlMock());
+		if (StringUtils.isNotBlank(msg.getRequestUrl())) {
+			urls.add(msg.getRequestUrl());
 		}
 		
 		//model.setEnabledTestDatas();

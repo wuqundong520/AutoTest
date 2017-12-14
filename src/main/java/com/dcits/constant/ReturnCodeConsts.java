@@ -171,11 +171,15 @@ public class ReturnCodeConsts {
 	public static final Integer QUARTZ_HAS_BEEN_STOP = 8242;
 	
 	/**
-	 * 缺少定时规则
+	 * 缺少定时规则<br>
 	 * '8243'
 	 */
 	public static final Integer QUARTZ_NEED_CRON_EXPRESSION = 8243;
 	
+	/**
+	 * cron表达式有误<br>
+	 * '8244'
+	 */
 	public static final Integer QUARTZ_CRON_EXPRESSION_SETTING_ERROR = 8244;
 	
 }

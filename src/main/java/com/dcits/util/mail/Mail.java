@@ -116,7 +116,8 @@ public class Mail {
 				+ "完成一次定时测试任务。<br>本次共执行测试场景<span style=\"color:#0000FF;\">" + report.getSceneNum() + "</span>个,"
 				+ "其中测试成功<span style=\"color:green;\">" + report.getSuccessNum() + "</span>个,"
 				+ "测试失败<span style=\"color:red;\">" + report.getFailNum() + "</span>个,"
-				+ "异常中断<span style=\"color:#848484;\">" + report.getStopNum() + "</span>个。<br>详情请参考附件中的离线测试报告!(请先从邮箱中下载在本地打开查看，否则会出现样式错误!)", "text/html;charset=UTF-8");
+				+ "异常中断<span style=\"color:#848484;\">" + report.getStopNum() + "</span>个。"
+				+ "<br>详情请参考附件中的离线测试报告!(请先从邮箱中下载在本地打开查看，否则会出现样式错误!)", "text/html;charset=UTF-8");
 		
 		
 		

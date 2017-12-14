@@ -2,12 +2,17 @@ package com.dcits.business.message.bean;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.struts2.json.annotations.JSON;
 
 import com.dcits.annotation.FieldNameMapper;
+import com.dcits.business.message.service.TestSetService;
 import com.dcits.business.user.bean.User;
 
 /**
@@ -56,6 +61,21 @@ public class TestSet implements Serializable {
 	private TestConfig config;
 	
 	/**
+	 * 是否为父节点<br>父节点就是测试集菜单而不是测试集
+	 * <br>1 - 表示测试集  0 - 表示文件夹目录
+	 */
+	private String parented;
+	
+	/**
+	 * 父节点
+	 */
+	private TestSet parentSet;;
+	
+	/**
+	 * 子节点或者下属测试集
+	 */
+	private Set<TestSet> childrenSets = new HashSet<TestSet>();
+	/**
 	 * 包含场景数量
 	 */
 	@FieldNameMapper(fieldPath="size(ms)",ifSearch=false)
@@ -74,6 +94,8 @@ public class TestSet implements Serializable {
 	 */
 	@FieldNameMapper(fieldPath="size(css)",ifSearch=false)
 	private Integer complexSetSceneNum;
+	
+	private Integer parentId;
 
 	public TestSet(Integer setId, String setName, User user,
 			Timestamp createTime, String status, String mark, TestConfig config) {
@@ -87,11 +109,72 @@ public class TestSet implements Serializable {
 		this.config = config;
 	}
 
+	public TestSet (Integer setId) {
+		this.setId = setId;
+	}
+	
 	public TestSet() {
 	}
 	
+	/**
+	 * 获取节点数据
+	 * @return
+	 */
+	public Map<String, Object> getNodesMap (TestSetService service) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("id", setId);
+		map.put("name", setName);
+		map.put("spread", false);
+		map.put("parented", "0".equals(parented) ? true : false);
+		map.put("invalid", "1".equals(status) ? true : false);
+		if (service.totalCount("parentSet.setId=" + setId) > 0) {
+			map.put("spread", true);
+			List<Map<String, Object>> childrens = new ArrayList<Map<String, Object>>();
+			for (TestSet set:service.findAll("parentSet.setId=" + setId)) {
+				childrens.add(set.getNodesMap(service));
+			}
+			map.put("children", childrens);
+		}
+		return map;
+		
+	}
 	
+	public Integer getParentId() {
+		if (this.getParentSet() != null) {
+			return this.parentSet.getSetId();
+		}
+		return 0;
+	}
 	
+	public void setParentId(Integer parentId) {
+		this.parentId = parentId;
+	}
+	
+	public void setParentSet(TestSet parentSet) {
+		this.parentSet = parentSet;
+	}
+	
+	@JSON(serialize=false)
+	public TestSet getParentSet() {
+		return parentSet;
+	}
+	
+	public void setChildrenSets(Set<TestSet> childrenSets) {
+		this.childrenSets = childrenSets;
+	}
+	
+	@JSON(serialize=false)
+	public Set<TestSet> getChildrenSets() {
+		return childrenSets;
+	}
+	
+	public String getParented() {
+		return parented;
+	}
+	
+	public void setParented(String parented) {
+		this.parented = parented;
+	}
 	
 	public Integer getComplexSetSceneNum() {
 		return this.css.size();

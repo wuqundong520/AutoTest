@@ -10,6 +10,7 @@ var protocolType;
 
 var addParameterTemplate;
 
+
 var templateParams = {
 		tableTheads:["接口","报文名", "类型", "创建时间", "状态", "创建用户", "最后修改", "入参报文", "场景", "操作"],
 		btnTools:[{
@@ -244,11 +245,10 @@ var columnsSetting = [
               		    ];
 var currentCallParamterSpan;
 var eventList = {
-		'.add-child-call-parameter':function() {
-			
+		'.add-child-call-parameter':function() {			
 			var name = $(this).text();
 			var context = {"key":"", "value":""};
-			layer_show("添加参数-" + name, addParameterTemplate(context), '360', '240', 1, function(layero, index) {
+			layer_show("添加参数-" + name, addParameterTemplate(context), 350, 230, 1, function(layero, index) {
 				$("#save-new-call-parameter").attr("layer-index", index);
 				$("#save-new-call-parameter").attr("parent-parameter-name", name);
 				$("#save-new-call-parameter").attr("mode", "add");
@@ -259,7 +259,7 @@ var eventList = {
 			var name = $(this).parents('div').siblings('label').text();
 			var keyValue = ($(this).text()).split("=");
 			var context = {"key":keyValue[0], "value":keyValue[1]};
-			layer_show("修改参数-" + name, addParameterTemplate(context), '360', '240', 1, function(layero, index) {
+			layer_show("修改参数-" + name, addParameterTemplate(context), 350, 230, function(layero, index) {
 				$("#save-new-call-parameter").attr("layer-index", index);
 				$("#save-new-call-parameter").attr("parent-parameter-name", name);
 				$("#save-new-call-parameter").attr("mode", "edit");
@@ -372,7 +372,7 @@ var eventList = {
 			
 			callParameterViewHtml += '<div class="row cl"><div class="col-xs-7 col-sm-8 col-xs-offset-4 col-sm-offset-3"><input class="btn btn-danger radius" type="button" value="&nbsp;&nbsp;保存更改&nbsp;&nbsp;" id="change-call-parameter"></div></div></form></article>';
 			
-			layer_show(protocolType + "调用参数设置", callParameterViewHtml, '700', '500', 1, function(layero, index) {
+			layer_show(protocolType + "调用参数设置", callParameterViewHtml, 780, 500, 1, function(layero, index) {
 				$("#change-call-parameter").attr("layer-index", index);
 			});
 			
@@ -386,7 +386,7 @@ var eventList = {
 				+ '&nbsp;<span class="r"><a href="javascript:;" onclick="getParameterJson();" class="btn btn-primary radius">刷新</a></span>'
 				+ '</div><textarea class="textarea radius dct-message-json"></textarea></div>';
 			
-			layer_show(data.messageName + "-[入参报文]", paramsHmtl, '800', '500', 1, function(){
+			layer_show(data.messageName + "-[入参报文]", paramsHmtl, '840', '460', 1, function(){
 				getParameterJson();					
 				$("#copy-message-json").zclip({
 					path: "../../libs/ZeroClipboard.swf",
@@ -413,7 +413,7 @@ var eventList = {
 		},
 		".add-object":function() {
 			publish.renderParams.editPage.modeFlag = 0;					
-			currIndex = layer_show("增加报文", editHtml, "800", "560",1);
+			currIndex = layer_show("增加报文", editHtml, editPageWidth, editPageHeight.add, 1);
 			//layer.full(index);
 			publish.init();			
 		},
@@ -430,7 +430,7 @@ var eventList = {
 			messageId = data.messageId;
 			publish.renderParams.editPage.modeFlag = 1;
 			publish.renderParams.editPage.objId = messageId;
-			layer_show("编辑报文信息", editHtml, "850", "720",1);
+			layer_show("编辑报文信息", editHtml, editPageWidth, editPageHeight.edit, 1);
 			publish.init();	
 		},
 		".validate-parameter-json":function() {
@@ -495,6 +495,9 @@ var mySetting = {
 			
 			addParameterTemplate = Handlebars.compile($("#add-parameter-template").html());
 			
+			//编辑页面高度重设
+			editPageHeight.add = (editPageHeight.add + 60);
+			editPageHeight.edit =(editPageHeight.edit + 60);
    		 	df.resolve();
    	 	},
 		editPage:{

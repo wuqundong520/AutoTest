@@ -11,6 +11,7 @@ import com.dcits.business.message.bean.TestSet;
 import com.dcits.business.message.service.TestSetService;
 import com.dcits.business.system.bean.AutoTask;
 import com.dcits.business.system.service.AutoTaskService;
+import com.dcits.business.user.bean.User;
 import com.dcits.constant.ReturnCodeConsts;
 import com.dcits.constant.SystemConsts;
 import com.dcits.coretest.task.JobManager;
@@ -50,6 +51,9 @@ public class AutoTaskAction extends BaseAction<AutoTask> {
 			jsonMap.put("msg", "重复的任务名称!");
 			
 			return SUCCESS;
+		}
+		if (model.getTaskId() == null) {
+			model.setUser((User)StrutsUtils.getSessionMap().get("user"));
 		}
 		return super.edit();
 	}

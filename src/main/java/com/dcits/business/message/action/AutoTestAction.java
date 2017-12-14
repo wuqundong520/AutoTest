@@ -20,7 +20,6 @@ import com.dcits.business.user.bean.User;
 import com.dcits.business.user.service.UserService;
 import com.dcits.constant.MessageKeys;
 import com.dcits.constant.ReturnCodeConsts;
-import com.dcits.constant.SystemConsts;
 import com.dcits.coretest.message.test.MessageAutoTest;
 import com.dcits.util.StrutsUtils;
 import com.opensymphony.xwork2.ActionSupport;
@@ -113,7 +112,7 @@ public class AutoTestAction extends ActionSupport implements ModelDriven<TestCon
 		User user = (User) StrutsUtils.getSessionMap().get("user");
 		
 		if (user == null) {
-			user = userService.get(SystemConsts.ADMIN_USER_ID);
+			user = userService.get(config.getUserId());
 		}
 		
 		if (autoTestFlag == null) {

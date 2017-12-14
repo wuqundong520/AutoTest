@@ -25,17 +25,16 @@ var cronExpressionData = [{"labelText":"小时","name":"hour","options":
 		:"22","23":"23","24":"24","25":"25","26":"26","27":"27","28":"28","29":"29","30":"30","31":"31","32":"32","33"
 		:"33","34":"34","35":"35","36":"36","37":"37","38":"38","39":"39","40":"40","41":"41","42":"42","43":"43","44"
 		:"44","45":"45","46":"46","47":"47","48":"48","49":"49","50":"50","51":"51","52":"52","53":"53","54":"54","55"
-		:"55","56":"56","57":"57","58":"58","59":"59"}},{"labelText":"日期","name":"date","options":{"*":"每天","?":"不设置",
+		:"55","56":"56","57":"57","58":"58","59":"59"}},{"labelText":"日期","name":"date","options":{"*":"每天",
 		"1":"1","2":"2","3":"3","4":"4","5":"5","6":"6","7":"7","8":"8","9":"9","10":"10","11":"11","12":"12","13"
 		:"13","14":"14","15":"15","16":"16","17":"17","18":"18","19":"19","20":"20","21":"21","22":"22","23":"23",
 		"24":"24","25":"25","26":"26","27":"27","28":"28","29":"29","30":"30","31":"31"}},{"labelText":"星期","name":"week"
-		,"options":{"*":"每天","?":"不设置","1":"星期一","2":"星期二","3":"星期三","4":"星期四","5":"星期五","6":"星期六","7"
-		:"星期日",}},{"labelText":"月份","name":"month","options":{"*":"每个月","1":"1","2":"2","3":"3","4":"4"
+		,"options":{"?":"不设置"}},{"labelText":"月份","name":"month","options":{"*":"每个月","1":"1","2":"2","3":"3","4":"4"
 		,"5":"5","6":"6","7":"7","8":"8","9":"9","10":"10","11":"11","12":"12"}}];
 
 
 var templateParams = {
-		tableTheads:["名称", "类型", "测试集", "定时规则/CRON表达式", "已执行次数", "最后一次执行", "创建时间", "开启状态", "操作"],
+		tableTheads:["名称", "类型", "测试集", "定时规则表达式", "已执行次数", "最后一次执行", "创建时间", "开启状态", "创建用户","操作"],
 		btnTools:[{
 			type:"primary",
 			size:"M",
@@ -103,6 +102,10 @@ var templateParams = {
 						 name:"createTime",
 						 value:new Date().Format("yyyy-MM-dd hh:mm:ss")
 						
+					 },
+					 {
+						 name:"user.userId"
+											
 					 },
 					 {
 						 name:"lastFinishTime"
@@ -183,6 +186,7 @@ var columnsSetting = [
 	                		  	return labelCreate(data, option);
 							}
 					  },
+					  ellipsisData("user.realName"),
 					  {
 						  	"data":null,
 	                        "render":function(data, type, full, meta){
@@ -276,7 +280,7 @@ var eventList = {
 			    			});
 		    		},
 		    		function(index){
-		    			layer_show ("定时规则设置", expressionEditHtml, '800', '600', '1', function(layero, index) {
+		    			layer_show ("定时规则设置", expressionEditHtml, '800', '520', '1', function(layero, index) {
 		    				if (data.taskCronExpression != null && data.taskCronExpression != "") {
 		    					var expressionArray = (data.taskCronExpression).split(" ");
 		    					$("#second").val(expressionArray[0]);
@@ -284,7 +288,8 @@ var eventList = {
 		    					$("#hour").val(expressionArray[2]);
 		    					$("#date").val(expressionArray[3]);
 		    					$("#month").val(expressionArray[4]);
-		    					$("#week").val(expressionArray[5]);
+		    					//$("#week").val(expressionArray[5]);
+		    					$("#week").parents(".row").hide();
 		    					$("#year").val(expressionArray[6]);	
 		    					$("#taskCronExpression").val(data.taskCronExpression);
 		    				}
@@ -315,14 +320,29 @@ var eventList = {
 			publish.init();	
 		},
 		'#batch-op':function() {
-			
+			layer.confirm(
+					'请选择你需要进行的批量操作:',
+					{
+						title:'批量操作',
+						btn:['运行任务','停止任务','删除任务'],
+						btn3:function(index){
+							layer.close(index);
+							batchDelObjs($(".selectTask:checked"), TASK_DEL_URL);
+						}
+					},function(index){ 
+						layer.close(index);
+						batchOp($(".selectTask:checked"), TASK_ADD_RUNABLE_TASK_URL, "运行", null, "taskId");
+					},function(index){
+						layer.close(index);
+						batchOp($(".selectTask:checked"), TASK_STOP_TASK_URL, "停止", null, "taskId");
+					});	
 		},
 		'#choose-task-set':function() {
 			var type = $("#taskType").val();
 			
 			//判断是否为接口自动化类型
 			if (type == "0") {
-				layer_show("接口自动化-选择测试集", "../message/testSet.html?selectMode=0", "880", "660", 2);
+				layer_show("接口自动化-选择测试集", "../message/testSet.html?selectMode=0", 1100, 660, 2);
 			}
 			//web自动化
 			if (type == "1") {
@@ -352,7 +372,7 @@ var mySetting = {
 			listUrl:TASK_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0, 4, 5, 10]			
+			columnsJson:[0, 4, 5, 11]			
 		},
 		editPage:{
 			editUrl:TASK_EDIT_URL,

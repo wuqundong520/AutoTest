@@ -103,15 +103,11 @@ var eventList = {
 			mark:data.mark
 		};			
 		
-		parent.layer.open({
-			  title: '测试结果',
-			  shade: 0.35,
-			  shadeClose:true,
-			  type: 1,
-			  skin: 'layui-layer-rim', //加上边框		
-			  area: ['700px', '400px'], //宽高
-			  content: resultTemplate(resultData)
-			});
+		layer_show('测试结果', resultTemplate(resultData), null, null, 1, null, null, null, {
+			shade: 0.35,
+			shadeClose:true,
+			skin: 'layui-layer-rim', //加上边框
+		})
 	}			
 };
 

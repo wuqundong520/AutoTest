@@ -68,6 +68,8 @@ var SET_GET_URL = "set-get"; //获取指定测试集信息
 var SET_DEL_URL = "set-del"; //删除指定测试集
 var SET_NAME_CHECK_URL = "set-checkName"; //验证测试集名称是否重复
 var SET_RUN_SETTING_CONFIG_URL = "set-settingConfig";//配置测试集运行时配置
+var SET_GET_CATEGORY_NODES_URL = "set-getCategoryNodes";//获取测试集目录树
+var SET_MOVE_TO_FOLDER = "set-moveFolder"; //将指定测试集移动到指定的目录文件夹下
 
 
 //组合场景
@@ -134,8 +136,8 @@ var GLOBAL_VARIABLE_LIST_URL = "variable-listAll";
 var GLOBAL_VARIABLE_EDIT_URL = "variable-edit";
 var GLOBAL_VARIABLE_DEL_URL = "variable-del";
 var GLOBAL_VARIABLE_GET_URL = "variable-get";
-var GLOBAL_VARIABLE_CHECK_NAME_URL = "variable-checkName";
-var GLOBAL_VARIABLE_UPDATE_VALUE_URL = "variable-updateValue";
-var GLOBAL_VARIABLE_CREATE_VARIABLE_URL = "variable-createVariable";
+var GLOBAL_VARIABLE_CHECK_NAME_URL = "variable-checkName";//检查key是否重复
+var GLOBAL_VARIABLE_UPDATE_VALUE_URL = "variable-updateValue";//更新指定变量模板的value值
+var GLOBAL_VARIABLE_CREATE_VARIABLE_URL = "variable-createVariable";//生成变量结果
 
 var UPLOAD_FILE_URL = "upload-upload";//上传文件

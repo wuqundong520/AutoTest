@@ -4,10 +4,10 @@ var beforeSettings = {};
 var eventList = {
 		".save-setting":function(){
 			if(getJsonLength(editInfo) > 0){
-				$.post(publish.renderParams.editPage.editUrl,editInfo,function(data){
+				$.post(publish.renderParams.editPage.editUrl, editInfo, function(data) {
 					if(data.returnCode == 0){	
 						editInfo = {};
-						layer.msg("修改成功!",{icon:1,time:1500});
+						layer.msg("修改成功!",{icon:1, time:1500});
 					}else{
 						layer.alert(data.msg,{icon:5});
 					}
@@ -29,7 +29,7 @@ var mySetting = {
 					var o=data.data;
 					$.each(o,function(i,n){								
 						if ($("#" + n.settingName)) {
-							$("#" + n.settingName).val(strIsNotEmpty(n.settingValue) ? n.settingValue : n.defaultValue);
+							$("#" + n.settingName).val((strIsNotEmpty(n.settingValue) ? n.settingValue : n.defaultValue));
 							beforeSettings[n.settingName] = n.settingValue;
 						}						
 					});
@@ -54,6 +54,6 @@ var mySetting = {
 
 
 $(function(){			
-	publish.renderParams = $.extend(true,publish.renderParams,mySetting);
+	publish.renderParams = $.extend(true,publish.renderParams, mySetting);
 	publish.init();
 });

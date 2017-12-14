@@ -167,3 +167,5 @@
 .layui-upload-file {
 	display: none;
 }
+
+body .layui-tree-skin-shihuang .layui-tree-branch{color: #EDCA50;}

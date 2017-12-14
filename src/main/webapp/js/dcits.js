@@ -18,8 +18,11 @@ var formControlTemplate;
 
 var editHtml = "";
 var table;
+var editPageWidth = 800;
+var editPageHeight;
+var maxHeight = $(document).height();
+var maxWidth = $(document).width();
 
-var renderShadeIndex;
 
 $(function() {
 	//加载对应的js文件		
@@ -255,6 +258,7 @@ var publish = {
     		 //renderShadeIndex = layer.msg('正在努力加载中...', {icon:16, time:99999, shade:0.4});
     		 $(".page-container").spinModal();
     		 var t = this.renderParams.templateParams;
+    		 editPageHeight = countEditPageHeight();
         	 var html = "";
         	//预编译handlebars模板
     		$("#template-page").load("../template/pageTemplate.htm", function() {    			
@@ -389,6 +393,7 @@ function initDT (tableObj, ajaxUrl, columnsSetting, columnsJson, dtOtherSetting)
     })*/
     //初始化完毕
     .on( 'init.dt', function () {  //刷新表格不会触发此事件  只存在一次
+    	//添加动态拖拽改变列宽的插件
     	$('.table').colResizable({
     		partialRefresh:true,
     		minWidth:35,
@@ -397,7 +402,7 @@ function initDT (tableObj, ajaxUrl, columnsSetting, columnsJson, dtOtherSetting)
     	});
     	$(".page-container").spinModal(false); 	    	
     })
-	.DataTable($.extend(true, {}, CONSTANT.DATA_TABLES.DEFAULT_OPTION,{
+	.DataTable($.extend(true, {}, CONSTANT.DATA_TABLES.DEFAULT_OPTION, {
 		"ajax":ajaxUrl,
         "columns":columnsSetting,                                           
         "columnDefs": [{"orderable":false, "aTargets":columnsJson}]
@@ -411,7 +416,7 @@ function initDT (tableObj, ajaxUrl, columnsSetting, columnsJson, dtOtherSetting)
  * 返回DT中checkbox的html
  * @param name  name属性,对象的name或者其他
  * @param val   value属性,对象的id
- * @param className  class属性,一般为select+对象
+ * @param className  class属性,一般为select+对象名称
  */
 function checkboxHmtl(name,val,className) {
 	return '<input type="checkbox" name="'+name+'" value="'+val+'" class="'+className+'">';
@@ -474,7 +479,7 @@ function showSelectBox (data, idName, titleNames, chooseCallback) {
 		+ '<input type="button" class="btn btn-primary radius" onclick="" id="show-select-box-choose" value="选择"/></div></div>';
 	
 	var index = layer_show("请选择", show_html, '400', '120', 1, function() {
-		$("#show-select-box-choose").one('click', function() {
+		$(document).delegate("#show-select-box-choose", 'click', function() {
 			var data_id = $('#select-object option:selected').attr('data-id');
 			chooseCallback($('#select-object').val(), data[data_id], index);
 		});
@@ -484,12 +489,14 @@ function showSelectBox (data, idName, titleNames, chooseCallback) {
 /**
  * 批量方法-表格为DT时
  * @param checkboxList  checkBox被选中的列表
- * @param url   删除url
+ * @param url   url 远程接口
  * @param tableObj   TD对象，默认名为table
  * @param opName 操作方式名称 默认为 删除
+ * @param idName 对应实体的ID名称
+ * @param otherSendData 其他要随着ID发送的参数
  * @returns {Boolean}
  */
-function batchDelObjs(checkboxList, url, tableObj, opName) {
+function batchOp (checkboxList, url, opName, tableObj, idName, otherSendData, callback) {
 	if (checkboxList.length < 1) {
 		return false;
 	}
@@ -506,11 +513,21 @@ function batchDelObjs(checkboxList, url, tableObj, opName) {
 		$.each(checkboxList ,function(i, n) {
 			var objId = $(n).val();//获取id
 			var objName = $(n).attr("name");	//name属性为对象的名称	
+			var params = {id: objId};
+			if (strIsNotEmpty(idName) && idName != "id") {
+				params[idName] = objId;
+			}
+			if (otherSendData != null && otherSendData instanceof Object) {
+				$.each(otherSendData, function(i, n) {
+					params[i] = n;
+				});
+			}
+			
 			//layer.msg("正在" + opName + objName + "...", {time: 999999});    
 				$.ajax({
 					type:"post",
 					url:url,
-					data:{id:objId},
+					data:params,
 					//async:false,
 					success:function(data) {
 						totalCount++;
@@ -525,11 +542,14 @@ function batchDelObjs(checkboxList, url, tableObj, opName) {
 		
 		var intervalID = setInterval(function() {
 			if (totalCount == checkboxList.length) {
-				clearInterval(intervalID)
+				clearInterval(intervalID);
+				if (callback != null) {
+					callback();
+				}
 				refreshTable(null, function(json) {
 					layer.close(loadindex);
 					if (errorTip != "") {
-						errorTip = "在" + opName + errorTip + "时发生了错误<br>请执行单笔删除操作!";
+						errorTip = "在" + opName + errorTip + "时发生了错误<br>请执行单笔" + opName + "操作!";
 						layer.alert(errorTip, {icon:5}, function(index) {
 							layer.close(index);							
 							layer.msg("共" + opName + delCount + "条数据!", {icon:1, time:2000});
@@ -541,7 +561,17 @@ function batchDelObjs(checkboxList, url, tableObj, opName) {
 			}
 		}, 500);				
 	});
-		
+}
+
+/**
+ * 批量删除
+ * @param checkboxList
+ * @param url
+ * @param tableObj
+ * @param opName
+ */
+function batchDelObjs(checkboxList, url, tableObj, opName, callback) {
+	batchOp(checkboxList, url, opName, tableObj, null, null, callback);	
 }
 
 /**
@@ -606,7 +636,7 @@ function iterObj(jsonObj, parentName) {
  */
 function formValidate(formObj, rules, messages, ajaxUrl, closeFlag, ajaxCallbackFun, beforeSubmitCallback) {
 	var callbackFun = function(data) {
-		if (data.returnCode==0) {	
+		if (data.returnCode == 0) {	
 			refreshTable();
 			if (closeFlag) {
 				//关闭当前的所有页面层
@@ -617,7 +647,7 @@ function formValidate(formObj, rules, messages, ajaxUrl, closeFlag, ajaxCallback
 		}			
 	};
 	if (ajaxCallbackFun != null) {
-		callbackFun=ajaxCallbackFun;
+		callbackFun = ajaxCallbackFun;
 	}
 	$(formObj).validate({
 		rules:rules,
@@ -646,6 +676,11 @@ function formValidate(formObj, rules, messages, ajaxUrl, closeFlag, ajaxCallback
  */
 function refreshTable(ajaxUrl2, callback, tableObject, resetPaging){
 	$(".table").spinModal();
+	
+	if (tableObject == null && table == null) {
+		$(".table").spinModal(false);
+		return false;
+	}
 	
 	if (tableObject == null) {
 		tableObject = table;
@@ -854,25 +889,31 @@ function dynamicLoadScript (scriptPath, type) {
  * @param success 成功打开之后的回调函数
  * @param cancel 右上角关闭层的回调函数
  * @param end 层销毁之后的回调
+ * @param other 其他DT设置
  * @returns index
  */
-function layer_show (title, url, w, h, type, success, cancel, end) {
+function layer_show (title, url, w, h, type, success, cancel, end, other) {
+	
+	if (other == null) {
+		other = {};
+	}
+	
 	if (title == null || title == '') {
 		title = false;
 	};
 	if (url == null || url == '') {
 		url="../../404.html";
 	};
-	if (w == null || w == '') {
-		w=800;
+	if (w == null || w == '' || w >= maxWidth) {
+		w =	maxWidth * 0.8
 	};
-	if (h == null || h == '') {
-		h=($(window).height() - 50);
+	if (h == null || h == '' || h >= maxHeight) {
+		h= (maxHeight * 0.86) ;
 	};
 	if (type == null || type == '') {
 		type = 2;
 	}
-	index = layer.open({
+	index = layer.open($.extend(true, {
 		type: type,
 		area: [w+'px', h +'px'],
 		fix: false, //不固定
@@ -884,7 +925,7 @@ function layer_show (title, url, w, h, type, success, cancel, end) {
 		success:success,
 		cancel:cancel,
 		end:end
-	});
+	} ,other));
 	return index;
 }
 
@@ -1035,4 +1076,35 @@ function strIsNotEmpty (str) {
 		return false;
 	}
 	return true;
+}
+
+/**
+ * 计算 编辑页面的弹出层高度
+ */
+function countEditPageHeight () {
+	var returnHeight = {add:null, edit:null};
+	if (!$.isEmptyObject(publish.renderParams.templateParams.formControls)) {			
+		//添加页面的高度
+		var addPageHeight = 140;
+		//编辑页面的高度
+		var editPageHeight = 140;
+		$.each(publish.renderParams.templateParams.formControls, function (i, n) {
+			if (strIsNotEmpty(n.label)) {
+				editPageHeight = editPageHeight + (n.textarea ? 116 : 45);
+				if (!(n.edit)) {
+					addPageHeight = addPageHeight + (n.textarea ? 116 : 45);
+				}
+				
+			}
+		});
+		if (addPageHeight >= maxHeight) {
+			addPageHeight = null;
+		}
+		if (editPageHeight >= maxHeight) {
+			editPageHeight = null;
+		}
+		returnHeight.add = addPageHeight;
+		returnHeight.edit = editPageHeight;
+	}
+	return returnHeight;
 }

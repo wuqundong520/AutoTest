@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.dcits.annotation.FieldNameMapper;
+import com.dcits.business.user.bean.User;
 
 /**
  * 
@@ -68,6 +69,8 @@ public class AutoTask {
 	@FieldNameMapper(fieldPath="relatedId")
 	private String setName = "";
 	
+	private User user;
+	
 	public AutoTask() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -88,6 +91,13 @@ public class AutoTask {
 	}
 
 	
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
+	public User getUser() {
+		return user;
+	}
 
 	public String getSetName() {
 		return setName;

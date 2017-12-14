@@ -78,9 +78,21 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
 		return (T)getSession().load(clazz, id);
 	}
 
-	public List<T> findAll() {
+	public List<T> findAll(String ...filterCondition) {
 		// TODO Auto-generated method stub
 		String hsql = "select t from " + clazz.getSimpleName() + " t";
+		
+		if (filterCondition != null && filterCondition.length > 0) {
+			hsql += " where ";
+			int i = 1;
+			for (String s : filterCondition) {
+				hsql += s;
+				i++;
+				if (i <= filterCondition.length) {
+					hsql += " and ";
+				}
+			}
+		}
 		
 		return getSession().createQuery(hsql).setCacheable(true).list();
 	}

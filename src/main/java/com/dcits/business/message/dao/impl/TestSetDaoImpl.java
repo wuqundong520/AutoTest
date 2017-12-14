@@ -56,9 +56,24 @@ public class TestSetDaoImpl extends BaseDaoImpl<TestSet> implements TestSetDao {
 	@Override
 	public void updateSettingConfig(Integer setId, TestConfig config) {
 		// TODO Auto-generated method stub
-		String hql = "update TestSet t set t.config.configId=:configId where t.setId=:setId";
-		
+		String hql = "update TestSet t set t.config.configId=:configId where t.setId=:setId";	
 		getSession().createQuery(hql).setInteger("configId", config.getConfigId()).setInteger("setId", setId).executeUpdate();
 		
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<TestSet> getRootSet() {
+		// TODO Auto-generated method stub
+		String hql = "from TestSet t where t.parentSet=null";
+		return getSession().createQuery(hql).setCacheable(true).list();
+	}
+
+	@Override
+	public void moveFolder(Integer setId, Integer parentId) {
+		// TODO Auto-generated method stub
+		String sql = "update at_test_set s set s.parent_id=:parentId where s.set_id=:setId";
+		getSession().createSQLQuery(sql).setInteger("setId", setId).setInteger("parentId", parentId).executeUpdate();
+	}
+
 }

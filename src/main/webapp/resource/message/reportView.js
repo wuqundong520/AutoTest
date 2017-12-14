@@ -40,7 +40,7 @@ var mySetting = {
 		userDefaultRender:false,    
    	 	userDefaultTemplate:false,
    	 	customCallBack:function(params){
-   	 		 currentIndex = layer.msg('正在努力加载中...', {icon:16, time:99999, shade:0.7});
+   	 		 currentIndex = layer.msg('正在努力加载中...', {icon:16, time:99999, shade:0.1});
    	 		 
 	   	 	//esc关闭所有弹出层
 	       	 $(window).keydown (function(e) {

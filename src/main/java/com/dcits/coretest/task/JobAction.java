@@ -36,7 +36,7 @@ public class JobAction implements Job {
 		String[] result = new String[2];
 		//获取请求地址
 		String testUrl = SettingUtil.getSettingValue(SystemConsts.GLOBAL_SETTING_HOME) + "/" + SystemConsts.AUTO_TASK_TEST_RMI_URL
-				+ "?setId=" + task.getRelatedId() + "&autoTestFlag=true" + "&tooken=" + SystemConsts.REQUEST_ALLOW_TOOKEN;
+				+ "?setId=" + task.getRelatedId() + "&autoTestFlag=true" + "&tooken=" + SystemConsts.REQUEST_ALLOW_TOOKEN + "&userId=" + task.getUser().getUserId();
 		LOGGER.info("[自动化定时任务]执行自动化测试任务:url=" + testUrl);
 		
 		String returnJson = PracticalUtils.doGetHttpRequest(testUrl);

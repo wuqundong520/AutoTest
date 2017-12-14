@@ -4,6 +4,7 @@ var $wrapper = $('#div-table-container');
 
 var interfaceId; //当前正在编辑的interface的id
 var currIndex;//当前正在操作的layer窗口的index
+
 var advancedQueryFormTemplate;//高级查询页面模板
 var advancedQueryParameters = {
 		interfaceName:"",
@@ -22,12 +23,6 @@ var templateParams = {
 		btnTools:[{
 			type:"primary",
 			size:"M",
-			id:"advanced-query",
-			iconFont:"&#xe665;",
-			name:"高级查询"
-		},{
-			type:"primary",
-			size:"M",
 			id:"add-object",
 			iconFont:"&#xe600;",
 			name:"添加接口"
@@ -43,6 +38,12 @@ var templateParams = {
 			id:"import-data-from-excel",
 			iconFont:"&#xe642;",
 			name:"Excel导入"
+		},{
+			type:"primary",
+			size:"M",
+			id:"advanced-query",
+			iconFont:"&#xe665;",
+			name:"高级查询"
 		}],
 		formControls:[
 		{
@@ -221,7 +222,7 @@ var columnsSetting = [
           	"render":function(data, type, full, meta ){
                   return labelCreate(data);
               }},
-          {"data":"user.realName"},{"data":"lastModifyUser"},
+          ellipsisData("user.realName"),ellipsisData("lastModifyUser"),
           
           {
               "data":"parametersNum",
@@ -270,7 +271,7 @@ var eventList = {
 		},
 		"#add-object":function(){
 			publish.renderParams.editPage.modeFlag = 0;					
-			layer_show("增加接口", editHtml, "800", "560", 1);
+			layer_show("增加接口", editHtml, editPageWidth, editPageHeight.add, 1);
 			publish.init();
 			
 		},
@@ -281,7 +282,7 @@ var eventList = {
 		".edit-params":function(){
 			var data = table.row( $(this).parents('tr') ).data();
 			layer_show(data.interfaceName + "-" + data.interfaceCnName +" 接口参数管理", "interfaceParameter.html?interfaceId=" + data.interfaceId
-					, "900", "635", 2, null, function() {
+					, null, null, 2, null, function() {
 					refreshTable();
 			});	
 		},
@@ -289,7 +290,7 @@ var eventList = {
 			var data = table.row( $(this).parents('tr') ).data();
 			publish.renderParams.editPage.modeFlag = 1;
 			publish.renderParams.editPage.objId = data.interfaceId;
-			layer_show("编辑接口信息", editHtml, "800", "600",1);
+			layer_show("编辑接口信息", editHtml, editPageWidth, editPageHeight.edit,1);
 			publish.init();	
 		},
 		".interface-del":function(){
@@ -301,7 +302,7 @@ var eventList = {
 					, UPLOAD_FILE_URL, INTERFACE_IMPORT_FROM_EXCEL);
 		},
 		"#advanced-query":function() {//打开高级查询页面
-			currIndex = layer_show("接口-高级查询", advancedQueryFormTemplate(advancedQueryParameters), '600', '410', 1
+			currIndex = layer_show("接口-高级查询", advancedQueryFormTemplate(advancedQueryParameters), '600', '430', 1
 					, function(layero, index) {
 						$.each(advancedQueryParameters, function(name, value) {
 							if ($("#" + name)) {

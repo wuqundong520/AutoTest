@@ -173,7 +173,7 @@ var columnsSetting = [
 var eventList = {
 		"#add-object":function() {
 			publish.renderParams.editPage.modeFlag = 0;					
-			currIndex = layer_show("增加参数", editHtml, "680", "480", 1);
+			currIndex = layer_show("增加参数", editHtml, editPageWidth, editPageHeight.add, 1);
 			publish.init();			
 		},
 		"#batch-del-object":function() {
@@ -184,7 +184,7 @@ var eventList = {
 			var data = table.row( $(this).parents('tr') ).data();
 			publish.renderParams.editPage.modeFlag = 1;
 			publish.renderParams.editPage.objId = data.parameterId;
-			layer_show("编辑参数信息", editHtml, "680", "520",1);
+			layer_show("编辑参数信息", editHtml, editPageWidth, editPageHeight.edit, 1);
 			publish.init();	
 		},
 		".object-del":function() {
@@ -192,7 +192,7 @@ var eventList = {
 			delObj("确定删除此入参吗(删除会影响该接口下的报文生成)？请慎重操作!", PARAM_DEL_URL, data.parameterId, this);
 		},
 		"#batch-add-object":function(){ //导入报文
-			currIndex = layer_show("导入报文", showHtml, "700", "400", 1);
+			currIndex = layer_show("导入报文", showHtml, null,406, 1);
 		},
 		"#parse-message-to-parameters":function () {//解析报文
 			var paramsJson=$("#jsonParams").val();	

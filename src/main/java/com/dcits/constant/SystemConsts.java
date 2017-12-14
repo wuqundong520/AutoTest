@@ -1,6 +1,5 @@
 package com.dcits.constant;
 
-import com.dcits.util.MD5Util;
 
 
 
@@ -26,6 +25,17 @@ public class SystemConsts {
 	 */
 	public static final Integer ADMIN_USER_ID = 1;
 	
+	//特殊参数的id
+	//数组中的数组参数对象
+	public static final Integer PARAMETER_ARRAY_IN_ARRAY_ID = 2;
+	//数组中的Map参数对象
+	public static final Integer PARAMETER_MAP_IN_ARRAY_ID = 3;
+	//Object对象 对应外层
+	public static final Integer PARAMETER_OBJECT_ID = 1;
+	
+	/**
+	 * 请求带上此tooken代表为内部自调用接口，不需要验证权限
+	 */
 	public static final String REQUEST_ALLOW_TOOKEN = "ec189a1731d73dfe16d8f9df16d67187";
 	
 	
@@ -84,13 +94,7 @@ public class SystemConsts {
 	 */
 	public static final String RESULT_NON_EXISTENT_OP = "opnotfound"; 
 	
-	//特殊参数的id
-	//数组中的数组参数对象
-	public static final Integer PARAMETER_ARRAY_IN_ARRAY_ID = 2;
-	//数组中的Map参数对象
-	public static final Integer PARAMETER_MAP_IN_ARRAY_ID = 3;
-	//Object对象 对应外层
-	public static final Integer PARAMETER_OBJECT_ID = 1;
+	
 	
 	//ApplicationMap中指定属性名	
 	public static final String APPLICATION_ATTRIBUTE_QUERY_DB = "queryDb";
@@ -122,6 +126,7 @@ public class SystemConsts {
 	
 	public static final String GLOBAL_SETTING_MESSAGE_ENCODING = "messageEncoding";
 	
+	//邮箱推送相关
 	public static final String GLOBAL_SETTING_IF_SEND_REPORT_MAIL = "sendReportMail";
 	public static final String GLOBAL_SETTING_MAIL_SERVER_HOST = "mailHost";
 	public static final String GLOBAL_SETTING_MAIL_SERVER_PORT = "mailPort";
@@ -133,6 +138,7 @@ public class SystemConsts {
 	
 	//测试报告静态html存储文件夹
 	public static final String REPORT_VIEW_HTML_FOLDER = "reportHtml";
+	//静态报告
 	public static final String REPORT_VIEW_HTML_FIXED_HTML = "viewTemplate.xml";
 	
 	//测试集测试请求地址

@@ -35,7 +35,7 @@ public class MessageSceneDaoImpl extends BaseDaoImpl<MessageScene> implements Me
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<MessageScene> findAll() {
+	public List<MessageScene> findAll(String ...filterCondition) {
 		// TODO Auto-generated method stub		
 		String hql = "From MessageScene m where m.message is not null and m.message.status='0' and m.message.interfaceInfo.status='0'";
 		return getSession().createQuery(hql).setCacheable(true).list();

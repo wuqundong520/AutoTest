@@ -51,4 +51,17 @@ public interface TestSetService extends BaseService<TestSet> {
 	 * @param config
 	 */
 	void updateSettingConfig(Integer setId, TestConfig config);
+	
+	/**
+	 * 获取测试集目录树根节点
+	 * @return
+	 */
+	List<TestSet> getRootSet ();
+	
+	/**
+	 * 移动测试集到指定文件夹下
+	 * @param setId
+	 * @param parentId
+	 */
+	void moveFolder(Integer setId, Integer parentId);
 }

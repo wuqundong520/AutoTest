@@ -9,14 +9,18 @@ package com.dcits.constant;
  */
 public class GlobalVariableConstant {
 	
+	/*随机数*/
 	public static final String RANDOM_MIN_NUM_ATTRIBUTE_NAME = "randomMin";
 	public static final String RANDOM_MAX_NUM_ATTRIBUTE_NAME = "randomNumMax";
 	
+	/*格式化日期*/
 	public static final String DATETIME_FORMAT_ATTRIBUTE_NAME = "datetimeFormat";
 	
+	/*随机字符串*/
 	public static final String RANDOM_STRING_MODE_ATTRIBUTE_NAME = "randomStringMode";
 	public static final String RANDOM_STRING_NUM_ATTRIBUTE_NAME = "randomStringNum";
 	
+	/*测试运行时配置*/
 	public static final String SET_RUNTIME_SETTING_REQUEST_URL_FLAG = "requestUrlFlag";
 	public static final String SET_RUNTIME_SETTING_CONNECT_TIMEOUT = "connectTimeOut";
 	public static final String SET_RUNTIME_SETTING_READ_TIMEOUT = "readTimeOut";
@@ -25,6 +29,7 @@ public class GlobalVariableConstant {
 	public static final String SET_RUNTIME_SETTING_CHECK_DATA_FLAG = "checkDataFlag";
 	public static final String SET_RUNTIME_SETTING_CUSTOMR_EQUEST_URL = "customRequestUrl";
 	
+	/*验证模板*/
 	public static final String RELATED_KEYWORD_VALIDATE_VALUE = "validateValue";
 	
 	//使用方式，左边界

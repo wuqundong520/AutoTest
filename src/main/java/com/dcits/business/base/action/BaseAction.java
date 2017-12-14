@@ -172,8 +172,9 @@ public class BaseAction<T> extends ActionSupport implements ModelDriven<T> {
 	 * @return
 	 */
 	public String edit() {
-		
+				
 		baseService.edit(model);
+		jsonMap.put("object", model);
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
 		
 		return SUCCESS;

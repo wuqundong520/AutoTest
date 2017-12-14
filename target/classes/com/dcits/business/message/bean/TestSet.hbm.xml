@@ -21,7 +21,14 @@
         <property name="mark" type="java.lang.String">
             <column name="mark" />
         </property>
-        
+        <property name="parented" type="java.lang.String">
+            <column name="parented" length="1"/>
+        </property>
+               
+        <many-to-one name="parentSet" class="com.dcits.business.message.bean.TestSet" lazy="proxy">
+            <column name="parent_id" />
+        </many-to-one> 
+               
         <property name="createTime" type="java.util.Date">
         	<column name="create_time"></column>
         </property>
@@ -40,6 +47,13 @@
                 <column name="set_id" />
             </key>
             <one-to-many class="com.dcits.business.message.bean.ComplexSetScene" />
+        </set>
+        
+        <set name="childrenSets" cascade="all" lazy="true" inverse="true">
+            <key>
+                <column name="parent_id" />
+            </key>
+            <one-to-many class="com.dcits.business.message.bean.TestSet" />
         </set>
     </class>
 </hibernate-mapping>

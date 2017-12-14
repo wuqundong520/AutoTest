@@ -106,7 +106,7 @@ var columnsSetting = [
 var eventList = {
 		".add-object":function() {
 			publish.renderParams.editPage.modeFlag = 0;					
-			currIndex = layer_show("添加组合场景", editHtml, "550", "360", 1);
+			currIndex = layer_show("添加组合场景", editHtml, editPageWidth, editPageHeight.add, 1);
 			publish.init();			
 		},
 		".batch-del-object":function() {
@@ -117,7 +117,7 @@ var eventList = {
 			var data = table.row( $(this).parents('tr') ).data();
 			publish.renderParams.editPage.modeFlag = 1;
 			publish.renderParams.editPage.objId = data.id;
-			layer_show("编辑组合场景信息", editHtml, "550", "380", 1);
+			layer_show("编辑组合场景信息", editHtml, editPageWidth, editPageHeight.edit, 1);
 			publish.init();	
 		},
 		".complex-scene-del":function() {
@@ -127,7 +127,7 @@ var eventList = {
 		".show-scenes":function() { //管理组合中的场景
 			var data = table.row( $(this).parents('tr') ).data();
 			layer_show("组合场景设定", "messageScene.html?setId=" + setId 
-					+ "&complexSceneId=" + data.id + "&complexSceneFlag=0", "860", "680", 2, null, function(index, layero) {//点击x关闭时保存
+					+ "&complexSceneId=" + data.id + "&complexSceneFlag=0", null, null, 2, null, function(index, layero) {//点击x关闭时保存
 				var body = layer.getChildFrame('body', index);
 				body.find('#save-scene-variables').click();
 				return false;

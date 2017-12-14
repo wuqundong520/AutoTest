@@ -48,7 +48,7 @@ public interface BaseService<T> {
 	 * 获取所有实体实例列表
 	 * @return 符合条件的实例列表
 	 */
-	 List<T> findAll();
+	 List<T> findAll(String ...filterCondition);
 	
 	/**
 	 * 统计总实体实例的数量

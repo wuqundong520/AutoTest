@@ -1,23 +1,21 @@
 //遮罩层覆盖区域
 var $wrapper = $('#div-table-container');
-var configData;
+
 var setId; //当前正在操作的set
 var setName; //当前正在操作的setName
 var currIndex;//当前正在操作的layer窗口的index
 
 
-var settingConfigViewTemplate;
-
 var selectMode = "1";//是否为选择模式，只供选择0-是   1-不是
 
 var templateParams = {
-		tableTheads:["名称", "场景数", "组合场景数","状态", "创建用户", "创建时间", "运行时配置","操作"],
+		tableTheads:["名称", "场景数", "组合场景数","状态", "创建用户", "创建时间", "操作"],
 		btnTools:[{
 			type:"primary",
 			size:"M",
-			id:"add-object",
-			iconFont:"&#xe600;",
-			name:"添加测试集"
+			id:"batch-move-folder",
+			iconFont:"&#xe66c;",
+			name:"批量移动"
 		},{
 			type:"danger",
 			size:"M",
@@ -136,19 +134,6 @@ var columnsSetting = [
                       },
                       ellipsisData("user.realName"),ellipsisData("createTime"),
                       {
-                    	  "data":null,
-                    	  "render":function(data) {
-                    		  var context =
-                            		[{
-                          			type:"primary",
-                          			size:"M",
-                          			markClass:"run-setting-config",
-                          			name:"配置"
-                          		}];
-                                return btnTextTemplate(context);
-                    	  }
-                      },
-                      {
                           "data":null,
                           "render":function(data, type, full, meta){
                             var context;                            
@@ -160,10 +145,6 @@ var columnsSetting = [
                             	}];
                             } else {
                             	context = [{
-                    	    		title:"测试集编辑",
-                    	    		markClass:"object-edit",
-                    	    		iconFont:"&#xe6df;"
-                    	    	},{
                     	    		title:"测试集删除",
                     	    		markClass:"object-del",
                     	    		iconFont:"&#xe6e2;"
@@ -183,7 +164,45 @@ var eventList = {
 		},
 		"#batch-del-object":function() {
 			var checkboxList = $(".selectSet:checked");
-			batchDelObjs(checkboxList,SET_DEL_URL);
+			batchDelObjs(checkboxList,SET_DEL_URL, null, null, function() {
+				parent.createNodeTree();
+			});
+		},
+		"#batch-move-folder":function() {
+			var checkboxList = $(".selectSet:checked");
+			if (checkboxList.length < 1) {
+				return false;
+			}
+			
+			var show_html = '<div class="row cl" style="width:340px;margin:15px;">'		 
+				+ '<div class="formControls col-xs-10"><span class="select-box radius mt-0">'
+				+ '<select class="select" size="1" name="select-object" id="select-object">'
+				+ '</select></span></div><div class="form-label col-xs-2">'
+				+ '<input type="button" class="btn btn-primary radius" onclick="" id="show-select-box-choose" value="选择"/></div></div>';
+				
+			var index = layer_show("请选择要移动到的目录", show_html, '400', '120', 1, function() {				
+				$.get(SET_GET_CATEGORY_NODES_URL, function(json) {
+					$(".page-container").spinModal(); 
+       	 			if (json.returnCode == 0) {
+       	 				$.each(json.nodes, function(i, node) {
+       	 					createOption(node, $("#select-object"), "");
+       	 				});
+       	 				$(".page-container").spinModal(false); 
+       	 			} else {
+       	 				$(".page-container").spinModal(false); 
+       	 				layer.alert(json.msg, {icon:5});
+       	 			}
+       	 		});	
+				
+				$(document).delegate("#show-select-box-choose", 'click', function() {
+					var parentId = $('#select-object option:selected').val();
+					batchOp(checkboxList, SET_MOVE_TO_FOLDER, "移动", table, "setId", {parentId:parentId}
+							, function() {
+								layer.close(index);
+								parent.createNodeTree();
+					})
+				});
+			})		
 		},
 		".object-edit":function() {
 			var data = table.row( $(this).parents('tr') ).data();
@@ -197,79 +216,14 @@ var eventList = {
 			delObj("确定删除此测试集(删除测试集不会删除下属测试场景)？请慎重操作!", SET_DEL_URL, data.setId, this);
 		},
 		".show-scenes":function() { //打开场景页,可在此页添加删除场景
+			if (selectMode == "0") {
+				return false;
+			}
 			var data = table.row($(this).parents('tr')).data();
 			currIndex = layer_show(data.setName + "-测试场景", "setScene.html?setId=" + data.setId, "860", "680", 2, null, function() {
 				refreshTable();
 			});			
-		},
-		".run-setting-config":function() {
-			var that = table.row($(this).parents('tr'));
-			var data = that.data();
-			var tip = "<strong><span class=\"c-primary\">【自定义】</span></strong><br>点击<span class=\"c-warning\">'默认'</span>将会恢复为默认配置<br>点击<span class=\"c-warning\">'自定义'</span>修改或者查看当前配置!"
-			var mode = 1;
-			if (data.config == null) {
-				tip = "<strong><span class=\"c-primary\">【默认】</span></strong><br>点击<span class=\"c-warning\">'自定义'</span>将会创建自定义的配置信息<br>点击<span class=\"c-warning\">'默认'</span>返回!";
-				mode = 0;
-			}
-			tip += "<br>点击<span class=\"c-warning\">'自定义模板'</span>选择一个模板并配置为该测试集的运行时设置!";
-			
-			layer.confirm('当前选择的运行时配置为：' + tip, {icon: 0,title:'提示', btn:['默认', '自定义', '自定义模板'],
-				btn3:function(index) {
-					//选择自定义模板
-					$.post(GLOBAL_VARIABLE_LIST_URL, {variableType:"setRuntimeSetting"}, function(json) {
-						if (json.returnCode == 0) {
-							showSelectBox(json.data, "variableId", "variableName", function(variableId, globalVariable, index1) {
-								$.post(SET_RUN_SETTING_CONFIG_URL, {setId:data.setId, variableId:variableId}, function(json) {
-									if (json.returnCode == 0) {
-										layer.msg('已确定选择！', {icon:1, time:1800});
-										layer.closeAll('page');
-									} else {
-										layer.alert(json.msg, {icon:5});
-									}
-								});
-								
-								/*data.config = json.config;
-								that.data(data);
-								viewRunSettingConfig(data, that);*/
-																
-							})
-						} else {
-							layer.alert(json.msg, {icon:5});
-						}
-					});
-				}}
-				, function(index) {
-					if (mode == 1) {
-						settingConfig(data.setId, mode, function (json) {
-							data.config = null;
-							that.data(data);
-							layer.close(index);
-							layer.msg("修改成功!", {icon:1, time:1500});
-						});
-					} else {
-						layer.close(index);
-					}										
-				}
-				, function(index) {
-					if (mode == 0) {
-						settingConfig(data.setId, mode, function (json) {
-							data.config = json.config;
-							that.data(data);
-							layer.close(index);
-							viewRunSettingConfig(data, that);	
-						});
-					} else {					
-						viewRunSettingConfig(data, that);	
-					}
-									
-				});
-		},
-		"#update-option":function() {
-			updateTestOptions();
-		},
-		"#reset-option":function() {
-			resetOptions();
-		},
+		},		
 		".object-select":function() {
 			var data = table.row( $(this).parents('tr') ).data();
 			parent.$("#relatedId").val(data.setId);
@@ -278,10 +232,13 @@ var eventList = {
 			parent.layer.close(parent.layer.getFrameIndex(window.name));
 		}, 
 		".show-complex-set-scenes":function() { //组合场景
+			if (selectMode == "0") {
+				return false;
+			}
 			var data = table.row( $(this).parents('tr') ).data();			
 			$(this).attr("data-title", data.setName + " - 测试集 - 组合场景");
 			$(this).attr("_href", "resource/message/complexSetScene.html?setId=" + data.setId);
-			Hui_admin_tab(this);
+			parent.Hui_admin_tab(this);
 		}
 };
 
@@ -293,8 +250,6 @@ var mySetting = {
 				$(".breadcrumb").hide();
 				$("#btn-tools").parent('.cl').hide();
 			}
-			
-			settingConfigViewTemplate = Handlebars.compile($("#setting-config-template").html());
 			df.resolve();
 		},
 		editPage:{
@@ -324,7 +279,8 @@ var mySetting = {
 			listUrl:SET_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0, 8, 9]			
+			columnsJson:[0, 8],
+			exportExcel:false
 		},
 		templateParams:templateParams		
 	};
@@ -336,48 +292,27 @@ $(function(){
 
 
 /********************************************************************************************************/
-function viewRunSettingConfig (rowData, obj) { 
-	configData = rowData.config;
-	layer_show(rowData.setName + "-运行时配置", settingConfigViewTemplate(rowData.config), '800', '510', 1, function() {
-		resetOptions();
-	}, function() {
-		rowData.config = configData; 
-		obj.data(rowData);
-	});
-}
 
-function settingConfig(setId, mode, callback) {
-	$.post(SET_RUN_SETTING_CONFIG_URL, {setId:setId, mode:mode}, function(json) {
-		if (json.returnCode == 0) {			
-			callback(json);
-		} else {
-			layer.alert(json.msg, {icon:5});
-		}
-	});
-}
 
-function resetOptions () {
-	if (configData != null) {
-		$("#requestUrlFlag").val(configData.requestUrlFlag);
-		$("#connectTimeOut").val(configData.connectTimeOut);
-		$("#readTimeOut").val(configData.readTimeOut);
-		$("#checkDataFlag").val(configData.checkDataFlag);
-		$("#configId").val(configData.configId);
-		$("#runType").val(configData.runType);
-		$("#customRequestUrl").val(configData.customRequestUrl);
-		$("#retryCount").val(configData.retryCount);
+/**
+ * 父目录选择下拉框
+ * @param node
+ * @param selectObj
+ * @param sign
+ * @returns {Boolean}
+ */
+function createOption(node, selectObj, sign) {
+	//不能将当前节点移动到自己节点下和自己的子节点下
+	if (node.id == $("#setId").val()) {		
+		return false;
 	}
-}
-
-//更新配置信息
-function updateTestOptions(){
-	var updateConfigData=$("#form-setting-config").serializeArray();
-	$.post(UPDATE_TEST_CONFIG_URL, updateConfigData, function(data){
-		if(data.returnCode == 0){
-			configData = data.config;
-			layer.msg('更新成功',{icon:1, time:1500});
-		} else {
-			layer.alert("更新失败：" + data.msg, {icon:5});
-		}
-	});	
+	if (!node.parented) {
+		return false;
+	}
+	selectObj.append('<option value="' + node.id + '">' + sign + "╟&nbsp;" + node.name + '</option>');
+	if (node.children != null && node.children.length > 0) {
+		$.each(node.children, function(i, n) {
+			createOption(n, selectObj, sign + "&nbsp;&nbsp;");
+		});
+	}
 }

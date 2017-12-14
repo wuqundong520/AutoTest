@@ -3,6 +3,7 @@ package com.dcits.business.message.action;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -69,24 +70,60 @@ public class TestSetAction extends BaseAction<TestSet> {
 	
 	private Integer variableId;
 	
+	private Integer parentId;
+	
 	@Autowired
 	public void setTestSetService(TestSetService testSetService) {
 		super.setBaseService(testSetService);
 		this.testSetService = testSetService;
 	}
 
+	
+	@Override
+	public String[] prepareList() {
+		// TODO Auto-generated method stub
+		this.filterCondition = new String[]{"parented=1"};
+		return this.filterCondition;
+	}
+
+	/**
+	 * 获取目录树结构
+	 * @return
+	 */
+	public String getCategoryNodes () {
+		List<TestSet> rootSets = testSetService.getRootSet();
+		
+		if (rootSets.size() < 1) {
+			jsonMap.put("msg", "根节点不存在!");
+			jsonMap.put("returnCode", ReturnCodeConsts.SYSTEM_ERROR_CODE);
+			return SUCCESS;
+		}
+		
+		List<Map<String, Object>> sets = new ArrayList<Map<String, Object>>();
+		for (TestSet set:rootSets) {
+			sets.add(set.getNodesMap(testSetService));
+		}
+		jsonMap.put("nodes", sets);
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		return SUCCESS;
+	}
+
+
 	@Override
 	public String edit() {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub		
 		if (model.getSetId() == null) {
 			model.setCreateTime(new Timestamp(System.currentTimeMillis()));
-			model.setUser((User)(StrutsUtils.getSessionMap().get("user")));
+			model.setUser((User)(StrutsUtils.getSessionMap().get("user")));			
 		} else {
 			model.setMs(testSetService.get(model.getSetId()).getMs());
 		}
-		
+		if (parentId != 0) {
+			model.setParentSet(new TestSet(parentId));
+		}		
 		testSetService.edit(model);
 		
+		jsonMap.put("object", model);
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
 		return SUCCESS;
 	}
@@ -115,6 +152,16 @@ public class TestSetAction extends BaseAction<TestSet> {
 		return SUCCESS;
 	}
 	
+	/**
+	 * 移动测试集到文件夹目录下
+	 * @return
+	 */
+	public String moveFolder () {
+		
+		testSetService.moveFolder(model.getSetId(), parentId);
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
+		return SUCCESS;
+	}
 	
 	/**
 	 * 操作测试场景到测试集
@@ -141,9 +188,8 @@ public class TestSetAction extends BaseAction<TestSet> {
 	 * @return
 	 */
 	public String getMySet () {
-		User user = (User) StrutsUtils.getSessionMap().get("user");
 		
-		jsonMap.put("data", testSetService.getUserSets(user.getUserId()));
+		jsonMap.put("data", testSetService.findAll("parented=1"));
 		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);
 		return SUCCESS;
 	}
@@ -281,6 +327,10 @@ public class TestSetAction extends BaseAction<TestSet> {
 	
 	public void setVariableId(Integer variableId) {
 		this.variableId = variableId;
+	}
+	
+	public void setParentId(Integer parentId) {
+		this.parentId = parentId;
 	}
 	
 }

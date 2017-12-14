@@ -196,7 +196,7 @@ var currentVariablesSpan;
 var eventList = {
 		"#add-object":function() {
 			publish.renderParams.editPage.modeFlag = 0;					
-			currIndex = layer_show("增加场景", editHtml, "550", "360", 1);
+			currIndex = layer_show("增加场景", editHtml, editPageWidth, editPageHeight.add, 1);
 			//layer.full(index);
 			publish.init();			
 		},
@@ -208,7 +208,7 @@ var eventList = {
 			var data = table.row( $(this).parents('tr') ).data();
 			publish.renderParams.editPage.modeFlag = 1;
 			publish.renderParams.editPage.objId = data.messageSceneId;
-			layer_show("编辑场景信息", editHtml, "550", "380",1);
+			layer_show("编辑场景信息", editHtml, editPageWidth, editPageHeight.edit, 1);
 			publish.init();	
 		},
 		".scene-del":function() {
@@ -218,7 +218,7 @@ var eventList = {
 		".scene-test":function() {
 			var data = table.row( $(this).parents('tr') ).data();
 			messageSceneId = data.messageSceneId;
-			layer_show("场景测试", sceneTestHtml, '800','500', 1, function() {
+			layer_show("场景测试", sceneTestHtml, 1000, 490, 1, function() {
 				renderSceneTestPage();				
 			});
 			
@@ -226,7 +226,12 @@ var eventList = {
 		".validate-method":function() {//场景验证规则管理
 			var data = table.row( $(this).parents('tr') ).data();
 			messageSceneId = data.messageSceneId;
-			var index = layer.open({
+			
+			layer_show (data.sceneName + "-验证规则管理", 'validateParameters.html?messageSceneId=' + messageSceneId, null, null, 2, null, function() {
+				refreshTable();
+			});
+			
+			/*var index = layer.open({
 	            type: 2,
 	            anim:5,
 	            title: data.sceneName + "-验证规则管理",
@@ -235,7 +240,7 @@ var eventList = {
 	            	refreshTable();
 	            }
 	        });
-			layer.full(index);
+			layer.full(index);*/
 			
 		},
 		".show-test-data":function() { //展示测试数据
@@ -243,17 +248,22 @@ var eventList = {
 			var title = data.interfaceName + "-" + data.messageName + "-" + data.sceneName + " " + "测试数据";
 			var url = "testData.html?messageSceneId=" + data.messageSceneId + "&sceneName=" + data.sceneName;
 			
-			var index = layer.open({
+			layer_show (title, url, null, null, 2, null, function() {
+				refreshTable();
+			});
+			
+			/*var index = layer.open({
 	            type: 2,
 	            title: title,
 	            content: url,
 	            anim:5,
+	            area:['800px', '680'],
 	            cancel:function() {
 	            	refreshTable();
 	            }
 	        });
 			
-			layer.full(index);
+			layer.full(index);*/
 		},
 		".show-complex-scene-variables":function() {//展示组合场景中场景的变量管理
 			var data = table.row( $(this).parents('tr') ).data();
@@ -264,7 +274,7 @@ var eventList = {
 			$.each(complexSetScene.useVariables["" + data.messageSceneId], function(key, value) {
 				context.useVariables.push({key:key, value:value});
 			});
-			layer_show(data.sceneName + "-编辑变量", showSceneVariablesTemplate(context), "700", "330", 1, null, function() {
+			layer_show(data.sceneName + "-编辑变量", showSceneVariablesTemplate(context), 500, 280, 1, null, function() {
 				//自动保存变量信息
 				$.each($("#save-variables").siblings('div').children(".edit-this-variables"), function(i, n) {
 					var variables = ($(n).text()).split(":");
@@ -316,7 +326,7 @@ var eventList = {
 		"#save-variables,#use-variables":function() {//新建组合参数变量
 			var name = $(this).text();
 			var context = {"key":"", "value":""};
-			layer_show("添加-" + name, editVariablesTemplate(context), '360', '240', 1, function(layero, index) {
+			layer_show("添加-" + name, editVariablesTemplate(context), 400, 220, 1, function(layero, index) {
 				$("#save-new-varibales").attr("layer-index", index);
 				$("#save-new-varibales").attr("mode", "add");
 				$("#save-new-varibales").attr("parent-parameter-name", name);
@@ -340,7 +350,7 @@ var eventList = {
 			var keyValue = ($(this).text()).split("=");
 			var name = $(this).parents('div').siblings('label').text();
 			var context = {"key":keyValue[0], "value":keyValue[1]};
-			layer_show("修改-" + name, editVariablesTemplate(context), '360', '240', 1, function(layero, index) {
+			layer_show("修改-" + name, editVariablesTemplate(context), 400, 220, 1, function(layero, index) {
 				$("#save-new-varibales").attr("layer-index", index);
 				$("#save-new-varibales").attr("mode", "edit");
 				$("#save-new-varibales").attr("parent-parameter-name", name);
@@ -522,7 +532,7 @@ function renderSceneTestPage(flag) {
 			var selectData=$("#selectData");
 						
 			selectData.html('');
-			$(".textarea").val('');
+			$("#scene-test-request-messages").val('');
 			
 			if (flag != 0) {
 				selectUrl.html('');				
@@ -536,10 +546,10 @@ function renderSceneTestPage(flag) {
 				$.each(data.testData,function(i,n){
 					selectData = selectData.append("<option data-id='" + n.dataId + "' value='" + i + "'>" + n.dataDiscr + "</option>");
 				});
-				$(".textarea").val(data.testData[0].dataJson);
+				$("#scene-test-request-messages").val(data.testData[0].dataJson);
 				$("#selectData").change(function(){
 					var p1 = $(this).children('option:selected').val();
-					$(".textarea").val(data.testData[p1].dataJson);
+					$("#scene-test-request-messages").val(data.testData[p1].dataJson);
 				});
 			}
 		} else {
@@ -554,7 +564,7 @@ function renderSceneTestPage(flag) {
  */
 function sceneTest() {
 	var requestUrl=$("#selectUrl").val();
-	var requestMessage=$(".textarea").val();
+	var requestMessage=$("#scene-test-request-messages").val();
 		
 	if(requestUrl == "" || requestUrl == null || requestMessage == "" || requestMessage == null){
 		layer.msg('请选择正确的接口地址和测试数据',{icon:2, time:1500});
@@ -577,9 +587,7 @@ function sceneTest() {
 			} else {
 				color="red";
 				flag="STOP";
-			}
-			
-			
+			}						
 			var resultData = {
 				color:color,
 				flag:flag,
@@ -588,16 +596,15 @@ function sceneTest() {
 				responseMessage:(data.result.responseMessage == "null") ? "" : data.result.responseMessage,
 				mark:data.result.mark
 			};			
+			console.log(resultData);
+			var html = resultTemplate(resultData);
+			console.log(html);
+			layer_show('测试结果', html, 700, 600 , 1, null, null, null, {
+				shade: 0,
+				skin: 'layui-layer-rim', //加上边框
+				anim:-1,
+			});
 			
-			parent.layer.open({
-				  title: '测试结果',
-				  shade: 0,
-				  type: 1,
-				  skin: 'layui-layer-rim', //加上边框		
-				  area: ['700px', '600px'], //宽高
-				  anim:-1,
-				  content: resultTemplate(resultData)
-				});
 		}else{
 			layer.close(index);
 			layer.alert(data.msg, {icon:5});

@@ -59,4 +59,37 @@ public class TestSetServiceImpl extends BaseServiceImpl<TestSet> implements Test
 		// TODO Auto-generated method stub
 		testSetDao.updateSettingConfig(setId, config);
 	}
+
+	@Override
+	public List<TestSet> getRootSet() {
+		// TODO Auto-generated method stub
+		return testSetDao.getRootSet();
+	}
+
+	@Override
+	public void delete(int id) {
+		// TODO Auto-generated method stub
+		TestSet set = get(id);
+		if (set == null) {
+			return;
+		}
+		
+		if ("0".equals(set.getParented())) {//测试集目录
+			TestSet parentSet = set.getParentSet();
+			
+			for (TestSet s:set.getChildrenSets()) {
+				s.setParentSet(parentSet);
+				edit(s);
+			}
+		}
+		set.setChildrenSets(null);		
+		testSetDao.delete(id);
+		
+	}
+
+	@Override
+	public void moveFolder(Integer setId, Integer parentId) {
+		// TODO Auto-generated method stub
+		testSetDao.moveFolder(setId, parentId);
+	}
 }

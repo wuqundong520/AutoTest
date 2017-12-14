@@ -55,7 +55,8 @@ public class CallMethodInterceptor extends AbstractInterceptor {
 			//请求接口路径
 			String actionName = arg0.getProxy().getActionName();
 			//当前所有接口信息
-			List<OperationInterface> ops = (List<OperationInterface>) StrutsUtils.getApplicationMap().get(SystemConsts.APPLICATION_ATTRIBUTE_OPERATION_INTERFACE);
+			List<OperationInterface> ops = (List<OperationInterface>) StrutsUtils.getApplicationMap()
+					.get(SystemConsts.APPLICATION_ATTRIBUTE_OPERATION_INTERFACE);
 			
 			logger.info("[" + timeTag + "]" + "开始调用接口:" + actionName + ",进行权限验证!");
 			

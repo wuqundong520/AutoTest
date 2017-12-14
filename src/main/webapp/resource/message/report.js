@@ -103,7 +103,7 @@ var columnsSetting = [
 					},
 					ellipsisData("createTime"),
 					ellipsisData("finishTime"),
-					{"data":"createUserName"},
+					ellipsisData("createUserName"),
 					ellipsisData("mark"),
 					{
 						"data":null,
@@ -211,5 +211,5 @@ function openResults(reportId, type, title, count) {
 	if (count < 1) {
 		return false;
 	}
-	layer_show(title, "result.html?reportId=" + reportId + "&runStatus=" + type, '800', '600', 2);
+	layer_show(title, "result.html?reportId=" + reportId + "&runStatus=" + type, 1100, 620, 2);
 }

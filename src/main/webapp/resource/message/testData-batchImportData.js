@@ -26,7 +26,14 @@ var eventList = {
 		var thisParam = getParamInfo(parameterId);
 		if (thisParam != null) {
 			currParam = thisParam;
-			layer_show("参数信息", parameterInfoTemplate(thisParam), '500', '300', 1);
+			//layer_show("参数信息", parameterInfoTemplate(thisParam), '600', '400', 1);
+			layer.open({
+				title:"参数信息",
+				content:parameterInfoTemplate(thisParam),
+				type:1,
+				anim:5,
+				area:['490px', '360px']
+			});
 		}
 	},
 	".parameter-info-table button:eq(0)":function() { //确定选中参数

@@ -137,20 +137,19 @@ var columnsSetting = [
 var eventList = {
 		".add-object":function() {
 			publish.renderParams.editPage.modeFlag = 0;					
-			currIndex = layer_show("增加数据", editHtml, "550", "320", 1);
+			currIndex = layer_show("增加数据", editHtml, editPageWidth, editPageHeight.add, 1);
 			//layer.full(index);
 			publish.init();			
 		},
-		".batch-add-object":function() { //批量导入数据						
+		".batch-add-object":function() { //批量导入数据	
 			var index = parent.layer.open({
-				type: 2,
-				maxmin: false,
-				shade:0.4,
-				anim:5,
-				title: sceneName + "-批量导入数据",
-				content: "testData-batchImportData.html?messageSceneId=" + messageSceneId
+				title:sceneName + "-批量导入数据",
+				type:2,	
+				content:"testData-batchImportData.html?messageSceneId=" + messageSceneId,
+				end:function() {
+					refreshTable();
+				}
 			});
-			
 			parent.layer.full(index);
 		},
 		".batch-del-object":function() {
@@ -161,7 +160,7 @@ var eventList = {
 			var data = table.row( $(this).parents('tr') ).data();
 			publish.renderParams.editPage.modeFlag = 1;
 			publish.renderParams.editPage.objId = data.dataId;
-			layer_show("编辑数据信息", editHtml, "550", "340",1);
+			layer_show("编辑数据信息", editHtml, editPageWidth, editPageHeight.edit,1);
 			publish.init();	
 		},
 		".data-del":function() {
@@ -191,7 +190,7 @@ var eventList = {
 			$.post(GET_SETTING_DATA_URL, {messageSceneId:messageSceneId, dataId:$("#dataId").val()} ,function(json) {
 				if (json.returnCode == 0) {
 					currParams = json.params;
-					layer_show("设置数据", setttingParameterTemplate(json), '900', '640', 1, null, function(index, layero) {
+					layer_show("设置数据", setttingParameterTemplate(json), null, null, 1, null, function(index, layero) {
 						$("#paramsData").val(getParamsData());
 						layer.close(index);
 					});
@@ -253,7 +252,7 @@ var mySetting = {
 			listUrl:DATA_LIST_URL,
 			tableObj:".table-sort",
 			columnsSetting:columnsSetting,
-			columnsJson:[0,4]
+			columnsJson:[0, 4]
 		},
 		templateParams:templateParams		
 	};

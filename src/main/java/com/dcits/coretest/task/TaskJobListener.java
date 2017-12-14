@@ -72,7 +72,7 @@ public class TaskJobListener implements JobListener {
 		String tip = "";
 		if (StringUtils.isEmpty(result[0])) {
 			tip = "接口自动化测试定时任务<br><span class=\"label label-primary radius\">[任务Id]</span> = " + task.getTaskId() + "<br><span class=\"label label-primary radius\">[任务名称]</span> = " + task.getTaskName() + "<br><span class=\"label label-primary radius\">[任务类型]</span> = " + getTaskType(task.getTaskType()) + "<br><span class=\"label label-primary radius\">[任务状态]</span> = <span class=\"c-red\"><strong>失败</strong></span><br><pre class=\"prettyprint linenums\">" + result[1] + "</pre>";
-			mailService.sendSystemMail(tip, SystemConsts.ADMIN_USER_ID);
+			mailService.sendSystemMail(tip, task.getUser().getUserId());
 			return;
 		}
 		
@@ -80,7 +80,7 @@ public class TaskJobListener implements JobListener {
 			String finishFlag = "N";
 			
 			while ("N".equalsIgnoreCase(finishFlag)) {
-				finishFlag = reportService.isFinished(Integer.parseInt(result[0]));				
+				finishFlag = reportService.isFinished(Integer.parseInt(result[0]));	
 				try {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {
@@ -132,7 +132,7 @@ public class TaskJobListener implements JobListener {
 			}
 		}
 		
-		mailService.sendSystemMail(tip, SystemConsts.ADMIN_USER_ID);
+		mailService.sendSystemMail(tip, task.getUser().getUserId());
 		
 		
 	}

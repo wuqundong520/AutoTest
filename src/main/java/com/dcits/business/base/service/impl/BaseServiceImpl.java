@@ -53,9 +53,9 @@ public class BaseServiceImpl<T> implements BaseService<T>{
 	}
 
 	@Override
-	public List<T> findAll() {
+	public List<T> findAll(String ...filterCondition) {
 		// TODO Auto-generated method stub
-		return baseDao.findAll();
+		return baseDao.findAll(filterCondition);
 	}
 
 	@Override

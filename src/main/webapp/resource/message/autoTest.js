@@ -11,7 +11,7 @@ var eventList = {
 	'#choose-test-set':function() {
 		$.get(LIST_MY_SETS_URL, function(json) {
 			if (json.returnCode == 0) {
-				layer_show("我的测试集", mySetViewTemplate(json.data), '680', '500', 1);
+				layer_show("所有测试集", mySetViewTemplate(json.data), null, null, 1);
 			} else {
 				layer.alert(json.msg, {icon:5});
 			}
