@@ -820,6 +820,9 @@ function labelCreate(data, option){
  * 获取远程地址的html文件
  */
 function jqueryLoad(url, dom, callback) {
+	if (typeof dom != 'object') {
+		dom = $(dom);
+	}
 	dom.load(url, function() {
 		var domHmtl = dom.html();
 		dom.html('');
@@ -946,6 +949,7 @@ function showMark(itemName, markName, obj, tipName) {
 		formType: 2,
 		maxlength:65535,
 		anim:5,
+		shadeClose:true,
 		value: data[markName],
 		title: itemName + '-' + tipName,
 		area: ['500px', '300px']}, 

@@ -155,10 +155,10 @@ public class ImportInterfaceInfo {
 			}
 		}
 			
-		result.put(PublicExcelImportUtil.RESULT_MAP_TOTAL_COUNT, totalCount);
-		result.put(PublicExcelImportUtil.RESULT_MAP_SUCCESS_COUNT, successCount);
-		result.put(PublicExcelImportUtil.RESULT_MAP_FAIL_COUNT, failCount);
-		result.put(PublicExcelImportUtil.RESULT_MAP_MSG, msg.toString());
+		result.put(PoiExcelUtil.RESULT_MAP_TOTAL_COUNT, totalCount);
+		result.put(PoiExcelUtil.RESULT_MAP_SUCCESS_COUNT, successCount);
+		result.put(PoiExcelUtil.RESULT_MAP_FAIL_COUNT, failCount);
+		result.put(PoiExcelUtil.RESULT_MAP_MSG, msg.toString());
 		return result;
 	}
 	
@@ -228,7 +228,7 @@ public class ImportInterfaceInfo {
 	 */
 	public static List<InterfaceInfo> importValue (String path) {
 		if (path != null && !path.equals("")) {
-            String ext = PublicExcelImportUtil.getExt(path);
+            String ext = PoiExcelUtil.getExt(path);
             if (ext!=null && !ext.equals("")) {
                 if (ext.equals("xls")) {
                     return readXls(path);
@@ -278,18 +278,18 @@ public class ImportInterfaceInfo {
                      HSSFCell createMessage = hssfRow.getCell(10);
                      HSSFCell createScene = hssfRow.getCell(11);
                      
-                     info.setInterfaceName(PublicExcelImportUtil.getValue(interfaceName));
-                     info.setInterfaceType(PublicExcelImportUtil.getValue(interfaceType).toUpperCase());
-                     info.setInterfaceProtocol(PublicExcelImportUtil.getValue(interfaceProtocol));
-                     info.setInterfaceCnName(PublicExcelImportUtil.getValue(interfaceCnName));
-                     info.setRequestUrlMock(PublicExcelImportUtil.getValue(requestUrlMock));
-                     info.setRequestUrlReal(PublicExcelImportUtil.getValue(requestUrlReal));
-                     info.setStatus(PublicExcelImportUtil.getValue(status));
-                     info.setRequestMsg(PublicExcelImportUtil.getValue(requestMsg));
-                     info.setMessageType(PublicExcelImportUtil.getValue(messageType).toUpperCase());
-                     info.setMark(PublicExcelImportUtil.getValue(mark));
-                     info.setCreateMessage(PublicExcelImportUtil.getValue(createMessage));
-                     info.setCreateScene(PublicExcelImportUtil.getValue(createScene));
+                     info.setInterfaceName(PoiExcelUtil.getValue(interfaceName));
+                     info.setInterfaceType(PoiExcelUtil.getValue(interfaceType).toUpperCase());
+                     info.setInterfaceProtocol(PoiExcelUtil.getValue(interfaceProtocol));
+                     info.setInterfaceCnName(PoiExcelUtil.getValue(interfaceCnName));
+                     info.setRequestUrlMock(PoiExcelUtil.getValue(requestUrlMock));
+                     info.setRequestUrlReal(PoiExcelUtil.getValue(requestUrlReal));
+                     info.setStatus(PoiExcelUtil.getValue(status));
+                     info.setRequestMsg(PoiExcelUtil.getValue(requestMsg));
+                     info.setMessageType(PoiExcelUtil.getValue(messageType).toUpperCase());
+                     info.setMark(PoiExcelUtil.getValue(mark));
+                     info.setCreateMessage(PoiExcelUtil.getValue(createMessage));
+                     info.setCreateScene(PoiExcelUtil.getValue(createScene));
                      
                      infos.add(info);
                  }
@@ -337,18 +337,18 @@ public class ImportInterfaceInfo {
                      XSSFCell createMessage = xssfRow.getCell(10);
                      XSSFCell createScene = xssfRow.getCell(11);
                      
-                     info.setInterfaceName(PublicExcelImportUtil.getValue(interfaceName));
-                     info.setInterfaceType(PublicExcelImportUtil.getValue(interfaceType).toUpperCase());
-                     info.setInterfaceProtocol(PublicExcelImportUtil.getValue(interfaceProtocol));
-                     info.setInterfaceCnName(PublicExcelImportUtil.getValue(interfaceCnName));
-                     info.setRequestUrlMock(PublicExcelImportUtil.getValue(requestUrlMock));
-                     info.setRequestUrlReal(PublicExcelImportUtil.getValue(requestUrlReal));
-                     info.setStatus(PublicExcelImportUtil.getValue(status));
-                     info.setRequestMsg(PublicExcelImportUtil.getValue(requestMsg));
-                     info.setMessageType(PublicExcelImportUtil.getValue(messageType).toUpperCase());
-                     info.setMark(PublicExcelImportUtil.getValue(mark));
-                     info.setCreateMessage(PublicExcelImportUtil.getValue(createMessage));
-                     info.setCreateScene(PublicExcelImportUtil.getValue(createScene));
+                     info.setInterfaceName(PoiExcelUtil.getValue(interfaceName));
+                     info.setInterfaceType(PoiExcelUtil.getValue(interfaceType).toUpperCase());
+                     info.setInterfaceProtocol(PoiExcelUtil.getValue(interfaceProtocol));
+                     info.setInterfaceCnName(PoiExcelUtil.getValue(interfaceCnName));
+                     info.setRequestUrlMock(PoiExcelUtil.getValue(requestUrlMock));
+                     info.setRequestUrlReal(PoiExcelUtil.getValue(requestUrlReal));
+                     info.setStatus(PoiExcelUtil.getValue(status));
+                     info.setRequestMsg(PoiExcelUtil.getValue(requestMsg));
+                     info.setMessageType(PoiExcelUtil.getValue(messageType).toUpperCase());
+                     info.setMark(PoiExcelUtil.getValue(mark));
+                     info.setCreateMessage(PoiExcelUtil.getValue(createMessage));
+                     info.setCreateScene(PoiExcelUtil.getValue(createScene));
                      
                      infos.add(info);
                  }

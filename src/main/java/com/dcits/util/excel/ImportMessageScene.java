@@ -104,10 +104,10 @@ public class ImportMessageScene {
 			}
 		}
 		
-		result.put(PublicExcelImportUtil.RESULT_MAP_TOTAL_COUNT, totalCount);
-		result.put(PublicExcelImportUtil.RESULT_MAP_SUCCESS_COUNT, successCount);
-		result.put(PublicExcelImportUtil.RESULT_MAP_FAIL_COUNT, failCount);
-		result.put(PublicExcelImportUtil.RESULT_MAP_MSG, msg.toString());
+		result.put(PoiExcelUtil.RESULT_MAP_TOTAL_COUNT, totalCount);
+		result.put(PoiExcelUtil.RESULT_MAP_SUCCESS_COUNT, successCount);
+		result.put(PoiExcelUtil.RESULT_MAP_FAIL_COUNT, failCount);
+		result.put(PoiExcelUtil.RESULT_MAP_MSG, msg.toString());
 		return result;
 	}
 	
@@ -157,7 +157,7 @@ public class ImportMessageScene {
 	 */
 	public static List<MessageScene> importValue (String path) {
 		if (path != null && !path.equals("")) {
-            String ext = PublicExcelImportUtil.getExt(path);
+            String ext = PoiExcelUtil.getExt(path);
             if (ext!=null && !ext.equals("")) {
                 if (ext.equals("xls")) {
                     return readXls(path);
@@ -198,9 +198,9 @@ public class ImportMessageScene {
                      HSSFCell defaultValidate = hssfRow.getCell(1);
                      HSSFCell mark = hssfRow.getCell(2);
                      
-                     info.setSceneName(PublicExcelImportUtil.getValue(sceneName));
-                     info.setValidateMethodStr(PublicExcelImportUtil.getValue(defaultValidate));
-                     info.setMark(PublicExcelImportUtil.getValue(mark));
+                     info.setSceneName(PoiExcelUtil.getValue(sceneName));
+                     info.setValidateMethodStr(PoiExcelUtil.getValue(defaultValidate));
+                     info.setMark(PoiExcelUtil.getValue(mark));
                      
                      infos.add(info);
                  }
@@ -239,9 +239,9 @@ public class ImportMessageScene {
                      XSSFCell defaultValidate = xssfRow.getCell(1);
                      XSSFCell mark = xssfRow.getCell(2);
 
-                     info.setSceneName(PublicExcelImportUtil.getValue(sceneName));
-                     info.setValidateMethodStr(PublicExcelImportUtil.getValue(defaultValidate));
-                     info.setMark(PublicExcelImportUtil.getValue(mark));
+                     info.setSceneName(PoiExcelUtil.getValue(sceneName));
+                     info.setValidateMethodStr(PoiExcelUtil.getValue(defaultValidate));
+                     info.setMark(PoiExcelUtil.getValue(mark));
                      
                      infos.add(info);
                  }

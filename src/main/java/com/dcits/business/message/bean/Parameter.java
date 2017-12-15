@@ -64,6 +64,7 @@ public class Parameter implements Serializable {
 	private Set<ComplexParameter> complexParameters = new HashSet<ComplexParameter>();
 
      
+	private Integer parentId;
     // Constructors
 
     /** default constructor */
@@ -92,12 +93,17 @@ public class Parameter implements Serializable {
         this.path = path;
         this.type = type;
     }
-
-   
+    
+    
     // Property accessors
     
+    public void setParentId(Integer parentId) {
+		this.parentId = parentId;
+	}
     
-    
+    public Integer getParentId() {
+		return parentId;
+	}
 
     public Integer getParameterId() {
         return this.parameterId;

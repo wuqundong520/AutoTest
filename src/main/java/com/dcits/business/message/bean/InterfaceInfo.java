@@ -6,10 +6,12 @@ import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.dcits.annotation.FieldNameMapper;
 import com.dcits.business.user.bean.User;
+import com.dcits.constant.MessageKeys;
 
 
 /**
@@ -112,7 +114,7 @@ public class InterfaceInfo implements Serializable {
 	private Integer messagesNum;
 	
 	
-	/******特殊成员变量，某些情况下使用*********/
+	/******特殊成员变量，某些情况下使用-excel导入报文信息*********/
 	private String requestMsg; //入参报文
 	private String createMessage;//是否创建默认报文
 	private String createScene;//是否创建默认场景
@@ -145,7 +147,64 @@ public class InterfaceInfo implements Serializable {
         this.lastModifyUser = lastModifyUser;
     }
 
-   
+    /**
+     * 获取参数的树型json树<br>由于接口的参数库中参数不是按照父子关系存储，则需要根据节点path来梳理父子关系
+     * 
+     * @return Object[] 0 - 适用于Ztree的简单json数据格式  1 - 出错的信息
+     */
+    @JSON(serialize=false)
+    public Object[] getParameterZtreeMap () {
+    	parameters = this.getParameters();
+    	if (parameters.size() < 1) {//没有参数
+    		return null;
+    	}    	
+    	Integer rootPid = 0;
+    	StringBuilder errorInfo = new StringBuilder();
+    	for (Parameter p:parameters) {
+    		Integer parentId = getParentId(p.getPath());
+    		
+    		if (parentId == null) {
+    			errorInfo.append("节点参数&nbsp;" + p.getParameterIdentify() + "&nbsp;[" + p.getPath() + "]不存在父节点或者父节点已被删除,请检查该节点的路径是否正确!<br>" );
+    		} else if (parentId == 0) {
+    			rootPid = p.getParameterId();
+    		}
+    			   			
+    		p.setParentId(parentId);
+    	}
+    	
+    	return new Object[]{parameters, rootPid,errorInfo};
+    }
+    
+    /**
+     * 根据自身path获取父节点id
+     * @param path
+     * @return
+     */
+    @JSON(serialize=false)
+    private Integer getParentId (String path) {
+    	if (MessageKeys.MESSAGE_PARAMETER_DEFAULT_ROOT_PATH.equals(path)) {
+    		return 0; //根节点
+    	}
+    	
+    	String parentIdentify = path.substring(path.lastIndexOf(".") + 1);
+    	String parentPath = path.substring(0, path.lastIndexOf("."));
+    	Parameter p = findParam(parentIdentify, parentPath);
+    	if (p != null) {
+    		return p.getParameterId();
+    	}
+    	return null; //找不到父节点
+    }
+    
+    private Parameter findParam (String identify, String path) {
+    	for (Parameter p:this.parameters) {
+    		if (identify.equalsIgnoreCase(p.getParameterIdentify()) && path.equalsIgnoreCase(p.getPath())) {
+    			return p;
+    		}
+    	}
+    	
+    	return null;
+    }
+    
     // Property accessors
     
     public void setCreateUserName(String createUserName) {
@@ -322,6 +381,9 @@ public class InterfaceInfo implements Serializable {
 	}
 	
 	public String getMark() {
+		if (StringUtils.isBlank(mark)) {
+			return "";
+		}
 		return mark;
 	}
 

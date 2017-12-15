@@ -27,7 +27,7 @@
             <column name="create_time" length="19" />
         </property>
         
-        <set name="testDatas" cascade="all" lazy="true"  order-by="Status" inverse="true">
+        <set name="testDatas" cascade="all" lazy="true"  order-by="status" inverse="true">
             <key>
                 <column name="message_scene_id" />
             </key>

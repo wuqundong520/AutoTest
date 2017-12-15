@@ -224,7 +224,7 @@ var eventList = {
 				refreshTable();
 			});			
 		},		
-		".object-select":function() {
+		".object-select":function() {//选择指定场景-定时任务模块
 			var data = table.row( $(this).parents('tr') ).data();
 			parent.$("#relatedId").val(data.setId);
 			parent.$("#choose-task-set").siblings("span").remove();

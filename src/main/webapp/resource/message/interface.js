@@ -44,6 +44,12 @@ var templateParams = {
 			id:"advanced-query",
 			iconFont:"&#xe665;",
 			name:"高级查询"
+		},{
+			type:"primary",
+			size:"M",
+			id:"export-interface-document",
+			iconFont:"&#xe644;",
+			name:"下载接口文档"
 		}],
 		formControls:[
 		{
@@ -299,7 +305,7 @@ var eventList = {
 		},
 		"#import-data-from-excel":function() {
 			createImportExcelMark("Excel导入接口信息", "../../excel/upload_interface_template.xlsx"
-					, UPLOAD_FILE_URL, INTERFACE_IMPORT_FROM_EXCEL);
+					, UPLOAD_FILE_URL, INTERFACE_IMPORT_FROM_EXCEL_URL);
 		},
 		"#advanced-query":function() {//打开高级查询页面
 			currIndex = layer_show("接口-高级查询", advancedQueryFormTemplate(advancedQueryParameters), '600', '430', 1
@@ -327,10 +333,34 @@ var eventList = {
 			layer.close(currIndex);
 			refreshTable(INTERFACE_LIST_URL + "?queryMode=advanced&" + $("#advanced-query-form").serialize());			
 		},
-		"#submit-advanced-query-reset":function() {
+		"#submit-advanced-query-reset":function() {//保存高级查询参数并刷新表格显示所有
 			saveQueryParameters();
 			layer.close(currIndex);
 			refreshTable(INTERFACE_LIST_URL);			
+		},
+		"#export-interface-document":function() {//导出详细的接口文档			
+			var checkboxList = $(".selectInterface:checked");
+			if (checkboxList.length < 1) {
+				return false;
+			}
+			
+			layer.confirm('确认导出选中的' + checkboxList.length + "条接口的详细文档?", {title:'提示', anim:5}, function (index) {
+				var loadindex = layer.msg('正在批量导出接口文档...', {icon:16, time:60000, shade:0.35});
+				var ids = [];
+				$.each(checkboxList, function (i, n) {
+					ids.push($(n).val());
+				});
+				
+				$.post(INTERFACE_EXPORT_DOCUMENT_EXCEL_URL, {ids:ids.join(",")}, function (json) {
+					layer.close(loadindex);
+					if (json.returnCode == 0) {
+						window.open("../../" + json.path)
+					} else {
+						layer.alert(json.msg, {icon:5});
+					}
+				});
+				layer.close(index);
+			});
 		}
 		
 };

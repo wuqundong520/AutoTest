@@ -16,7 +16,9 @@ import com.dcits.business.message.service.InterfaceInfoService;
 import com.dcits.business.user.bean.User;
 import com.dcits.constant.ReturnCodeConsts;
 import com.dcits.util.StrutsUtils;
+import com.dcits.util.excel.ExportInterfaceInfo;
 import com.dcits.util.excel.ImportInterfaceInfo;
+import com.dcits.util.excel.PoiExcelUtil;
 
 /**
  * 接口自动化
@@ -37,10 +39,70 @@ public class InterfaceInfoAction extends BaseAction<InterfaceInfo> {
 	
 	private String queryMode;
 	
+	private String ids;
+	
 	@Autowired
 	public void setInterfaceInfoService(InterfaceInfoService interfaceInfoService) {
 		super.setBaseService(interfaceInfoService);
 		this.interfaceInfoService = interfaceInfoService;
+	}
+	
+	/**
+	 * 获取参数jsonTree数据
+	 * @return
+	 */
+	public String getParametersJsonTree () {
+		Object[] os = interfaceInfoService.get(model.getInterfaceId()).getParameterZtreeMap();
+		
+		if (os == null) {
+			jsonMap.put("msg", "没有可用的参数,请检查!");
+			jsonMap.put("returnCode", ReturnCodeConsts.NO_RESULT_CODE);
+			return SUCCESS;
+		}
+		
+		jsonMap.put("data", os[0]);
+		jsonMap.put("rootPid", Integer.parseInt(os[1].toString()));
+		jsonMap.put("error", os[2].toString());
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);	
+		return SUCCESS;
+	}
+	
+	/**
+	 * 批量导出接口文档
+	 * @return
+	 */
+	public String exportInterfaceDocument () {
+		if (ids == null) {
+			ids = "";
+		}
+		
+		String[] ids_s = ids.split(",");
+		
+		List<InterfaceInfo> infos = new ArrayList<InterfaceInfo>();
+		for (String s:ids_s) {
+			infos.add(interfaceInfoService.get(Integer.valueOf(s)));
+		}
+		
+		if (infos.size() < 1) {
+			jsonMap.put("msg", "没有足够的数据可供导出,请刷新表格并重试!");
+			jsonMap.put("returnCode", ReturnCodeConsts.MISS_PARAM_CODE);	
+			return SUCCESS;
+		}
+		
+		String path = null;
+		
+		try {
+			path = ExportInterfaceInfo.exportDocuments(infos, PoiExcelUtil.XLSX);
+		} catch (Exception e) {
+			// TODO: handle exception
+			jsonMap.put("returnCode", ReturnCodeConsts.SYSTEM_ERROR_CODE);
+			jsonMap.put("msg", "后台写文件出错:<br>" + e.getMessage() + "<br>请联系管理员!");
+			return SUCCESS;
+		}
+		
+		jsonMap.put("path", path);
+		jsonMap.put("returnCode", ReturnCodeConsts.SUCCESS_CODE);	
+		return SUCCESS;
 	}
 	
 	/**
@@ -149,5 +211,9 @@ public class InterfaceInfoAction extends BaseAction<InterfaceInfo> {
 	
 	public void setQueryMode(String queryMode) {
 		this.queryMode = queryMode;
+	}
+	
+	public void setIds(String ids) {
+		this.ids = ids;
 	}
 }

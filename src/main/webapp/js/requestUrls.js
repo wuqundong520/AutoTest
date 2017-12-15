@@ -17,7 +17,9 @@ var INTERFACE_CHECK_NAME_URL = "interface-checkName"; //检查新增接口名是
 var INTERFACE_EDIT_URL = "interface-edit";  //接口编辑
 var INTERFACE_GET_URL = "interface-get"; //获取指定接口信息
 var INTERFACE_DEL_URL = "interface-del"; //删除指定接口
-var INTERFACE_IMPORT_FROM_EXCEL = "interface-importFromExcel";//从已经上传完成的excel中导入接口数据
+var INTERFACE_IMPORT_FROM_EXCEL_URL = "interface-importFromExcel";//从已经上传完成的excel中导入接口数据
+var INTERFACE_EXPORT_DOCUMENT_EXCEL_URL = "interface-exportInterfaceDocument";//批量导出接口文档
+var INTERFACE_GET_PARAMETERS_JSON_TREE_URL = "interface-getParametersJsonTree";//获取jsonTree数据
 
 
 var MESSAGE_LIST_URL = "message-list"; //获取报文列表

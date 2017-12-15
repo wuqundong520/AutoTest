@@ -103,7 +103,7 @@
 	height:220px;
 	font-size: 18px;
 }
-.parameter-info-table > tbody > tr > td:nth-child(1) {
+.parameter-info-table td:nth-child(1), #show-parameter-info td:nth-child(1) {
 	font-weight: bolder;
 }
 

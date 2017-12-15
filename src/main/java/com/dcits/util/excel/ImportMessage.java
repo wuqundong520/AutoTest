@@ -121,10 +121,10 @@ public class ImportMessage {
 			}
 		}
 		
-		result.put(PublicExcelImportUtil.RESULT_MAP_TOTAL_COUNT, totalCount);
-		result.put(PublicExcelImportUtil.RESULT_MAP_SUCCESS_COUNT, successCount);
-		result.put(PublicExcelImportUtil.RESULT_MAP_FAIL_COUNT, failCount);
-		result.put(PublicExcelImportUtil.RESULT_MAP_MSG, msg.toString());
+		result.put(PoiExcelUtil.RESULT_MAP_TOTAL_COUNT, totalCount);
+		result.put(PoiExcelUtil.RESULT_MAP_SUCCESS_COUNT, successCount);
+		result.put(PoiExcelUtil.RESULT_MAP_FAIL_COUNT, failCount);
+		result.put(PoiExcelUtil.RESULT_MAP_MSG, msg.toString());
 		return result;
 	}
 	
@@ -190,7 +190,7 @@ public class ImportMessage {
 	 */
 	public static List<Message> importValue (String path) {
 		if (path != null && !path.equals("")) {
-            String ext = PublicExcelImportUtil.getExt(path);
+            String ext = PoiExcelUtil.getExt(path);
             if (ext!=null && !ext.equals("")) {
                 if (ext.equals("xls")) {
                     return readXls(path);
@@ -235,13 +235,13 @@ public class ImportMessage {
                      HSSFCell status = hssfRow.getCell(5);
                      HSSFCell createMessageScene = hssfRow.getCell(6);
                      
-                     info.setMessageName(PublicExcelImportUtil.getValue(messageName));
-                     info.setMessageType(PublicExcelImportUtil.getValue(messageType).toUpperCase());
-                     info.setParameterJson(PublicExcelImportUtil.getValue(paramsJson));
-                     info.setRequestUrl(PublicExcelImportUtil.getValue(requestUrl));
-                     info.setCallParameter(PublicExcelImportUtil.getValue(callParameter));
-                     info.setStatus(PublicExcelImportUtil.getValue(status));
-                     info.setCreateMessageScene(PublicExcelImportUtil.getValue(createMessageScene));
+                     info.setMessageName(PoiExcelUtil.getValue(messageName));
+                     info.setMessageType(PoiExcelUtil.getValue(messageType).toUpperCase());
+                     info.setParameterJson(PoiExcelUtil.getValue(paramsJson));
+                     info.setRequestUrl(PoiExcelUtil.getValue(requestUrl));
+                     info.setCallParameter(PoiExcelUtil.getValue(callParameter));
+                     info.setStatus(PoiExcelUtil.getValue(status));
+                     info.setCreateMessageScene(PoiExcelUtil.getValue(createMessageScene));
                      
                      infos.add(info);
                  }
@@ -284,13 +284,13 @@ public class ImportMessage {
                      XSSFCell status = xssfRow.getCell(5);
                      XSSFCell createMessageScene = xssfRow.getCell(6);
                      
-                     info.setMessageName(PublicExcelImportUtil.getValue(messageName));
-                     info.setMessageType(PublicExcelImportUtil.getValue(messageType).toUpperCase());
-                     info.setParameterJson(PublicExcelImportUtil.getValue(paramsJson));
-                     info.setRequestUrl(PublicExcelImportUtil.getValue(requestUrl));
-                     info.setCallParameter(PublicExcelImportUtil.getValue(callParameter));
-                     info.setStatus(PublicExcelImportUtil.getValue(status));
-                     info.setCreateMessageScene(PublicExcelImportUtil.getValue(createMessageScene));
+                     info.setMessageName(PoiExcelUtil.getValue(messageName));
+                     info.setMessageType(PoiExcelUtil.getValue(messageType).toUpperCase());
+                     info.setParameterJson(PoiExcelUtil.getValue(paramsJson));
+                     info.setRequestUrl(PoiExcelUtil.getValue(requestUrl));
+                     info.setCallParameter(PoiExcelUtil.getValue(callParameter));
+                     info.setStatus(PoiExcelUtil.getValue(status));
+                     info.setCreateMessageScene(PoiExcelUtil.getValue(createMessageScene));
                      
                      infos.add(info);
                  }

@@ -2,6 +2,7 @@ var interfaceId; //当前的测试id
 var parameterId;//当前正在操作的参数
 var currIndex;//当前正在操作的layer窗口的index
 
+//导入报文参数
 var showHtml = '<div class="page-container">'+
 	'<div class="cl pd-5 bg-1 bk-gray mt-0"> <span class="l">'+
 	'<a href="javascript:;" id="parse-message-to-parameters" class="btn btn-danger radius">解析报文</a>'+
@@ -16,6 +17,8 @@ var showHtml = '<div class="page-container">'+
 	'</span></div><br><textarea style="height: 240px;" class="textarea radius" '+
 	'id="jsonParams" placeholder="输入接口报文"></textarea></div>';
 
+//查看参数节点图
+var showParameterTreeHtml;
 
 var templateParams = {
 		tableTheads:["标识", "名称", "默认值", "路径", "类型", "备注", "操作"],
@@ -37,6 +40,12 @@ var templateParams = {
 			id:"batch-add-object",
 			iconFont:"&#xe645;",
 			name:"导入报文"
+		},{
+			type:"success",
+			size:"M",
+			id:"view-structure-ztree",
+			iconFont:"&#xe6cf;",
+			name:"预览节点树"
 		}],
 		formControls:[
 		{
@@ -69,13 +78,18 @@ var templateParams = {
 				name:"defaultValue"
 				}]
 		},
-		{	
-			label:"节点路径",  			
-			input:[{	
-				name:"path",
-				placeholder:"根节点请不要填写"
-				}]
-		},
+		{
+			 label:"节点路径",
+			 input:[{
+				 hidden:true,
+				 name:"path"
+				}],
+			 button:[{
+				 style:"success",
+				 value:"选择",
+				 name:"choose-new-path"
+			}]					 
+		 },
 		{	
 			required:true,
 			label:"节点类型",  			
@@ -110,7 +124,7 @@ var templateParams = {
 		}]		
 	};
 
-
+var rootPid;
 var columnsSetting = [
                       {
                       	"data":null,
@@ -169,7 +183,8 @@ var columnsSetting = [
                           	return btnIconTemplate(context);
                           }}
                   ];
-
+var isChoosePath = false;
+var paramsTreeLayerIndex;
 var eventList = {
 		"#add-object":function() {
 			publish.renderParams.editPage.modeFlag = 0;					
@@ -184,7 +199,9 @@ var eventList = {
 			var data = table.row( $(this).parents('tr') ).data();
 			publish.renderParams.editPage.modeFlag = 1;
 			publish.renderParams.editPage.objId = data.parameterId;
-			layer_show("编辑参数信息", editHtml, editPageWidth, editPageHeight.edit, 1);
+			layer_show("编辑参数信息", editHtml, editPageWidth, editPageHeight.edit, 1, null, null, function() {
+				publish.renderParams.editPage.objId = null;
+			});
 			publish.init();	
 		},
 		".object-del":function() {
@@ -212,6 +229,59 @@ var eventList = {
 					layer.alert(data.msg, {icon: 5});
 				}
 			});
+		},
+		"#choose-new-path":function() {//选择节点路径、打开节点树视图页面
+			isChoosePath = true;
+			$("#view-structure-ztree").click();
+		},
+		"#show-parameter-info #choose-this-path":function() {//编辑或者添加参数时选择参数的path路径
+			if (!strIsNotEmpty($("td[data-name='type']").text()) || $("td[data-name='type'] span").text() == "String" 
+						|| $("td[data-name='type'] span").text() == "Number") {
+				layer.msg('当前节点不能添加任何子节点,请更换路径!', {title:'提示', icon:0, time:1800});
+				return false;
+			}
+			
+			//不能选择自身节点作为父节点
+			if (publish.renderParams.editPage.objId == $("td[data-name='parameterId']").text()) {
+				layer.msg('不能选择自身节点为父节点,请更换路径!', {title:'提示', icon:0, time:1800});
+				return false;
+			}
+			
+			var choosePath = $("td[data-name='path']").text() + ($("td[data-name='path']").text() == "" ? "" : ".") + $("td[data-name='parameterIdentify']").text();
+			$("#path").val(choosePath);
+			$("#choose-new-path").siblings("span").remove();
+			$("#choose-new-path").before('<span>' + choosePath + '&nbsp;</span>');
+			layer.close(paramsTreeLayerIndex);		
+		},
+		"#view-structure-ztree":function() {//预览参数结构视图
+			paramsTreeLayerIndex = layer_show("参数节点树", showParameterTreeHtml, null, null, 1, function() {
+				if (!isChoosePath) {
+					$("#show-parameter-info #choose-this-path").hide();
+				}
+				$.post(INTERFACE_GET_PARAMETERS_JSON_TREE_URL, {interfaceId:interfaceId}, function(json) {
+					$("#ztree-json-view").spinModal();
+					if (json.returnCode == 0) {
+						//初始化ztree												
+						if (strIsNotEmpty(json.error)) {
+							$("#errorInfo").html('<pre class="c-red">' + json.error + '</pre>');
+						}
+						rootPid = json.rootPid;
+						var nodes = json.data;
+						$.each(nodes, function (i, node) {
+							if (node.type == "Map" || node.type == "Array" || node.type == "List") {
+								node["isParent"] = true;
+								node["open"] = true;
+							}
+						});
+						$.fn.zTree.init($("#treeDemo"), zTreeSetting, nodes);
+						$("#ztree-json-view").spinModal(false);
+					} else {
+						layer.alert(json.msg, {icon:5});
+					}
+				});
+			}, null, function() {
+				isChoosePath = false;
+			});							
 		}
 };
 
@@ -224,6 +294,11 @@ var mySetting = {
 			interfaceId = GetQueryString("interfaceId");
 			publish.renderParams.listPage.listUrl = PARAMS_GET_URL + "?interfaceId=" + interfaceId;
 			publish.renderParams.editPage.editUrl = PARAM_EDIT_URL + "?interfaceId=" + interfaceId;
+			
+			jqueryLoad("interfaceParameter-viewTree.htm", '#show-parameter-tree-html', function (dom) {
+				showParameterTreeHtml = dom;
+			});
+			
 			df.resolve();
 		},
 		editPage:{
@@ -232,7 +307,7 @@ var mySetting = {
 				df.resolve();
        	 	},
        	 	renderCallback:function(obj){
-       	 		$("#path").val((obj.path).substring(8));
+       	 		$("#choose-new-path").before('<span>' + (obj.path).substring(8) + '&nbsp;</span>');
        	 	},
 			editUrl:PARAM_EDIT_URL,
 			getUrl:PARAM_GET_URL,
@@ -251,7 +326,7 @@ var mySetting = {
 			columnsJson:[0, 7, 8],
 			dtOtherSetting:{
 				serverSide:false,
-				"aaSorting": [[ 5, "asc" ]]
+				aaSorting: [[ 5, "asc" ]]
 			}
 		},
 		templateParams:templateParams		
@@ -264,3 +339,36 @@ $(function(){
 
 
 /********************************************************************************************************/
+var zTreeSetting = {
+		data: {
+			simpleData: {
+				enable:true,
+				idKey: "parameterId",
+				pIdKey: "parentId",
+				rootPId: rootPid
+			},
+			key: {
+				name:"parameterIdentify",
+				title:"parameterName"
+			}		
+		},
+		callback: {
+			onClick: zTreeOnClick
+		}
+};
+
+
+function zTreeOnClick(event, treeId, treeNode) {
+	$.each(treeNode, function (name, value) {	
+		var that = $("#show-parameter-info td[data-name='" + name + "']");
+		if (that) {
+			that.html(value);
+		}	
+		if (name == "path") {
+			that.html(value.replace('TopRoot.', '').replace('TopRoot', ''));
+		}
+		if (name == "type") {
+			that.html('<span class="label label-success radius">' + value + '</span>');
+		}
+	});
+}
